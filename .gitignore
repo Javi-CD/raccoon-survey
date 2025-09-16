@@ -1,8 +1,10 @@
 __pycache__/
+.ruff_cache/
 .venv/
 
 build/
 dist/
+node_modules/
 wheels/
 
 .env

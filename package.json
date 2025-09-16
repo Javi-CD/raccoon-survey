@@ -1,0 +1,61 @@
+{
+  "name": "raccoon-survey",
+  "version": "0.0.0",
+  "description": "Anonymous survey platforms to measure the work environment",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Javi-CD/raccoon-survey.git"
+  },
+  "keywords": [
+    "survey",
+    "anonymous",
+    "work-environment",
+    "python",
+    "web-application"
+  ],
+  "author": "Javi-CD",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "prepare": "husky install",
+    "lint:commit": "commitlint --edit",
+    "lint:commit-ci": "git rev-parse --verify HEAD~1 >/dev/null 2>&1 && commitlint --from=HEAD~1 --to=HEAD --verbose || echo 'No previous commits found. Skipping commit validation.'",
+    "lint:pre-commit": "npm run lint:ui && npm run lint:python",
+    "lint:python": "npm run lint:python-ruff && npm run lint:python-isort",
+    "lint:python-ruff": "uv run ruff check src/ --fix",
+    "lint:python-isort": "uv run isort src/",
+    "lint:python-check": "npm run lint:python-ruff-check && npm run lint:python-isort-check && npm run lint:python-format-check",
+    "lint:python-ruff-check": "uv run ruff check src/",
+    "lint:python-isort-check": "uv run isort --check-only src/",
+    "lint:python-format-check": "uv run ruff format --check src/",
+    "lint:ui": "npm run lint:js && npm run lint:css && npm run format:ui",
+    "lint:ui-check": "npm run lint:js-check && npm run lint:css-check && npm run format:ui-check",
+    "lint:js": "eslint src/ui/ --ext .js,.html --fix --no-error-on-unmatched-pattern",
+    "lint:js-check": "eslint src/ui/ --ext .js,.html --no-error-on-unmatched-pattern",
+    "lint:css": "stylelint \"src/ui/**/*.css\" --fix --allow-empty-input",
+    "lint:css-check": "stylelint \"src/ui/**/*.css\" --allow-empty-input",
+    "format:ui": "prettier --write \"src/ui/**/*.{html,css,js,ts,json,md}\" --ignore-unknown --no-error-on-unmatched-pattern 2>nul || echo \"No files to format\"",
+    "format:ui-check": "prettier --check \"src/ui/**/*.{html,css,js,ts,json,md}\" --ignore-unknown --no-error-on-unmatched-pattern 2>nul || echo \"No files to check\""
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^18.4.3",
+    "@commitlint/config-conventional": "^18.4.3",
+    "husky": "^8.0.3",
+    "eslint": "^8.55.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-html": "^7.1.0",
+    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "prettier": "^3.1.0",
+    "stylelint": "^14.16.1",
+    "stylelint-config-prettier": "^9.0.5",
+    "stylelint-config-standard": "^29.0.0"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  }
+}
