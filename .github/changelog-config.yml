@@ -1,0 +1,110 @@
+categories:
+  added:
+    keywords:
+      - "add"
+      - "new"
+      - "create"
+      - "implement"
+      - "introduce"
+      - "feat"
+      - "feature"
+    prefixes:
+      - "feat:"
+      - "feat("
+      - "add:"
+      - "new:"
+
+  changed:
+    keywords:
+      - "update"
+      - "change"
+      - "modify"
+      - "improve"
+      - "refactor"
+      - "enhance"
+      - "perf"
+    prefixes:
+      - "refactor:"
+      - "refactor("
+      - "perf:"
+      - "perf("
+      - "update:"
+      - "change:"
+      - "improve:"
+
+  deprecated:
+    keywords:
+      - "deprecate"
+      - "obsolete"
+    prefixes:
+      - "deprecate:"
+      - "deprecate("
+
+  removed:
+    keywords:
+      - "remove"
+      - "delete"
+      - "drop"
+      - "revert"
+    prefixes:
+      - "remove:"
+      - "remove("
+      - "delete:"
+      - "revert:"
+      - "revert("
+
+  fixed:
+    keywords:
+      - "fix"
+      - "bug"
+      - "resolve"
+      - "correct"
+      - "patch"
+      - "hotfix"
+    prefixes:
+      - "fix:"
+      - "fix("
+      - "bug:"
+      - "patch:"
+      - "hotfix:"
+
+  security:
+    keywords:
+      - "security"
+      - "vulnerability"
+      - "cve"
+      - "exploit"
+    prefixes:
+      - "security:"
+      - "security("
+
+# Commit patterns to ignore in changelog
+ignore_patterns:
+  - "^chore:"
+  - "^docs:"
+  - "^style:"
+  - "^test:"
+  - "^ci:"
+  - "^build:"
+  - "Merge pull request"
+  - "Merge branch"
+  - "Initial commit"
+
+# Release notes template
+release_template: |
+  ## What's Changed
+
+  {changelog_content}
+
+  **Full Changelog**: https://github.com/{repository}/compare/{previous_tag}...{current_tag}
+
+# Changelog format settings
+format:
+  date_format: "%Y-%m-%d"
+  version_prefix: "v"
+  unreleased_label: "Unreleased"
+
+# GitHub repository settings (will be auto-detected)
+repository:
+  owner: ""
+  name: ""
