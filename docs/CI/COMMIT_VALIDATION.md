@@ -112,13 +112,78 @@ Closes #123
 
 ### Pre-commit Hook
 
-Runs before each commit to validate:
+Runs before each commit to validate and automatically fix:
 
-- Basic linting
+#### Frontend (UI) Linting
+- **ESLint**: JavaScript and HTML code quality and style
+- **Stylelint**: CSS code quality and style  
+- **Prettier**: Code formatting for HTML, CSS, JS, TS, JSON, and Markdown
+
+#### Backend (Python) Linting
+- **Ruff**: Python code quality, style, and automatic fixes
+- **isort**: Python import sorting and organization
+- **Ruff Format**: Python code formatting validation
+
+All linting tools run with automatic fixing enabled during pre-commit to ensure code quality before commits are made.
 
 ### Commit-msg Hook
 
 Validates commit message format using commitlint rules.
+
+---
+
+## Available Linting Commands
+
+### Manual Execution
+
+#### Frontend (UI) Commands
+```bash
+# Run all UI linting (with auto-fix)
+npm run lint:ui
+
+# Run UI linting checks only (no auto-fix)
+npm run lint:ui-check
+
+# Individual commands
+npm run lint:js          # ESLint with auto-fix
+npm run lint:js-check    # ESLint check only
+npm run lint:css         # Stylelint with auto-fix  
+npm run lint:css-check   # Stylelint check only
+npm run format:ui        # Prettier with auto-fix
+npm run format:ui-check  # Prettier check only
+```
+
+#### Backend (Python) Commands
+```bash
+# Run all Python linting (with auto-fix)
+npm run lint:python
+
+# Run Python linting checks only (no auto-fix)
+npm run lint:python-check
+
+# Individual commands
+npm run lint:python-ruff       # Ruff with auto-fix
+npm run lint:python-ruff-check # Ruff check only
+npm run lint:python-isort      # isort with auto-fix
+npm run lint:python-isort-check # isort check only
+npm run lint:python-format-check # Ruff format check only
+```
+
+#### Combined Commands
+```bash
+# Run pre-commit validation manually
+npm run lint:pre-commit
+
+# This executes both:
+# - npm run lint:ui
+# - npm run lint:python
+```
+
+### CI/CD Integration
+
+For continuous integration, use the check-only commands:
+- `npm run lint:ui-check` - Frontend validation without modifications
+- `npm run lint:python-check` - Backend validation without modifications
 
 ---
 
@@ -210,7 +275,7 @@ git commit --no-verify -m "emergency fix"
 
 ### `package.json`
 
-Contains scripts and basic commitlint configuration.
+Contains scripts for linting, formatting, and commitlint configuration.
 
 ### `commitlint.config.js`
 
@@ -220,19 +285,41 @@ Detailed commitlint rules and configuration.
 
 Directory containing git hook scripts:
 
-- `pre-commit`: Pre-commit validations
+- `pre-commit`: Pre-commit validations (UI + Python linting)
 - `commit-msg`: Commit message validation
+
+### Frontend Configuration
+
+- `.eslintrc.js` - ESLint configuration for JavaScript/HTML
+- `.stylelintrc.js` - Stylelint configuration for CSS
+- `.prettierrc.js` - Prettier formatting configuration
+
+### Backend Configuration
+
+- `pyproject.toml` - Python project configuration including:
+  - `[tool.ruff]` - Ruff linter and formatter settings
+  - `[tool.ruff.lint]` - Specific linting rules and configurations
+  - `[tool.ruff.lint.isort]` - Import sorting configuration
+  - `[tool.isort]` - Additional isort settings
 
 ---
 
 ## Best Practices
 
+### Commit Messages
 1. **Write clear descriptions**: Be specific about what changed
 2. **Use appropriate types**: Choose the most accurate type
 3. **Include scope when relevant**: Helps with organization
 4. **Write body for complex changes**: Explain why, not just what
 5. **Reference issues**: Use `Closes #123` or `Fixes #456`
 6. **Keep commits atomic**: One logical change per commit
+
+### Code Quality
+7. **Run linting before committing**: Use `npm run lint:pre-commit` to check both frontend and backend
+8. **Fix linting issues**: Address any issues reported by ESLint, Stylelint, or Ruff
+9. **Maintain consistent formatting**: Let Prettier and Ruff handle code formatting automatically
+10. **Organize imports properly**: isort will automatically organize Python imports according to PEP 8
+11. **Follow Python conventions**: Ruff enforces PEP 8 and other Python best practices
 
 > Visit the CommitS Convention Guide for more details: https://www.conventionalcommits.org/es/v1.0.0/
 
