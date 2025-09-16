@@ -141,7 +141,7 @@ wheels = [
 
 [[package]]
 name = "raccoon-survey"
-version = "0.0.0"
+version = "1.0.0"
 source = { virtual = "." }
 
 [package.optional-dependencies]
