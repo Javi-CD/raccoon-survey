@@ -1,0 +1,9 @@
+[project]
+name = "raccoon-survey"
+version = "0.0.0"
+description = "Anonymous survey platforms to measure the work environment"
+readme = "README.md"
+license = { text = "MIT" }
+keywords = ["survey", "work environment", "anonymous"]
+requires-python = ">=3.13"
+dependencies = []
