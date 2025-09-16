@@ -1,0 +1,210 @@
+name: Create Release with Changelog
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # Semantic versioning tags only
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: |
+          pip install PyYAML
+          pip install gitpython
+          pip install python-dateutil
+
+      - name: Extract version
+        id: version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "version_number=${VERSION#v}" >> $GITHUB_OUTPUT
+
+      - name: Generate changelog with config
+        id: changelog
+        run: |
+          python3 << 'EOF'
+          import os
+          import re
+          import subprocess
+          import yaml
+          from datetime import datetime
+          
+          # Load configuration
+          try:
+              with open('.github/changelog-config.yml', 'r') as f:
+                  config = yaml.safe_load(f)
+          except FileNotFoundError:
+              print("Config file not found, using defaults")
+              config = {}
+          
+          # Get version info
+          version = "${{ steps.version.outputs.version }}"
+          version_number = "${{ steps.version.outputs.version_number }}"
+          
+          # Get current date
+          date_format = config.get('format', {}).get('date_format', '%Y-%m-%d')
+          current_date = datetime.now().strftime(date_format)
+          
+          # Get commits since last tag
+          try:
+              last_tag = subprocess.check_output(['git', 'describe', '--tags', '--abbrev=0', 'HEAD^'], 
+                                                stderr=subprocess.DEVNULL).decode().strip()
+              commit_range = f"{last_tag}..HEAD"
+          except subprocess.CalledProcessError:
+              commit_range = "HEAD"
+          
+          # Get commit messages
+          commits = subprocess.check_output(['git', 'log', '--pretty=format:%s', commit_range]).decode().strip()
+          
+          if not commits:
+              print("No commits found for changelog")
+              exit(0)
+          
+          # Get ignore patterns
+          ignore_patterns = config.get('ignore_patterns', [])
+          
+          # Initialize categories
+          categories = {
+              'added': [],
+              'changed': [],
+              'deprecated': [],
+              'removed': [],
+              'fixed': [],
+              'security': []
+          }
+          
+          # Process commits
+          for commit in commits.split('\n'):
+              commit = commit.strip()
+              if not commit:
+                  continue
+              
+              # Check if commit should be ignored
+              should_ignore = False
+              for pattern in ignore_patterns:
+                  if re.search(pattern, commit, re.IGNORECASE):
+                      should_ignore = True
+                      break
+              
+              if should_ignore:
+                  continue
+              
+              # Categorize commit
+              categorized = False
+              commit_lower = commit.lower()
+              
+              for category, rules in config.get('categories', {}).items():
+                  if category not in categories:
+                      continue
+                  
+                  # Check prefixes first
+                  for prefix in rules.get('prefixes', []):
+                      if commit_lower.startswith(prefix.lower()):
+                          categories[category].append(f"- {commit}")
+                          categorized = True
+                          break
+                  
+                  if categorized:
+                      break
+                  
+                  # Check keywords
+                  for keyword in rules.get('keywords', []):
+                      if keyword.lower() in commit_lower:
+                          categories[category].append(f"- {commit}")
+                          categorized = True
+                          break
+                  
+                  if categorized:
+                      break
+              
+              # If not categorized, add to changed
+              if not categorized:
+                  categories['changed'].append(f"- {commit}")
+          
+          # Generate changelog entry
+          changelog_entry = f"\n## [{version_number}] - {current_date}\n"
+          
+          # Add sections in order
+          section_order = ['added', 'changed', 'deprecated', 'removed', 'fixed', 'security']
+          section_titles = {
+              'added': 'Added',
+              'changed': 'Changed', 
+              'deprecated': 'Deprecated',
+              'removed': 'Removed',
+              'fixed': 'Fixed',
+              'security': 'Security'
+          }
+          
+          for section in section_order:
+              if categories[section]:
+                  changelog_entry += f"\n### {section_titles[section]}\n"
+                  changelog_entry += "\n".join(categories[section]) + "\n"
+          
+          # Save changelog entry
+          with open('new_changelog_entry.txt', 'w') as f:
+              f.write(changelog_entry)
+          
+          # Save for release notes
+          with open('release_notes.txt', 'w') as f:
+              f.write(changelog_entry.strip())
+          
+          print(f"Generated changelog entry for {version}")
+          EOF
+
+      - name: Update CHANGELOG.md
+        run: |
+          NEW_ENTRY=$(cat new_changelog_entry.txt)
+          
+          if [ -f "CHANGELOG.md" ]; then
+            awk -v new_entry="$NEW_ENTRY" '
+            /^## \[Unreleased\]/ {
+              print $0
+              print new_entry
+              next
+            }
+            { print }
+            ' CHANGELOG.md > temp_changelog.md
+            
+            mv temp_changelog.md CHANGELOG.md
+            
+            # Update version links
+            VERSION_NUMBER="${{ steps.version.outputs.version_number }}"
+            sed -i "s|\[Unreleased\]: .*|\[Unreleased\]: https://github.com/${{ github.repository }}/compare/v${VERSION_NUMBER}...HEAD|" CHANGELOG.md
+            echo "[${VERSION_NUMBER}]: https://github.com/${{ github.repository }}/releases/tag/v${VERSION_NUMBER}" >> CHANGELOG.md
+          fi
+
+      - name: Commit changelog updates
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add CHANGELOG.md
+          git commit -m "chore: update CHANGELOG.md for ${{ steps.version.outputs.version }}" || exit 0
+          git push
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          release_name: Release ${{ steps.version.outputs.version }}
+          body_path: release_notes.txt
+          draft: false
+          prerelease: ${{ contains(steps.version.outputs.version, '-') }}
