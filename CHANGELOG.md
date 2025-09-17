@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2025-09-17
+
+### Added
+- feat(release): upgrade to version 1.0.1
+- feat(release): enhance release workflow with version sync and manual trigger
+- feat(release): enhance release workflow with version synchronization
+- ci(release): add manual trigger and version updates to release workflow
+- ci(scripts): add script to update package-lock.json version
+- feat(ci): add script to update package version
+- ci(scripts): add script to update version in pyproject.toml
+- feat: Upgrade to version 1.0.0
+
+### Changed
+- docs(CI): update changelog generation documentation
+- ci(changelog): modify workflow to support manual triggering
+
 ## [0.0.0] - 2024-12-19
 
 ### Added
@@ -29,5 +45,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `SECURITY.md`
   - `CHANGELOG.md`
 
-[Unreleased]: https://github.com/Javi-CD/raccoon-survey/compare/v0.0.0...HEAD
+[Unreleased]: https://github.com/Javi-CD/raccoon-survey/compare/v1.0.1...HEAD
 [0.0.0]: https://github.com/Javi-CD/raccoon-survey/releases/tag/v0.0.0
+[1.0.1]: https://github.com/Javi-CD/raccoon-survey/releases/tag/v1.0.1
