@@ -1,9 +1,6 @@
-name: Generate Changelog
+name: Generate Changelog (Manual)
 
 on:
-  push:
-    tags:
-      - "v*"
   workflow_dispatch:
     inputs:
       version:
@@ -23,6 +20,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Fetch full history for changelog generation
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -170,7 +169,7 @@ jobs:
           git config --local user.name "GitHub Action"
           git add CHANGELOG.md
           git commit -m "chore: update CHANGELOG.md for ${{ steps.version.outputs.version }}" || exit 0
-          git push
+          git push origin HEAD:${{ github.ref_name || 'main' }}
 
       - name: Create Release
         uses: actions/create-release@v1
