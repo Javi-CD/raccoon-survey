@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - 'v*.*.*'  # Semantic versioning tags only
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., v1.0.0)'
+        required: true
+        type: string
 
 jobs:
   release:
@@ -17,6 +23,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -32,7 +40,13 @@ jobs:
       - name: Extract version
         id: version
         run: |
-          VERSION=${GITHUB_REF#refs/tags/}
+          if [ "${{ github.event_name }}" = "push" ]; then
+            VERSION=${GITHUB_REF#refs/tags/}
+            echo "triggered_by=tag_push" >> $GITHUB_OUTPUT
+          else
+            VERSION=${{ github.event.inputs.version }}
+            echo "triggered_by=manual" >> $GITHUB_OUTPUT
+          fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "version_number=${VERSION#v}" >> $GITHUB_OUTPUT
 
@@ -190,15 +204,58 @@ jobs:
             echo "[${VERSION_NUMBER}]: https://github.com/${{ github.repository }}/releases/tag/v${VERSION_NUMBER}" >> CHANGELOG.md
           fi
 
-      - name: Commit changelog updates
+      - name: Update version in project files
+        if: steps.version.outputs.triggered_by == 'manual'
+        run: |
+          echo "Updating version in project files..."
+          
+          # Update pyproject.toml
+          python3 .github/scripts/update_pyproject_version.py "${{ steps.version.outputs.version }}" --file pyproject.toml
+          
+          # Update package.json
+          python3 .github/scripts/update_package_version.py "${{ steps.version.outputs.version }}" --file package.json
+          
+          # Update package-lock.json
+          node .github/scripts/update_package_lock.js "${{ steps.version.outputs.version }}" --file package-lock.json
+          
+          echo " Version update completed"
+
+      - name: Commit changelog and version updates
+        if: steps.version.outputs.triggered_by == 'manual'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add CHANGELOG.md
-          git commit -m "chore: update CHANGELOG.md for ${{ steps.version.outputs.version }}" || exit 0
-          git push
+          git add CHANGELOG.md pyproject.toml package.json package-lock.json
+          
+          # Only commit if there are changes
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update CHANGELOG.md and version files for ${{ steps.version.outputs.version }}"
+            git push origin HEAD:${{ github.ref_name || 'main' }}
+          fi
+
+      - name: Create tag (manual trigger only)
+        if: steps.version.outputs.triggered_by == 'manual'
+        run: |
+          git tag ${{ steps.version.outputs.version }}
+          git push origin ${{ steps.version.outputs.version }}
+
+      - name: Check if release exists
+        id: check_release
+        run: |
+          if gh release view ${{ steps.version.outputs.version }} >/dev/null 2>&1; then
+            echo "release_exists=true" >> $GITHUB_OUTPUT
+            echo "Release ${{ steps.version.outputs.version }} already exists"
+          else
+            echo "release_exists=false" >> $GITHUB_OUTPUT
+            echo "Release ${{ steps.version.outputs.version }} does not exist"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create GitHub Release
+        if: steps.check_release.outputs.release_exists == 'false'
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -208,3 +265,11 @@ jobs:
           body_path: release_notes.txt
           draft: false
           prerelease: ${{ contains(steps.version.outputs.version, '-') }}
+
+      - name: Update existing release
+        if: steps.check_release.outputs.release_exists == 'true'
+        run: |
+          gh release edit ${{ steps.version.outputs.version }} --notes-file release_notes.txt
+          echo "Updated existing release ${{ steps.version.outputs.version }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

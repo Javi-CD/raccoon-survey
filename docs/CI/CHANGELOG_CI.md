@@ -1,6 +1,17 @@
 # Changelog CI Documentation
 
-This document explains how the automatic changelog generation system works in the raccoon-survey project.
+This document explains how the automatic changelog generation and version synchronization system works in the raccoon-survey project.
+
+---
+
+## Quick Start
+
+For the recommended release creation approach:
+
+1. **Make conventional commits** following the patterns below
+2. **Go to GitHub Actions** → "Create Release with Changelog"
+3. **Run workflow manually** with your desired version (e.g., `v1.0.1`)
+4. **The system automatically** updates CHANGELOG.md, synchronizes versions in all files, commits changes, creates tags, and publishes the release
 
 ---
 
@@ -8,8 +19,14 @@ This document explains how the automatic changelog generation system works in th
 
 ### `.github/workflows/`
 
-- **`changelog.yml`**: Basic workflow for generating changelog
-- **`release.yml`**: Advanced workflow for releases with automatic changelog
+- **`changelog.yml`**: Basic workflow for generating changelog only
+- **`release.yml`**: **Advanced workflow** for complete releases with automatic changelog and version synchronization
+
+### `.github/scripts/`
+
+- **`update_pyproject_version.py`**: Updates version in `pyproject.toml`
+- **`update_package_version.py`**: Updates version in `package.json`
+- **`update_package_lock.js`**: Updates version in `package-lock.json`
 
 ### `.github/changelog-config.yml`
 
@@ -23,12 +40,18 @@ Configuration file that defines:
 
 ## How It Works
 
-### 1. Automatic Activation
+### 1. Workflow Activation
 
-The CI is triggered when:
+The CI can be triggered in two ways:
 
-- A version tag is created (e.g., `v1.0.0`, `v1.2.3`)
-- Manually executed from GitHub Actions
+#### **Manual Execution (Recommended)**
+- Go to GitHub Actions → "Create Release with Changelog"
+- Click "Run workflow" and specify version
+- **Advantages**: Full control, version synchronization, conflict prevention
+
+#### **Automatic via Tag Push**
+- Create and push a version tag (e.g., `v1.0.0`)
+- **Note**: Only creates/updates releases, doesn't commit changes to repository
 
 ### 2. Commit Categorization
 
@@ -80,7 +103,7 @@ Commits with these patterns are automatically ignored:
 
 ## System Usage
 
-### Create an Automatic Release
+### Manual Release Creation (Recommended)
 
 1. **Make commits following conventions:**
 
@@ -90,28 +113,34 @@ Commits with these patterns are automatically ignored:
    git commit -m "docs: update API documentation"
    ```
 
-2. **Create and push version tag:**
+2. **Execute workflow manually:**
+
+   - Go to GitHub Actions → "Create Release with Changelog"
+   - Click "Run workflow"
+   - Specify the version (e.g., `v1.0.1`)
+
+3. **The workflow automatically:**
+   - Analyzes commits since the last tag
+   - Categorizes changes
+   - Updates CHANGELOG.md
+   - **Synchronizes versions** in `pyproject.toml`, `package.json`, `package-lock.json`
+   - Commits all changes to the repository
+   - Creates version tag
+   - Creates GitHub Release with release notes
+
+### Automatic Release via Tag Push
+
+1. **Create and push version tag:**
 
    ```bash
    git tag v1.0.0
    git push origin v1.0.0
    ```
 
-3. **The CI automatically:**
-   - Analyzes commits since the last tag
-   - Categorizes changes
-   - Updates CHANGELOG.md
-   - Creates a GitHub Release
-   - Updates version links
-
-### Manual Execution
-
-You can also run the workflow manually:
-
-1. Go to GitHub Actions in your repository
-2. Select "Generate Changelog"
-3. Click "Run workflow"
-4. Specify the version (e.g., `v1.0.0`)
+2. **The workflow automatically:**
+   - Analyzes commits and generates changelog
+   - Creates or updates GitHub Release
+   - **Note**: Does not commit changes to repository
 
 ## Recommended Commit Conventions
 
@@ -136,6 +165,27 @@ remove: delete deprecated API endpoints
 # Security
 security: fix SQL injection vulnerability
 ```
+
+---
+
+## Workflow Behavior Differences
+
+| Feature | Manual Trigger | Tag Push |
+|---------|---------------|----------|
+| **Changelog Generation** | Yes | Yes |
+| **Version Synchronization** | Yes (`pyproject.toml`, `package.json`, `package-lock.json`) | No |
+| **Repository Commits** | Yes (commits changes) | No |
+| **Tag Creation** | Yes (creates tag) | Yes (uses existing tag) |
+| **Release Creation** | Yes | Yes |
+| **Conflict Prevention** | Yes (smart handling) | Limited |
+
+### Smart Release Management
+
+The workflow includes intelligent release handling:
+
+- **Release Existence Check**: Automatically detects if a release already exists
+- **Update vs Create**: Updates existing releases or creates new ones as needed
+- **Conflict Prevention**: Avoids duplicate releases and handles edge cases gracefully
 
 ---
 
@@ -185,6 +235,34 @@ format:
 
 ## Troubleshooting
 
+### Common Issues
+
+1. **No commits found for changelog**
+   - Ensure commits follow conventional format
+   - Check if there are commits since the last tag
+
+2. **Workflow doesn't trigger**
+   - Verify tag format (must start with 'v')
+   - Check workflow permissions
+
+3. **Empty changelog**
+   - Review commit messages
+   - Check configuration patterns in `.github/changelog-config.yml`
+
+4. **Version synchronization fails**
+   - Ensure version format is valid (e.g., `v1.0.0`, not `1.0.0`)
+   - Check if target files (`pyproject.toml`, `package.json`, `package-lock.json`) exist
+   - Verify file permissions and repository access
+
+5. **Commit step fails**
+   - Check if there are actual changes to commit
+   - Verify Git configuration and permissions
+   - Ensure the workflow has write access to the repository
+
+6. **Release already exists error**
+   - The workflow automatically handles existing releases
+   - If issues persist, manually delete the problematic release and re-run
+
 ### Workflow doesn't execute
 
 - Verify that the tag follows the `v*.*.*` format
@@ -199,6 +277,13 @@ format:
 
 - Ensure GitHub Actions has write permissions
 - Verify that `GITHUB_TOKEN` is available
+
+### Best Practices
+
+- **Use manual workflow execution** for better control and version synchronization
+- **Follow semantic versioning** (e.g., `v1.0.0`, `v1.2.3-beta.1`)
+- **Make conventional commits** for better changelog categorization
+- **Test version updates** in feature branches before main releases
 
 ---
 
