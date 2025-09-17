@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [test] - 2025-09-17
+
+### Added
+- feat: Upgrade to version 1.0.0
+
+### Changed
+- ci(release): enhance release workflow with manual trigger and safety checks
+
 ## [0.0.0] - 2024-12-19
 
 ### Added
@@ -29,5 +37,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `SECURITY.md`
   - `CHANGELOG.md`
 
-[Unreleased]: https://github.com/Javi-CD/raccoon-survey/compare/v0.0.0...HEAD
+[Unreleased]: https://github.com/Javi-CD/raccoon-survey/compare/vtest...HEAD
 [0.0.0]: https://github.com/Javi-CD/raccoon-survey/releases/tag/v0.0.0
+[test]: https://github.com/Javi-CD/raccoon-survey/releases/tag/vtest
