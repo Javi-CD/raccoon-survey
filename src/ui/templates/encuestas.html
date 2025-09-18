@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/encuestas.css') }}" />
+    <title>Encuesta de Satisfacción</title>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="user">
+        <img src="{{ url_for('static', filename='img/usuario.png') }}" alt="Usuario" />
+        <h3>Usuario</h3>
+      </div>
+      <nav>
+        <a href="#" id="menu-encuestas" onclick="mostrarSeccion('encuestas')">Encuestas</a>
+        <a href="#" id="menu-quejas" onclick="mostrarSeccion('quejas')">Quejas</a>
+        <a href="#">Opciones</a>
+        <a href="#">Salir</a>
+      </nav>
+    </aside>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Contenido principal -->
+    <div class="main-content">
+      <!-- Header -->
+      <header>
+        <!-- Botón hamburguesa -->
+        <div class="menu-btn" onclick="toggleSidebar()">
+          <span></span>
+          <span></span>
+        </div>
+        <img src="{{ url_for('static', filename='img/mapacheazul.png') }}" alt="Logo Raccoon" />
+        <h1>Encuesta de Satisfacción</h1>
+      </header>
+
+      <p style="text-align: center">Tu opinión es anónima y nos ayuda a mejorar continuamente</p>
+
+      <!-- Sección encuestas -->
+      <div id="seccion-encuestas" class="encuesta-layout">
+        <!-- Encuesta 1 -->
+        <div class="card encuesta active">
+          <h2>¿Cómo calificarías nuestro servicio?</h2>
+          <form>
+            <label class="option">
+              <input type="radio" name="satisfaccion" />
+              <div class="option-box"></div>
+              <span>Excelente</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="satisfaccion" />
+              <div class="option-box"></div>
+              <span>Bueno</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="satisfaccion" />
+              <div class="option-box"></div>
+              <span>Regular</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="satisfaccion" />
+              <div class="option-box"></div>
+              <span>Malo</span>
+            </label>
+            <button type="button" class="btn" onclick="nextEncuesta()">Enviar</button>
+          </form>
+        </div>
+
+        <!-- Encuesta 2 -->
+        <div class="card encuesta">
+          <h2>¿Recomendarías nuestros productos a un amigo?</h2>
+          <form>
+            <label class="option">
+              <input type="radio" name="recomendar" />
+              <div class="option-box"></div>
+              <span>Sí, sin duda</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="recomendar" />
+              <div class="option-box"></div>
+              <span>Tal vez</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="recomendar" />
+              <div class="option-box"></div>
+              <span>No lo sé</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="recomendar" />
+              <div class="option-box"></div>
+              <span>No</span>
+            </label>
+            <button type="button" class="btn" onclick="nextEncuesta()">Enviar</button>
+          </form>
+        </div>
+
+        <!-- Encuesta 3 -->
+        <div class="card encuesta">
+          <h2>¿Qué aspecto deberíamos mejorar más?</h2>
+          <form>
+            <label class="option">
+              <input type="radio" name="mejora" />
+              <div class="option-box"></div>
+              <span>Atención al cliente</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="mejora" />
+              <div class="option-box"></div>
+              <span>Calidad del producto</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="mejora" />
+              <div class="option-box"></div>
+              <span>Precios</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="mejora" />
+              <div class="option-box"></div>
+              <span>Tiempo de entrega</span>
+            </label>
+            <button type="button" class="btn" onclick="nextEncuesta()">Enviar</button>
+          </form>
+        </div>
+
+        <!-- Mensaje final -->
+        <div class="card encuesta">
+          <h2>¡Gracias por responder la encuesta!</h2>
+          <p style="text-align: center">Tus respuestas nos ayudan a mejorar</p>
+        </div>
+      </div>
+
+      <!-- Sección quejas -->
+      <div id="seccion-quejas" class="encuesta-layout" style="display: none">
+        <div class="card">
+          <h2>Presentar una queja</h2>
+          <form>
+            <textarea rows="6" maxlength="500" placeholder="Escribe tu queja..."></textarea>
+            <button type="submit" class="btn">Enviar Queja</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Control de encuestas
+      let currentIndex = 0;
+      const encuestas = document.querySelectorAll('.encuesta');
+
+      function nextEncuesta() {
+        encuestas[currentIndex].classList.remove('active');
+        currentIndex++;
+        if (currentIndex < encuestas.length) {
+          encuestas[currentIndex].classList.add('active');
+        }
+      }
+
+      // Control sidebar
+      function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('overlay').classList.toggle('active');
+      }
+
+      // Mostrar secciones (encuestas o quejas)
+      function mostrarSeccion(seccion) {
+        document.getElementById('seccion-encuestas').style.display = seccion === 'encuestas' ? 'block' : 'none';
+        document.getElementById('seccion-quejas').style.display = seccion === 'quejas' ? 'block' : 'none';
+
+        document.getElementById('menu-encuestas').classList.remove('active');
+        document.getElementById('menu-quejas').classList.remove('active');
+
+        if (seccion === 'encuestas') {
+          document.getElementById('menu-encuestas').classList.add('active');
+        } else if (seccion === 'quejas') {
+          document.getElementById('menu-quejas').classList.add('active');
+        }
+      }
+
+      // Mostrar encuestas al inicio
+      mostrarSeccion('encuestas');
+    </script>
+  </body>
+</html>

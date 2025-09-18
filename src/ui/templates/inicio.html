@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Raccon Survey</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/inicio.css') }}" />
+
+    <!-- Favicon  -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon2.png') }}" />
+  </head>
+  gvgvvvg
+  <body>
+    <!-- Header -->
+    <header>
+      <div class="logo">
+        <img src="{{ url_for('static', filename='img/mapacheazul.png') }}" alt="Logo Raccoon" />
+        <h1>Raccon Survey</h1>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="#hero">Inicio</a></li>
+          <li><a href="#about">Sobre</a></li>
+          <li><a href="#contact">Contacto</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- Hero -->
+    <section id="hero" class="hero">
+      <h2>Soluciones de Encuestas Empresariales</h2>
+      <p>
+        Raccon Survey ayuda a las empresas a recopilar datos confiables y analizar opiniones de manera eficiente,
+        asegurando la privacidad y la transparencia en todo el proceso.
+      </p>
+      <a href="{{ url_for('login') }}" class="btn">Comenzar</a>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="about">
+      <img src="{{ url_for('static', filename='img/img2.png') }}" alt="Equipo trabajando" />
+      <div class="about-text">
+        <h2>Sobre Nosotros</h2>
+        <p>
+          En Raccon Survey creemos en la importancia de escuchar. Nuestra plataforma está diseñada para brindar a las
+          empresas herramientas efectivas que permitan recopilar opiniones de forma anónima, clara y segura. Con una
+          interfaz intuitiva, tu organización podrá tomar decisiones basadas en datos reales.
+        </p>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="contact">
+      <h2>Contacto</h2>
+      <p>Escríbenos a: contacto@raccoonsurvey.com</p>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p>&copy; 2025 Raccon Survey - Todos los derechos reservados</p>
+    </footer>
+  </body>
+</html>
