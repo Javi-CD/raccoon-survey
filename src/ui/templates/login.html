@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Raccon Survey - Registro/Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}" />
+  </head>
+  <body>
+    <!-- Imagen superior -->
+    <img src="{{ url_for('static', filename='img/mapacheazul.png') }}" alt="Logo Raccon" class="top-image" />
+
+    <!-- Formulario Registro -->
+    <div class="form-container" id="register-form">
+      <h2>Registrarse</h2>
+      <input type="text" placeholder="Nombre completo" />
+      <input type="email" placeholder="Correo electrónico" />
+      <input type="password" placeholder="Contraseña" />
+      <button class="btn">Registrarse</button>
+      <p class="switch-form" onclick="toggleForms()">¿Ya tienes cuenta? Inicia Sesión</p>
+    </div>
+
+    <!-- Formulario Login -->
+    <div class="form-container" id="login-form" style="display: none">
+      <h2>Iniciar Sesión</h2>
+      <input type="email" placeholder="Correo electrónico" />
+      <input type="password" placeholder="Contraseña" />
+      <button class="btn">Ingresar</button>
+      <p class="switch-form" onclick="toggleForms()">¿No tienes cuenta? Regístrate</p>
+    </div>
+
+    <script>
+      function toggleForms() {
+        const registerForm = document.getElementById('register-form');
+        const loginForm = document.getElementById('login-form');
+        if (registerForm.style.display === 'none') {
+          registerForm.style.display = 'block';
+          loginForm.style.display = 'none';
+        } else {
+          registerForm.style.display = 'none';
+          loginForm.style.display = 'block';
+        }
+      }
+    </script>
+  </body>
+</html>

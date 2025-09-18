@@ -1,0 +1,109 @@
+/* ====== Reset ====== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #0d1117;
+  color: #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  padding-top: 50px;
+}
+
+/* ====== Imagen superior (es la misma xd)===== */
+.top-image {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 30px;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
+}
+
+.top-image:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 35px rgb(0 229 255 / 90%);
+}
+
+/* ====== Formulario ====== */
+.form-container {
+  background: #161b22;
+  padding: 30px;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 8px 25px rgb(0 0 0 / 70%);
+  margin-bottom: 30px;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes f {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+h2 {
+  text-align: center;
+  color: #00e5ff;
+  margin-bottom: 20px;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  background: #21262d;
+  color: #e0e0e0;
+}
+
+.btn {
+  width: 100%;
+  padding: 14px;
+  margin-top: 15px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #00e5ff, #0088a9);
+  color: #0a0a0a;
+  font-weight: bold;
+  cursor: pointer;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
+}
+
+.btn:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 0 15px rgb(0 229 255 / 60%);
+}
+
+/* ====== Links de alternar ====== */
+.switch-form {
+  text-align: center;
+  margin-top: 15px;
+  color: #bbb;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.switch-form:hover {
+  color: #00e5ff;
+}
