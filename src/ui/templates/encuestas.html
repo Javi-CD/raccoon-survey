@@ -15,7 +15,7 @@
       </div>
       <nav>
         <a href="#" id="menu-encuestas" onclick="mostrarSeccion('encuestas')">Encuestas</a>
-        <a href="#" id="menu-quejas" onclick="mostrarSeccion('quejas')">Sugerencias</a>
+        <a href="#" id="menu-sugerencias" onclick="mostrarSeccion('sugerencias')">Sugerencias</a>
         <a href="#">Opciones</a>
         <a href="#">Salir</a>
       </nav>
@@ -132,8 +132,8 @@
         </div>
       </div>
 
-      <!-- Sección quejas -->
-      <div id="seccion-quejas" class="encuesta-layout" style="display: none">
+      <!-- Sección sugerencias -->
+      <div id="seccion-sugerencias" class="encuesta-layout" style="display: none">
         <div class="card">
           <h2>Presentar una sugerencia/h2>
           <form>
@@ -163,18 +163,18 @@
         document.getElementById('overlay').classList.toggle('active');
       }
 
-      // Mostrar secciones (encuestas o quejas)
+      // Mostrar secciones (encuestas o sugerencias)
       function mostrarSeccion(seccion) {
         document.getElementById('seccion-encuestas').style.display = seccion === 'encuestas' ? 'block' : 'none';
-        document.getElementById('seccion-quejas').style.display = seccion === 'quejas' ? 'block' : 'none';
+        document.getElementById('seccion-sugerencias').style.display = seccion === 'sugerencias' ? 'block' : 'none';
 
         document.getElementById('menu-encuestas').classList.remove('active');
-        document.getElementById('menu-quejas').classList.remove('active');
+        document.getElementById('menu-sugerencias').classList.remove('active');
 
         if (seccion === 'encuestas') {
           document.getElementById('menu-encuestas').classList.add('active');
-        } else if (seccion === 'quejas') {
-          document.getElementById('menu-quejas').classList.add('active');
+        } else if (seccion === 'sugerencias') {
+          document.getElementById('menu-sugerencias').classList.add('active');
         }
       }
 
