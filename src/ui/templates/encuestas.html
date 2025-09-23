@@ -3,183 +3,430 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/encuestas.css') }}" />
-    <title>Encuesta de Satisfacción</title>
-  </head>
-  <body>
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-      <div class="user">
-        <img src="{{ url_for('static', filename='img/usuario.png') }}" alt="Usuario" />
-        <h3>Usuario</h3>
-      </div>
-      <nav>
-        <a href="#" id="menu-encuestas" onclick="mostrarSeccion('encuestas')">Encuestas</a>
-        <a href="#" id="menu-sugerencias" onclick="mostrarSeccion('sugerencias')">Sugerencias</a>
-        <a href="#">Opciones</a>
-        <a href="#">Salir</a>
-      </nav>
-    </aside>
+    <title>Encuestas - Raccoon Survey</title>
 
-    <!-- Overlay -->
-    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
-
-    <!-- Contenido principal -->
-    <div class="main-content">
-      <!-- Header -->
-      <header>
-        <!-- Botón hamburguesa -->
-        <div class="menu-btn" onclick="toggleSidebar()">
-          <span></span>
-          <span></span>
-        </div>
-        <img src="{{ url_for('static', filename='img/mapacheazul.png') }}" alt="Logo Raccoon" />
-        <h1>Encuesta de Satisfacción</h1>
-      </header>
-
-      <p style="text-align: center">Tu opinión es anónima y nos ayuda a mejorar continuamente</p>
-
-      <!-- Sección encuestas -->
-      <div id="seccion-encuestas" class="encuesta-layout">
-        <!-- Encuesta 1 -->
-        <div class="card encuesta active">
-          <h2>¿Cómo calificarías nuestro servicio?</h2>
-          <form>
-            <label class="option">
-              <input type="radio" name="satisfaccion" />
-              <div class="option-box"></div>
-              <span>Excelente</span>
-            </label>
-            <label class="option">
-              <input type="radio" name="satisfaccion" />
-              <div class="option-box"></div>
-              <span>Bueno</span>
-            </label>
-            <label class="option">
-              <input type="radio" name="satisfaccion" />
-              <div class="option-box"></div>
-              <span>Regular</span>
-            </label>
-            <label class="option">
-              <input type="radio" name="satisfaccion" />
-              <div class="option-box"></div>
-              <span>Malo</span>
-            </label>
-            <button type="button" class="btn" onclick="nextEncuesta()">Enviar</button>
-          </form>
-        </div>
-
-        <!-- Encuesta 2 -->
-        <div class="card encuesta">
-          <h2>¿Recomendarías nuestros productos a un amigo?</h2>
-          <form>
-            <label class="option">
-              <input type="radio" name="recomendar" />
-              <div class="option-box"></div>
-              <span>Sí, sin duda</span>
-            </label>
-            <label class="option">
-              <input type="radio" name="recomendar" />
-              <div class="option-box"></div>
-              <span>Tal vez</span>
-            </label>
-            <label class="option">
-              <input type="radio" name="recomendar" />
-              <div class="option-box"></div>
-              <span>No lo sé</span>
-            </label>
-            <label class="option">
-              <input type="radio" name="recomendar" />
-              <div class="option-box"></div>
-              <span>No</span>
-            </label>
-            <button type="button" class="btn" onclick="nextEncuesta()">Enviar</button>
-          </form>
-        </div>
-
-        <!-- Encuesta 3 -->
-        <div class="card encuesta">
-          <h2>¿Qué aspecto deberíamos mejorar más?</h2>
-          <form>
-            <label class="option">
-              <input type="radio" name="mejora" />
-              <div class="option-box"></div>
-              <span>Atención al cliente</span>
-            </label>
-            <label class="option">
-              <input type="radio" name="mejora" />
-              <div class="option-box"></div>
-              <span>Calidad del producto</span>
-            </label>
-            <label class="option">
-              <input type="radio" name="mejora" />
-              <div class="option-box"></div>
-              <span>Precios</span>
-            </label>
-            <label class="option">
-              <input type="radio" name="mejora" />
-              <div class="option-box"></div>
-              <span>Tiempo de entrega</span>
-            </label>
-            <button type="button" class="btn" onclick="nextEncuesta()">Enviar</button>
-          </form>
-        </div>
-
-        <!-- Mensaje final -->
-        <div class="card encuesta">
-          <h2>¡Gracias por responder la encuesta!</h2>
-          <p style="text-align: center">Tus respuestas nos ayudan a mejorar</p>
-        </div>
-      </div>
-
-      <!-- Sección sugerencias -->
-      <div id="seccion-sugerencias" class="encuesta-layout" style="display: none">
-        <div class="card">
-          <h2>Presentar una sugerencia/h2>
-          <form>
-            <textarea rows="6" maxlength="500" placeholder="Escribe tu sugerencia..."></textarea>
-            <button type="submit" class="btn">Enviar sugerencia</button>
-          </form>
-        </div>
-      </div>
-    </div>
-
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
-      // Control de encuestas
-      let currentIndex = 0;
-      const encuestas = document.querySelectorAll('.encuesta');
-
-      function nextEncuesta() {
-        encuestas[currentIndex].classList.remove('active');
-        currentIndex++;
-        if (currentIndex < encuestas.length) {
-          encuestas[currentIndex].classList.add('active');
-        }
-      }
-
-      // Control sidebar
-      function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('active');
-        document.getElementById('overlay').classList.toggle('active');
-      }
-
-      // Mostrar secciones (encuestas o sugerencias)
-      function mostrarSeccion(seccion) {
-        document.getElementById('seccion-encuestas').style.display = seccion === 'encuestas' ? 'block' : 'none';
-        document.getElementById('seccion-sugerencias').style.display = seccion === 'sugerencias' ? 'block' : 'none';
-
-        document.getElementById('menu-encuestas').classList.remove('active');
-        document.getElementById('menu-sugerencias').classList.remove('active');
-
-        if (seccion === 'encuestas') {
-          document.getElementById('menu-encuestas').classList.add('active');
-        } else if (seccion === 'sugerencias') {
-          document.getElementById('menu-sugerencias').classList.add('active');
-        }
-      }
-
-      // Mostrar encuestas al inicio
-      mostrarSeccion('encuestas');
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: '#1e3a5f',
+              secondary: '#2d4a73',
+              accent: '#00a8e8',
+            },
+          },
+        },
+      };
     </script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon2.png') }}" />
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+    </style>
+  </head>
+
+  <body class="h-full bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <!-- Logo -->
+          <div class="flex items-center gap-3">
+            <img
+              src="{{ url_for('static', filename='img/img2.png') }}"
+              alt="Logo Raccoon"
+              class="w-8 h-8 rounded-full object-cover"
+            />
+            <h1 class="text-xl font-bold text-primary">Raccoon Survey</h1>
+          </div>
+
+          <!-- Navigation -->
+          <nav class="hidden md:flex space-x-8">
+            <a href="{{ url_for('encuestas') }}" class="text-gray-600 hover:text-primary font-medium transition-colors">
+              Dashboard
+            </a>
+            <a href="{{ url_for('encuestas') }}" class="text-primary font-medium border-b-2 border-primary">
+              Encuestas
+            </a>
+            <a href="#" class="text-gray-600 hover:text-primary font-medium transition-colors">Reportes</a>
+            <a href="#" class="text-gray-600 hover:text-primary font-medium transition-colors">Configuración</a>
+          </nav>
+
+          <!-- User Menu -->
+          <div class="flex items-center gap-4">
+            <button class="p-2 text-gray-600 hover:text-primary transition-colors">
+              <i class="fas fa-bell text-lg"></i>
+            </button>
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                <i class="fas fa-user text-white text-sm"></i>
+              </div>
+              <span class="text-sm font-medium text-gray-700">Usuario</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Page Header -->
+      <div class="mb-8">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 class="text-3xl font-bold text-gray-900">Mis Encuestas</h1>
+            <p class="mt-2 text-gray-600">Gestiona y analiza tus encuestas anónimas</p>
+          </div>
+          <div class="mt-4 sm:mt-0">
+            <button
+              class="inline-flex items-center px-6 py-3 bg-primary hover:bg-secondary text-white font-semibold rounded-lg transition-all transform hover:-translate-y-0.5"
+            >
+              <i class="fas fa-plus mr-2"></i>
+              Nueva Encuesta
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+          <div class="flex items-center">
+            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+              <i class="fas fa-poll text-blue-600 text-xl"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-600">Total Encuestas</p>
+              <p class="text-2xl font-bold text-gray-900">12</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+          <div class="flex items-center">
+            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+              <i class="fas fa-users text-green-600 text-xl"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-600">Respuestas</p>
+              <p class="text-2xl font-bold text-gray-900">1,247</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+          <div class="flex items-center">
+            <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+              <i class="fas fa-chart-line text-yellow-600 text-xl"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-600">Tasa Respuesta</p>
+              <p class="text-2xl font-bold text-gray-900">68%</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+          <div class="flex items-center">
+            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+              <i class="fas fa-clock text-purple-600 text-xl"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-600">Activas</p>
+              <p class="text-2xl font-bold text-gray-900">5</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters and Search -->
+      <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200 mb-8">
+        <div class="flex flex-col sm:flex-row gap-4">
+          <div class="flex-1">
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i class="fas fa-search text-gray-400"></i>
+              </div>
+              <input
+                type="text"
+                placeholder="Buscar encuestas..."
+                class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+              />
+            </div>
+          </div>
+
+          <div class="flex gap-3">
+            <select
+              class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+            >
+              <option>Todas las encuestas</option>
+              <option>Activas</option>
+              <option>Completadas</option>
+              <option>Borradores</option>
+            </select>
+
+            <select
+              class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+            >
+              <option>Más recientes</option>
+              <option>Más antiguas</option>
+              <option>Más respuestas</option>
+              <option>Alfabético</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Surveys Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Survey Card 1 -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-shadow">
+          <div class="p-6">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Satisfacción del Cliente</h3>
+                <p class="text-sm text-gray-600">Evaluación de la experiencia del cliente con nuestros servicios</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"
+                >
+                  Activa
+                </span>
+                <button class="p-1 text-gray-400 hover:text-gray-600">
+                  <i class="fas fa-ellipsis-v"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="space-y-3 mb-6">
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600">Respuestas</span>
+                <span class="font-medium text-gray-900">234</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600">Tasa de respuesta</span>
+                <span class="font-medium text-gray-900">72%</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600">Creada</span>
+                <span class="font-medium text-gray-900">15 Ene 2025</span>
+              </div>
+            </div>
+
+            <div class="flex gap-2">
+              <button
+                class="flex-1 px-4 py-2 bg-primary hover:bg-secondary text-white text-sm font-medium rounded-lg transition-colors"
+              >
+                Ver Resultados
+              </button>
+              <button
+                class="px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium rounded-lg transition-colors"
+              >
+                <i class="fas fa-share-alt"></i>
+              </button>
+              <button
+                class="px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium rounded-lg transition-colors"
+              >
+                <i class="fas fa-edit"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Survey Card 2 -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-shadow">
+          <div class="p-6">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Evaluación de Empleados</h3>
+                <p class="text-sm text-gray-600">Encuesta anónima sobre el ambiente laboral y satisfacción</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800"
+                >
+                  Borrador
+                </span>
+                <button class="p-1 text-gray-400 hover:text-gray-600">
+                  <i class="fas fa-ellipsis-v"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="space-y-3 mb-6">
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600">Respuestas</span>
+                <span class="font-medium text-gray-900">0</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600">Tasa de respuesta</span>
+                <span class="font-medium text-gray-900">-</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600">Creada</span>
+                <span class="font-medium text-gray-900">12 Ene 2025</span>
+              </div>
+            </div>
+
+            <div class="flex gap-2">
+              <button
+                class="flex-1 px-4 py-2 bg-primary hover:bg-secondary text-white text-sm font-medium rounded-lg transition-colors"
+              >
+                Publicar
+              </button>
+              <button
+                class="px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium rounded-lg transition-colors"
+              >
+                <i class="fas fa-edit"></i>
+              </button>
+              <button
+                class="px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium rounded-lg transition-colors"
+              >
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Survey Card 3 -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-shadow">
+          <div class="p-6">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Feedback de Producto</h3>
+                <p class="text-sm text-gray-600">Opiniones sobre las nuevas características del producto</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
+                >
+                  Completada
+                </span>
+                <button class="p-1 text-gray-400 hover:text-gray-600">
+                  <i class="fas fa-ellipsis-v"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="space-y-3 mb-6">
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600">Respuestas</span>
+                <span class="font-medium text-gray-900">156</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600">Tasa de respuesta</span>
+                <span class="font-medium text-gray-900">65%</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600">Completada</span>
+                <span class="font-medium text-gray-900">8 Ene 2025</span>
+              </div>
+            </div>
+
+            <div class="flex gap-2">
+              <button
+                class="flex-1 px-4 py-2 bg-primary hover:bg-secondary text-white text-sm font-medium rounded-lg transition-colors"
+              >
+                Ver Resultados
+              </button>
+              <button
+                class="px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium rounded-lg transition-colors"
+              >
+                <i class="fas fa-download"></i>
+              </button>
+              <button
+                class="px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium rounded-lg transition-colors"
+              >
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add New Survey Card -->
+        <div
+          class="bg-white rounded-xl shadow-sm border-2 border-dashed border-gray-300 hover:border-primary transition-colors"
+        >
+          <div class="p-6 text-center">
+            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i class="fas fa-plus text-2xl text-gray-400"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Crear Nueva Encuesta</h3>
+            <p class="text-sm text-gray-600 mb-6">Comienza a recopilar feedback anónimo de tus usuarios</p>
+            <button
+              class="px-6 py-3 bg-primary hover:bg-secondary text-white font-semibold rounded-lg transition-all transform hover:-translate-y-0.5"
+            >
+              Comenzar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="mt-8 flex items-center justify-between">
+        <div class="text-sm text-gray-700">
+          Mostrando
+          <span class="font-medium">1</span>
+          a
+          <span class="font-medium">4</span>
+          de
+          <span class="font-medium">12</span>
+          encuestas
+        </div>
+        <div class="flex gap-2">
+          <button class="px-3 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <button class="px-3 py-2 bg-primary text-white rounded-lg">1</button>
+          <button class="px-3 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+            2
+          </button>
+          <button class="px-3 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+            3
+          </button>
+          <button class="px-3 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+          <div class="flex items-center gap-3 mb-4 md:mb-0">
+            <img
+              src="{{ url_for('static', filename='img/img2.png') }}"
+              alt="Logo Raccoon"
+              class="w-6 h-6 rounded-full object-cover"
+            />
+            <span class="text-lg font-bold text-primary">Raccoon Survey</span>
+          </div>
+
+          <div class="flex gap-6 text-sm text-gray-600">
+            <a href="#" class="hover:text-primary transition-colors">Ayuda</a>
+            <a href="#" class="hover:text-primary transition-colors">Soporte</a>
+            <a href="#" class="hover:text-primary transition-colors">Política de Privacidad</a>
+          </div>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>
