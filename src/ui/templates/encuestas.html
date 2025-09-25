@@ -1,5 +1,5 @@
-<!doctype html>
-<html lang="es">
+ <!doctype html>
+<html lang="es" class="h-full">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -40,48 +40,166 @@
     </style>
   </head>
 
-  <body class="h-full bg-gray-50">
-    <!-- Header -->
-    <header class="bg-white shadow-sm border-b border-gray-200">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
-          <!-- Logo -->
-          <div class="flex items-center gap-3">
-            <img
-              src="{{ url_for('static', filename='img/img2.png') }}"
-              alt="Logo Raccoon"
-              class="w-8 h-8 rounded-full object-cover"
-            />
-            <h1 class="text-xl font-bold text-primary">Raccoon Survey</h1>
-          </div>
 
-          <!-- Navigation -->
-          <nav class="hidden md:flex space-x-8">
-            <a href="{{ url_for('encuestas') }}" class="text-gray-600 hover:text-primary font-medium transition-colors">
-              Dashboard
-            </a>
-            <a href="{{ url_for('encuestas') }}" class="text-primary font-medium border-b-2 border-primary">
-              Encuestas
-            </a>
-            <a href="#" class="text-gray-600 hover:text-primary font-medium transition-colors">Reportes</a>
-            <a href="#" class="text-gray-600 hover:text-primary font-medium transition-colors">Configuración</a>
-          </nav>
-
-          <!-- User Menu -->
-          <div class="flex items-center gap-4">
-            <button class="p-2 text-gray-600 hover:text-primary transition-colors">
-              <i class="fas fa-bell text-lg"></i>
-            </button>
-            <div class="flex items-center gap-2">
-              <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                <i class="fas fa-user text-white text-sm"></i>
-              </div>
-              <span class="text-sm font-medium text-gray-700">Usuario</span>
-            </div>
-          </div>
-        </div>
+ <!-- Header -->
+<header class="bg-white shadow-sm border-b border-gray-200 relative z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+      <!-- Logo -->
+      <div class="flex items-center gap-3">
+        <img src="{{ url_for('static', filename='img/img2.png') }}" alt="Logo Raccoon" class="w-8 h-8 rounded-full object-cover" />
+        <h1 class="text-xl font-bold text-primary">Raccoon Survey</h1>
       </div>
-    </header>
+
+      <!-- Navigation -->
+      <nav class="hidden md:flex space-x-8">
+        <a href="{{ url_for('dashboard') }}" class="text-gray-600 font-medium transition-colors">
+        Dashboard
+        </a>
+        <a href="{{ url_for('encuestas') }}" class="text-primary font-medium border-b-2 border-primary">
+          Encuestas
+        </a>
+      <a href="#" id="openReportModalBtn" class="text-gray-600  font-medium transition-colors">
+         Reportes
+      </a>
+        <a href="#" class="text-gray-600  font-medium transition-colors">
+         Configuración
+        </a>
+      </nav>
+
+      <!-- User Menu -->
+      <div class="flex items-center gap-4">
+        <button class="p-2 text-gray-600  transition-colors">
+          <i class="fas fa-bell text-lg"></i>
+        </button>
+        <button id="userBtn" class="flex items-center gap-2 cursor-pointer">
+          <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+            <i class="fas fa-user text-white text-sm"></i>
+          </div>
+          <span class="text-sm font-medium text-gray-700">Usuario</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Sidebar -->
+<div id="sidebar"
+  class="fixed top-0 right-0 w-64 h-full bg-white shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out z-50">
+  
+  <!-- Header del Sidebar -->
+  <div class="p-6 flex flex-col items-center border-b border-gray-200 bg-blue-900">
+    <img src="{{ url_for('static', filename='img/usuario.png') }}" 
+         alt="Usuario" 
+         class="w-16 h-16 rounded-full object-cover mb-3 border-2 border-white">
+    <h2 class="text-lg font-bold text-white">"Usuario"</h2>
+  </div>
+  
+  <!-- Opciones -->
+  <nav class="p-6 flex flex-col gap-4">
+    <a href="#" class="text-gray-700 hover:text-gray-900 font-medium transition-colors">
+      Perfil
+    </a>
+    <a href="#" class="text-gray-700 hover:text-gray-900 font-medium transition-colors">
+      Ajustes
+    </a>
+    <a href="{{ url_for('root') }}" class="text-red-500 hover:text-red-600 font-medium transition-colors">
+      Salir
+    </a>
+  </nav>
+</div>
+
+
+<!-- Overlay -->
+<div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40"></div>
+
+<!-- Script -->
+<script>
+  const userBtn = document.getElementById('userBtn');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+
+  userBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('translate-x-full');
+    overlay.classList.toggle('hidden');
+  });
+
+  overlay.addEventListener('click', () => {
+    sidebar.classList.add('translate-x-full');
+    overlay.classList.add('hidden');
+  });
+</script>
+
+    <!-- Reportes Modal -->
+<div id="reportModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-lg p-6">
+    <div class="flex justify-between items-center border-b pb-3">
+      <h2 class="text-xl font-bold text-gray-800">Enviar Reporte</h2>
+      <button id="closeReportModalBtn" class="text-gray-400 hover:text-gray-600">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Asunto</label>
+        <input
+          type="text"
+          name="asunto"
+          class="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-primary focus:border-primary"
+          placeholder="Ej. Error en encuesta"
+          required
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Descripción</label>
+        <textarea
+          name="descripcion"
+          class="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-primary focus:border-primary"
+          rows="4"
+          placeholder="Describe el problema o sugerencia"
+          required
+        ></textarea>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Adjuntar archivo o imagen</label>
+        <input
+          type="file"
+          name="archivo"
+          class="mt-1 block w-full text-sm text-gray-600 border border-gray-300 rounded-lg px-3 py-2 cursor-pointer focus:ring-primary focus:border-primary"
+          accept="image/*,.pdf,.doc,.docx"
+        />
+      </div>
+
+      <div class="flex justify-end gap-3 pt-4 border-t">
+        <button
+          type="button"
+          id="closeReportModalBtn2"
+          class="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50"
+        >
+          Cancelar
+        </button>
+        <button type="submit" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary">
+          Enviar Reporte
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  const reportModal = document.getElementById('reportModal');
+  const openReportModalBtn = document.getElementById('openReportModalBtn');
+  const closeReportModalBtn = document.getElementById('closeReportModalBtn');
+  const closeReportModalBtn2 = document.getElementById('closeReportModalBtn2');
+
+  openReportModalBtn.addEventListener('click', () => reportModal.classList.remove('hidden'));
+  closeReportModalBtn.addEventListener('click', () => reportModal.classList.add('hidden'));
+  closeReportModalBtn2.addEventListener('click', () => reportModal.classList.add('hidden'));
+</script>
+
 
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -94,6 +212,7 @@
           </div>
           <div class="mt-4 sm:mt-0">
             <button
+              id="openModalBtn"
               class="inline-flex items-center px-6 py-3 bg-primary hover:bg-secondary text-white font-semibold rounded-lg transition-all transform hover:-translate-y-0.5"
             >
               <i class="fas fa-plus mr-2"></i>
@@ -288,7 +407,7 @@
               <button
                 class="flex-1 px-4 py-2 bg-primary hover:bg-secondary text-white text-sm font-medium rounded-lg transition-colors"
               >
-                Publicar
+               ver Resultados
               </button>
               <button
                 class="px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium rounded-lg transition-colors"
@@ -326,7 +445,7 @@
 
             <div class="space-y-3 mb-6">
               <div class="flex justify-between text-sm">
-                <span class="text-gray-600">Respuestas</span>
+                <span class="t ext-gray-600">Respuestas</span>
                 <span class="font-medium text-gray-900">156</span>
               </div>
               <div class="flex justify-between text-sm">
@@ -336,6 +455,61 @@
               <div class="flex justify-between text-sm">
                 <span class="text-gray-600">Completada</span>
                 <span class="font-medium text-gray-900">8 Ene 2025</span>
+              </div>
+            </div>
+
+            <div class="flex gap-2">
+              <button
+                class="flex-1 px-4 py-2 bg-primary hover:bg-secondary text-white text-sm font-medium rounded-lg transition-colors"
+              >
+                Ver Resultados
+              </button>
+              <button
+                class="px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium rounded-lg transition-colors"
+              >
+                <i class="fas fa-download"></i>
+              </button>
+              <button
+                class="px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium rounded-lg transition-colors"
+              >
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Survey Card 3 -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-shadow">
+          <div class="p-6">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Nuevos empleados</h3>
+                <p class="text-sm text-gray-600">Opiniones sobre las nuevos contratados</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
+                >
+                  Completada
+                </span>
+                <button class="p-1 text-gray-400 hover:text-gray-600">
+                  <i class="fas fa-ellipsis-v"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="space-y-3 mb-6">
+              <div class="flex justify-between text-sm">
+                <span class="t ext-gray-600">Respuestas</span>
+                <span class="font-medium text-gray-900">156</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600">Tasa de respuesta</span>
+                <span class="font-medium text-gray-900">65%</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600">Completada</span>
+                <span class="font-medium text-gray-900">16 Oct 2025</span>
               </div>
             </div>
 
@@ -370,6 +544,7 @@
             <h3 class="text-lg font-semibold text-gray-900 mb-2">Crear Nueva Encuesta</h3>
             <p class="text-sm text-gray-600 mb-6">Comienza a recopilar feedback anónimo de tus usuarios</p>
             <button
+              id="openModalBtn2"
               class="px-6 py-3 bg-primary hover:bg-secondary text-white font-semibold rounded-lg transition-all transform hover:-translate-y-0.5"
             >
               Comenzar
@@ -421,12 +596,69 @@
           </div>
 
           <div class="flex gap-6 text-sm text-gray-600">
-            <a href="#" class="hover:text-primary transition-colors">Ayuda</a>
-            <a href="#" class="hover:text-primary transition-colors">Soporte</a>
-            <a href="#" class="hover:text-primary transition-colors">Política de Privacidad</a>
+            <a href="#" class=" transition-colors">Ayuda</a>
+            <a href="#" class=" transition-colors">Soporte</a>
+            <a href="#" class=" transition-colors">Política de Privacidad</a>
           </div>
         </div>
       </div>
     </footer>
+
+    <!-- Modal -->
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg shadow-lg w-full max-w-lg p-6">
+        <div class="flex justify-between items-center border-b pb-3">
+          <h2 class="text-xl font-bold text-gray-800">Crear Nueva Encuesta</h2>
+          <button id="closeModalBtn" class="text-gray-400 hover:text-gray-600">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <form class="mt-4 space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Título de la encuesta</label>
+            <input
+              type="text"
+              class="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-primary focus:border-primary"
+              placeholder="Ej. Satisfacción del cliente"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Descripción</label>
+            <textarea
+              class="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-primary focus:border-primary"
+              rows="3"
+              placeholder="Describe brevemente el propósito de la encuesta"
+            ></textarea>
+          </div>
+
+          <div class="flex justify-end gap-3 pt-4 border-t">
+            <button
+              type="button"
+              id="closeModalBtn2"
+              class="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Script Modal -->
+    <script>
+      const modal = document.getElementById('modal');
+      const openModalBtn = document.getElementById('openModalBtn');
+      const openModalBtn2 = document.getElementById('openModalBtn2');
+      const closeModalBtn = document.getElementById('closeModalBtn');
+      const closeModalBtn2 = document.getElementById('closeModalBtn2');
+
+      openModalBtn.addEventListener('click', () => modal.classList.remove('hidden'));
+      openModalBtn2.addEventListener('click', () => modal.classList.remove('hidden'));
+      closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
+      closeModalBtn2.addEventListener('click', () => modal.classList.add('hidden'));
+    </script>
   </body>
 </html>
