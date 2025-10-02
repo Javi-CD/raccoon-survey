@@ -14,7 +14,7 @@ if load_dotenv is not None:
     )
 
 
-from typing import ClassVar
+from typing import Any, ClassVar
 
 
 class BaseConfig:
@@ -37,8 +37,23 @@ class BaseConfig:
         os.getenv("CORS_ORIGINS", "*").split(",")
     )
 
+    # Database
+    DATABASE_URL: ClassVar[str | None] = os.getenv("DATABASE_URL", None)
+    DATABASE_ECHO: ClassVar[bool] = os.getenv("DATABASE_ECHO", "0") == "1"
+
+    # SQLAlchemy
+    SQLALCHEMY_DATABASE_URI: ClassVar[str | None] = DATABASE_URL
+    SQLALCHEMY_TRACK_MODIFICATIONS: ClassVar[bool] = False
+    SQLALCHEMY_ENGINE_OPTIONS: ClassVar[dict[str, Any]] = {
+        "pool_pre_ping": True,
+        "pool_recycle": 1800,
+        "echo": DATABASE_ECHO,
+    }
+
     if not JWT_SECRET_KEY:
         raise ValueError("JWT_SECRET_KEY must be set")
+    if not DATABASE_URL:
+        raise ValueError("DATABASE_URL must be set")
 
 
 class DevConfig(BaseConfig):

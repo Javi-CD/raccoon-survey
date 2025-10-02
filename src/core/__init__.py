@@ -13,6 +13,7 @@ except ImportError:
     JWTManager = None
 
 from .config import get_config_class
+from .database import db
 
 
 def create_app(config: dict[str, Any] | None = None) -> Flask:
@@ -41,6 +42,9 @@ def create_app(config: dict[str, Any] | None = None) -> Flask:
         resources={r"/*": {"origins": config_class.CORS_ORIGINS}},
         supports_credentials=True,
     )
+
+    # Initialize SQLAlchemy
+    db.init_app(app)
 
     # Initialize JWT if available
     if JWTManager is not None:
