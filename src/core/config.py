@@ -30,12 +30,15 @@ class BaseConfig:
     JWT_TOKEN_LOCATION: ClassVar[tuple[str, ...]] = ("headers",)
     JWT_HEADER_NAME: ClassVar[str] = "Authorization"
     JWT_HEADER_TYPE: ClassVar[str] = "Bearer"
-    JWT_SECRET_KEY: ClassVar[str] = os.getenv("JWT_SECRET_KEY", "change-me-in-prod")
+    JWT_SECRET_KEY: ClassVar[str] = os.getenv("JWT_SECRET_KEY", None)
 
     # CORS
     CORS_ORIGINS: ClassVar[tuple[str, ...]] = tuple(
         os.getenv("CORS_ORIGINS", "*").split(",")
     )
+
+    if not JWT_SECRET_KEY:
+        raise ValueError("JWT_SECRET_KEY must be set")
 
 
 class DevConfig(BaseConfig):
