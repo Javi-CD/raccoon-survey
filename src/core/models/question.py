@@ -12,7 +12,8 @@ class Question(db.Model):
     )
     text = db.Column(db.Text, nullable=False)
     type = db.Column(db.String(50), nullable=False)
-    options = db.Column(db.JSONB)
+
+    options = db.Column(db.JSON)
     is_required = db.Column(db.Boolean, default=False)
     order_position = db.Column(db.Integer, default=0)
     state = db.Column(db.Boolean, default=True)
