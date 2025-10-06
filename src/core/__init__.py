@@ -7,6 +7,8 @@ from typing import Any
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
+from . import models as _models
+
 try:
     from flask_jwt_extended import JWTManager
 except ImportError:
