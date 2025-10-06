@@ -9,6 +9,7 @@ wheels/
 
 .env
 
+*.db
 *.egg-info
 *.py[oc]
 
