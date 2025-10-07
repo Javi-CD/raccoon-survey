@@ -1,0 +1,35 @@
+from __future__ import annotations
+
+from src.core.database import db
+
+
+class QuestionCategory(db.Model):
+    __tablename__ = "question_categories"
+
+    id = db.Column(db.Integer, primary_key=True)
+    question_id = db.Column(
+        db.Integer, db.ForeignKey("questions.id", ondelete="CASCADE"), nullable=False
+    )
+    category_id = db.Column(
+        db.Integer, db.ForeignKey("categories.id", ondelete="CASCADE"), nullable=False
+    )
+    assigned_by_user_id = db.Column(
+        db.Integer, db.ForeignKey("users.id", ondelete="SET NULL")
+    )
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+
+    question = db.relationship("Question")
+    category = db.relationship("Category", back_populates="question_categories")
+    assigned_by_user = db.relationship("User")
+
+    __table_args__ = (
+        db.UniqueConstraint(
+            "question_id", "category_id", name="uq_question_category_pair"
+        ),
+        db.Index("idx_question_categories_question_id", "question_id"),
+        db.Index("idx_question_categories_category_id", "category_id"),
+        db.Index("idx_question_categories_assigned_by", "assigned_by_user_id"),
+    )
+
+
+__all__ = ["QuestionCategory"]
