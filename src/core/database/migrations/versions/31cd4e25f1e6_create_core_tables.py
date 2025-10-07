@@ -6,7 +6,7 @@ Create Date: 2025-10-06 14:59:31.694987
 
 """
 
-from collections.abc import Sequence
+from collections.abc import Sequence  # noqa: I001
 
 import sqlalchemy as sa
 from alembic import op
