@@ -50,10 +50,21 @@ class BaseConfig:
         "echo": DATABASE_ECHO,
     }
 
+    # Default Admin User (used by seed script)
+    DEFAULT_USER_ADMIN_EMAIL: ClassVar[str] = os.getenv("DEFAULT_USER_ADMIN_EMAIL", None)
+    DEFAULT_USER_ADMIN_PASSWORD: ClassVar[str] = os.getenv("DEFAULT_USER_ADMIN_PASSWORD", None)
+    DEFAULT_USER_ADMIN_NAME: ClassVar[str] = os.getenv("DEFAULT_USER_ADMIN_NAME", None)
+
     if not JWT_SECRET_KEY:
         raise ValueError("JWT_SECRET_KEY must be set")
     if not DATABASE_URL:
         raise ValueError("DATABASE_URL must be set")
+    if not DEFAULT_USER_ADMIN_EMAIL:
+        raise ValueError("DEFAULT_USER_ADMIN_EMAIL must be set")
+    if not DEFAULT_USER_ADMIN_PASSWORD:
+        raise ValueError("DEFAULT_USER_ADMIN_PASSWORD must be set")
+    if not DEFAULT_USER_ADMIN_NAME:
+        raise ValueError("DEFAULT_USER_ADMIN_NAME must be set")
 
 
 class DevConfig(BaseConfig):
