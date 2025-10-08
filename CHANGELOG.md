@@ -7,6 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] - 2025-10-08
+
+### Added
+- feat: initialize database models and migrations
+- feat: initialize database models and migrations
+- feat(database): add database seeding script and admin config
+- feat(database): add database seeding functionality and admin user config
+- feat(database): add new database migrations
+- feat(database): add migrations audit log, category and question category tables
+- feat(models): add new models for audit logs and categories
+- feat(models): add new model classes to `__init__` file
+- feat(models): add QuestionCategory model for question-category mapping
+- feat(models): add Category model with database schema
+- feat(models): add audit log model for tracking system changes
+- feat(database): add initial database schema and migrations
+- feat(database): add initial migration database schema for core tables
+- feat(models): add database models for survey system
+- feat(models): add models module and import in core package
+- feat(models): add Response model for survey responses
+- feat(models): add Question model for survey questions
+- feat(models): add SurveyToken model for survey access control
+- feat(models): add Survey model for survey management
+- feat(models): add User model with relationships and indexes
+- feat(models): add Role model with basic fields and relationships
+- feat(models): add Team model for database relationships
+- feat(database): add alembic for database migrations
+- feat(database): add alembic for database migrations
+- feat(database): add SQLAlchemy integration with PostgreSQL support
+- feat(database): add SQLAlchemy integration with PostgreSQL
+- feat: add main application entry point with env configuration
+- feat(core): initial App Factory setup
+- feat(core): add configuration module for App Factory
+
+### Changed
+- refactor(models): change question options column type from JSONB to JSON
+
 ## [1.0.1] - 2025-09-17
 
 ### Added
@@ -45,6 +81,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `SECURITY.md`
   - `CHANGELOG.md`
 
-[Unreleased]: https://github.com/Javi-CD/raccoon-survey/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/Javi-CD/raccoon-survey/compare/v1.1.1...HEAD
 [0.0.0]: https://github.com/Javi-CD/raccoon-survey/releases/tag/v0.0.0
 [1.0.1]: https://github.com/Javi-CD/raccoon-survey/releases/tag/v1.0.1
+[1.1.1]: https://github.com/Javi-CD/raccoon-survey/releases/tag/v1.1.1
