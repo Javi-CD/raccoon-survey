@@ -19,11 +19,26 @@
         },
       };
     </script>
-    <!-- Chart.js -->
+    <!-- chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon2.png') }}" />
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
 
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+    </style>
   </head>
 
   <body class="bg-gray-100">
@@ -48,16 +63,14 @@
             <a href="{{ url_for('encuestas') }}" class="text-primary font-medium border-b-2 border-primary">
               Encuestas
             </a>
-            <a href="#" id="openReportModalBtn" class="text-gray-600 font-medium transition-colors">Reportes</a>
+            <a href="{{ url_for('reportes') }}" class="text-gray-600 font-medium transition-colors">Reportes</a>
 
             <a href="#" class="text-gray-600 font-medium transition-colors">Configuración</a>
           </nav>
 
           <!-- User Menu -->
           <div class="flex items-center gap-4">
-            <button class="p-2 text-gray-600 transition-colors">
-              <i class="fas fa-bell text-lg"></i>
-            </button>
+            <button class="p-2 text-gray-600 transition-colors"></button>
             <button id="userBtn" class="flex items-center gap-2 cursor-pointer">
               <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
                 <i class="fas fa-user text-white text-sm"></i>
@@ -186,7 +199,7 @@
             {
               label: 'Respuestas',
               data: [12, 19, 8, 15, 22, 30, 25],
-              backgroundColor: '#1D4ED8', // Azul Tailwind (blue-700)
+              backgroundColor: '#1D4ED8',
               borderRadius: 6,
             },
           ],

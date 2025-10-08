@@ -35,10 +35,27 @@ def encuestas() -> tuple:
     return render_template("encuestas.html"), 200
 
 
-# Nueva ruta para el Dashboard
+# Nuevas rutas
 @app.route("/dashboard")
 def dashboard():
     return render_template("dashboard.html")
+
+@app.route("/reportes")
+def reportes():
+    return render_template("reportes.html")
+
+
+@app.route("/roles")
+def roles():
+    return render_template("roles.html")
+
+@app.route("/resolver-encuesta")
+def resolver_encuesta():
+    return render_template("resolver_encuesta.html")
+
+
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
