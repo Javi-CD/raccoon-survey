@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iniciar Sesión - Raccoon Survey</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: '#1e3a5f',
+              secondary: '#2d4a73',
+              accent: '#00a8e8',
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon2.png') }}" />
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+    </style>
+  </head>
+
+  <body class="h-full bg-gradient-to-br from-gray-50 to-gray-100">
+    <div class="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <!-- Header with Logo -->
+      <div class="sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="flex justify-center">
+          <img
+            src="{{ url_for('static', filename='img/img2.png') }}"
+            alt="Logo Raccoon"
+            class="w-16 h-16 rounded-full object-cover"
+          />
+        </div>
+        <h2 class="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">Iniciar Sesión</h2>
+        <p class="mt-2 text-center text-sm text-gray-600">Accede a tu cuenta de Raccoon Survey</p>
+      </div>
+
+      <!-- Login Form -->
+      <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="bg-white py-8 px-4 shadow-xl rounded-xl border border-gray-200 sm:px-10">
+          <form class="space-y-6" action="{{ url_for('encuestas') }}" method="POST">
+            <!-- Email Field -->
+            <div>
+              <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Correo Electrónico</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="fas fa-envelope text-gray-400"></i>
+                </div>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  required
+                  class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                  placeholder="tu@email.com"
+                />
+              </div>
+            </div>
+
+            <!-- Password Field -->
+            <div>
+              <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Contraseña</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="fas fa-lock text-gray-400"></i>
+                </div>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autocomplete="current-password"
+                  required
+                  class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                  placeholder="••••••••"
+                />
+              </div>
+            </div>
+
+            <!-- Remember Me & Forgot Password -->
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <input
+                  id="remember-me"
+                  name="remember-me"
+                  type="checkbox"
+                  class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+                />
+                <label for="remember-me" class="ml-2 block text-sm text-gray-700">Recordarme</label>
+              </div>
+
+              <div class="text-sm">
+                <a href="#" class="font-medium text-primary hover:text-secondary transition-colors">
+                  ¿Olvidaste tu contraseña?
+                </a>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div>
+              <button
+                class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-primary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-200 transform hover:-translate-y-0.5"
+              >
+                <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                  <i class="fas fa-sign-in-alt text-primary-light group-hover:text-white"></i>
+                </span>
+                Iniciar Sesión
+              </button>
+            </div>
+
+            <!-- Divider -->
+            <div class="mt-6">
+              <div class="relative">
+                <div class="absolute inset-0 flex items-center">
+                  <div class="w-full border-t border-gray-300"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                  <span class="px-2 bg-white text-gray-500">O continúa con</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Social Login Buttons -->
+            <div class="mt-6 grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                class="w-full inline-flex justify-center py-3 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors"
+              >
+                <i class="fab fa-google text-red-500"></i>
+                <span class="ml-2">Google</span>
+              </button>
+
+              <button
+                type="button"
+                class="w-full inline-flex justify-center py-3 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors"
+              >
+                <i class="fab fa-microsoft text-blue-500"></i>
+                <span class="ml-2">Microsoft</span>
+              </button>
+            </div>
+          </form>
+
+          <!-- Sign Up Link -->
+          <div class="mt-6">
+            <div class="relative">
+              <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-gray-300"></div>
+              </div>
+              <div class="relative flex justify-center text-sm">
+                <span class="px-2 bg-white text-gray-500">¿No tienes cuenta?</span>
+              </div>
+            </div>
+
+            <div class="mt-6">
+              <a
+                href="#"
+                class="w-full flex justify-center py-3 px-4 border border-primary text-sm font-medium rounded-lg text-primary bg-white hover:bg-gray-50 transition-colors"
+              >
+                Crear cuenta gratuita
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Additional Links -->
+        <div class="mt-8 text-center">
+          <div class="flex justify-center space-x-6 text-sm">
+            <a href="{{ url_for('root') }}" class="text-gray-600 hover:text-primary transition-colors">
+              <i class="fas fa-arrow-left mr-1"></i>
+              Volver al inicio
+            </a>
+            <a href="#" class="text-gray-600 hover:text-primary transition-colors">Ayuda</a>
+            <a href="#" class="text-gray-600 hover:text-primary transition-colors">Contacto</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-8">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+          <div class="flex items-center gap-3 mb-4 md:mb-0">
+            <img
+              src="{{ url_for('static', filename='img/img2.png') }}"
+              alt="Logo Raccoon"
+              class="w-6 h-6 rounded-full object-cover"
+            />
+            <span class="text-lg font-bold">Raccoon Survey</span>
+          </div>
+
+          <div class="flex gap-6 text-sm text-gray-400">
+            <a href="#" class="hover:text-white transition-colors">Política de Privacidad</a>
+            <a href="#" class="hover:text-white transition-colors">Términos de Servicio</a>
+            <a href="#" class="hover:text-white transition-colors">Soporte</a>
+          </div>
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-gray-800 text-center text-sm text-gray-400">
+          &copy; 2025 Raccoon Survey - Todos los derechos reservados
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

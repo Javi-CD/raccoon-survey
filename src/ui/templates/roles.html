@@ -1,0 +1,46 @@
+<!-- roles.html -->
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seleccionar Rol - Raccoon Survey</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-50 flex items-center justify-center min-h-screen">
+    <div class="w-full max-w-md space-y-8">
+      <!-- Logo -->
+      <div class="text-center">
+        <img class="mx-auto h-12 w-auto" src="{{ url_for('static', filename='img/favicon.jpg') }}" alt="Raccoon Logo" />
+        <h2 class="mt-6 text-3xl font-bold text-gray-900">Seleccionar Rol</h2>
+        <p class="mt-2 text-sm text-gray-600">Elige cómo deseas ingresar</p>
+      </div>
+
+      <!-- Card -->
+      <div class="bg-white py-8 px-6 shadow-lg rounded-xl space-y-6">
+        <!-- Botón Gerente -->
+        <a
+          href="/dashboard_gerente.html"
+          class="w-full flex flex-col items-center justify-center p-5 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition transform hover:-translate-y-1 hover:bg-blue-50 group"
+        >
+          <i class="fas fa-briefcase text-blue-600 text-3xl mb-2 group-hover:scale-110 transition"></i>
+          <span class="font-medium text-lg text-gray-800">Gerente</span>
+          <p class="text-sm text-gray-500">Gestiona reportes y estadísticas</p>
+        </a>
+
+        <!-- Botón Administrador -->
+        <a
+          href="/dashboard_admin.html"
+          class="w-full flex flex-col items-center justify-center p-5 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition transform hover:-translate-y-1 hover:bg-green-50 group"
+        >
+          <i class="fas fa-user-shield text-green-600 text-3xl mb-2 group-hover:scale-110 transition"></i>
+          <span class="font-medium text-lg text-gray-800">Administrador</span>
+          <p class="text-sm text-gray-500">Administra usuarios y configuraciones</p>
+        </a>
+      </div>
+    </div>
+
+    <!-- FontAwesome -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  </body>
+</html>

@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="es" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Raccoon Survey - Soluciones Profesionales de Encuestas</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: '#1e3a5f',
+              secondary: '#2d4a73',
+              accent: '#00a8e8',
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon2.png') }}" />
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+
+      /* Navbar styles */
+      .navbar-transparent {
+        background: transparent !important;
+        backdrop-filter: none !important;
+        border-bottom: none !important;
+        box-shadow: none !important;
+      }
+
+      .navbar-solid {
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(12px) !important;
+        border-bottom: 1px solid rgba(229, 231, 235, 1) !important;
+        box-shadow:
+          0 1px 3px 0 rgba(0, 0, 0, 0.1),
+          0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+      }
+
+      .navbar-transition {
+        transition: all 0.3s ease-in-out;
+      }
+    </style>
+  </head>
+
+  <body class="bg-white text-gray-900 overflow-x-hidden">
+    <!-- Header -->
+    <header id="navbar" class="fixed top-0 left-0 w-full z-50 navbar-transparent navbar-transition py-4">
+      <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+          <img
+            src="{{ url_for('static', filename='img/img2.png') }}"
+            alt="Logo Raccoon"
+            class="w-14 h-14 rounded-full object-cover"
+          />
+          <h1 class="text-2xl font-bold text-primary tracking-tight">Raccoon Survey</h1>
+        </div>
+
+        <nav class="hidden md:flex">
+          <ul class="flex gap-8">
+            <li><a href="#hero" class="text-gray-600 hover:text-primary font-medium transition-colors">Inicio</a></li>
+            <li>
+              <a href="#features" class="text-gray-600 hover:text-primary font-medium transition-colors">
+                Características
+              </a>
+            </li>
+            <li>
+              <a href="#about" class="text-gray-600 hover:text-primary font-medium transition-colors">Sobre Nosotros</a>
+            </li>
+            <li><a href="#cta" class="text-gray-600 hover:text-primary font-medium transition-colors">CTA</a></li>
+            <li>
+              <a href="#contact" class="text-gray-600 hover:text-primary font-medium transition-colors">Contacto</a>
+            </li>
+          </ul>
+        </nav>
+
+        <div class="flex gap-3 items-center">
+          <a
+            href="{{ url_for('login') }}"
+            class="px-6 py-3 bg-primary hover:bg-secondary text-white font-semibold rounded-lg transition-all transform hover:-translate-y-0.5"
+          >
+            Iniciar Sesión
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="hero" class="pt-32 pb-32 bg-gradient-to-br from-gray-50 to-gray-100">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+          <!-- Text Content -->
+          <div class="text-left">
+            <div class="space-y-10">
+              <h1 class="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
+                Encuestas
+                <span class="text-primary">Anónimas</span>
+                que Generan Resultados Reales
+              </h1>
+              <p class="text-lg text-gray-600 leading-relaxed">
+                Obtén feedback honesto y sin sesgos con nuestra plataforma de encuestas completamente anónimas.
+                Protección total de la privacidad garantizada.
+              </p>
+
+              <div class="flex flex-wrap gap-4">
+                <a
+                  href="{{url_for('login')}}"
+                  class="px-7 py-3 bg-primary hover:bg-secondary text-white font-semibold rounded-lg transition-all transform hover:-translate-y-1"
+                >
+                  <i class="mr-2"></i>
+                  Comenzar Ahora
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Header Image -->
+          <div class="flex justify-center lg:justify-end">
+            <img
+              src="{{ url_for('static', filename='img/resources/header-survey-types-anonymous.svg') }}"
+              alt="Tipos de encuestas"
+              class="w-full max-w-lg h-auto"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-24 bg-white">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-20">
+          <h2 class="text-4xl lg:text-4xl font-bold text-gray-900 mb-6">
+            Obtén Mejores Resultados con Encuestas Anónimas
+          </h2>
+          <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+            Nuestra plataforma garantiza la máxima privacidad y calidad de datos
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div
+            class="bg-white border border-gray-200 rounded-xl p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+          >
+            <!-- <div class="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mb-6">
+              <i class="fas fa-shield-alt text-2xl text-primary"></i>
+            </div> -->
+            <h3 class="text-xl font-bold text-gray-900 mb-4">Protección de IP</h3>
+            <p class="text-gray-600 leading-relaxed">
+              El sistema elimina automáticamente todas las direcciones IP al acceder a la encuesta, sin dejar rastro
+              digital.
+            </p>
+          </div>
+
+          <div
+            class="bg-white border border-gray-200 rounded-xl p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+          >
+            <!-- <div class="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mb-6">
+              <i class="fas fa-link text-2xl text-primary"></i>
+            </div> -->
+            <h3 class="text-xl font-bold text-gray-900 mb-4">Control de Enlaces</h3>
+            <p class="text-gray-600 leading-relaxed">
+              Aplica configuraciones de anonimato a enlaces individuales - crea múltiples enlaces con diferentes
+              configuraciones de privacidad.
+            </p>
+          </div>
+
+          <div
+            class="bg-white border border-gray-200 rounded-xl p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+          >
+            <!-- <div class="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mb-6">
+              <i class="fas fa-envelope text-2xl text-primary"></i>
+            </div> -->
+            <h3 class="text-xl font-bold text-gray-900 mb-4">Distribución Segura</h3>
+            <p class="text-gray-600 leading-relaxed">
+              Envía encuestas anónimas por email o SMS manteniendo la funcionalidad de recordatorios sin comprometer la
+              identidad.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section id="about" class="py-24 bg-gray-50">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+          <div class="space-y-8">
+            <h2 class="text-4xl lg:text-5xl font-bold text-gray-900">¿Por Qué Elegir Raccoon Survey?</h2>
+
+            <div class="space-y-6">
+              <div class="flex gap-4">
+                <!-- <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <i class="fas fa-chart-line text-primary"></i>
+                </div> -->
+                <div>
+                  <h3 class="text-xl font-bold text-gray-900 mb-2">Mayores Tasas de Respuesta</h3>
+                  <p class="text-gray-600">68% de aumento en la participación cuando las encuestas son anónimas</p>
+                </div>
+              </div>
+
+              <div class="flex gap-4">
+                <!-- <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <i class="fas fa-heart text-primary"></i>
+                </div> -->
+                <div>
+                  <h3 class="text-xl font-bold text-gray-900 mb-2">Retroalimentación Genuina</h3>
+                  <p class="text-gray-600">Elimina el sesgo de deseabilidad social y obtén opiniones honestas</p>
+                </div>
+              </div>
+
+              <div class="flex gap-4">
+                <!-- <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <i class="fas fa-star text-primary"></i>
+                </div> -->
+                <div>
+                  <h3 class="text-xl font-bold text-gray-900 mb-2">Mejor Calidad de Datos</h3>
+                  <p class="text-gray-600">Los participantes comparten lo que realmente piensan</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex justify-center">
+            <img
+              src="{{ url_for('static', filename='img/resources/picture1.png') }}"
+              alt="Equipo trabajando"
+              class="rounded-2xl shadow-2xl max-w-full h-auto"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+    x
+
+    <!-- CTA Section -->
+    <section id="cta" class="py-24 bg-gradient-to-r from-primary to-secondary text-white">
+      <div class="max-w-4xl mx-auto px-6 text-center">
+        <h2 class="text-4xl lg:text-5xl font-bold mb-6">¿Listo para Obtener Feedback Real?</h2>
+        <p class="text-xl opacity-90 mb-10 leading-relaxed">
+          Únete a miles de empresas que ya confían en Raccoon Survey para obtener datos valiosos y honestos de sus
+          usuarios.
+        </p>
+
+        <div class="flex flex-wrap justify-center gap-6 mb-10">
+          <a
+            href="{{url_for('login')}}"
+            class="px-8 py-4 border-2 border-white text-white hover:bg-white hover:text-primary font-semibold rounded-lg transition-all text-lg"
+          >
+            Comenzar
+          </a>
+        </div>
+
+        <div class="flex flex-wrap justify-center gap-8 text-sm opacity-90">
+          <span class="flex items-center gap-2">
+            <i class="fas fa-check"></i>
+            Gratuito
+          </span>
+          <span class="flex items-center gap-2">
+            <i class="fas fa-check"></i>
+            Transparente
+          </span>
+          <span class="flex items-center gap-2">
+            <i class="fas fa-check"></i>
+            Código Abierto
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-24 bg-gray-50">
+      <div class="max-w-4xl mx-auto px-6 text-center">
+        <h2 class="text-4xl font-bold text-gray-900 mb-4">¿Necesitas Ayuda?</h2>
+        <p class="text-xl text-gray-600 mb-12">Nuestro equipo está aquí para ayudarte a comenzar</p>
+
+        <div class="flex flex-wrap justify-center gap-8">
+          <div class="flex items-center gap-3 text-gray-700">
+            <i class="fas fa-envelope text-primary text-xl"></i>
+            <span class="font-medium">contacto@raccoonsurvey.com</span>
+          </div>
+          <div class="flex items-center gap-3 text-gray-700">
+            <i class="fas fa-phone text-primary text-xl"></i>
+            <span class="font-medium">+1 (555) 123-4567</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-16">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+          <div>
+            <div class="flex items-center gap-3 mb-4">
+              <img
+                src="{{ url_for('static', filename='img/img2.png') }}"
+                alt="Logo Raccoon"
+                class="w-8 h-8 rounded-full object-cover"
+              />
+              <h3 class="text-xl font-bold">Raccoon Survey</h3>
+            </div>
+            <p class="text-gray-400 leading-relaxed">Soluciones profesionales de encuestas para empresas modernas.</p>
+          </div>
+
+          <div>
+            <h4 class="font-semibold mb-4">Producto</h4>
+            <ul class="space-y-2 text-gray-400">
+              <li><a href="#features" class="hover:text-white transition-colors">Características</a></li>
+              <li><a href="#pricing" class="hover:text-white transition-colors">Precios</a></li>
+              <li><a href="#security" class="hover:text-white transition-colors">Seguridad</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 class="font-semibold mb-4">Empresa</h4>
+            <ul class="space-y-2 text-gray-400">
+              <li><a href="#about" class="hover:text-white transition-colors">Sobre Nosotros</a></li>
+              <li><a href="#contact" class="hover:text-white transition-colors">Contacto</a></li>
+              <li><a href="#careers" class="hover:text-white transition-colors">Carreras</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 class="font-semibold mb-4">Soporte</h4>
+            <ul class="space-y-2 text-gray-400">
+              <li><a href="#help" class="hover:text-white transition-colors">Centro de Ayuda</a></li>
+              <li><a href="#docs" class="hover:text-white transition-colors">Documentación</a></li>
+              <li><a href="#api" class="hover:text-white transition-colors">API</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="border-t border-gray-800 pt-8 flex flex-wrap justify-between items-center gap-4">
+          <p class="text-gray-400 text-sm">&copy; 2025 Raccoon Survey - Todos los derechos reservados</p>
+          <div class="flex gap-6 text-sm">
+            <a href="#privacy" class="text-gray-400 hover:text-white transition-colors">Política de Privacidad</a>
+            <a href="#terms" class="text-gray-400 hover:text-white transition-colors">Términos de Servicio</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- JavaScript para el efecto de scroll del navbar -->
+    <script>
+      window.addEventListener('scroll', () => {
+        const navbar = document.getElementById('navbar');
+        const scrollPosition = window.scrollY;
+
+        // Cambiar el navbar cuando se haga scroll más de 50px
+        if (scrollPosition > 50) {
+          navbar.classList.remove('navbar-transparent');
+          navbar.classList.add('navbar-solid');
+        } else {
+          navbar.classList.remove('navbar-solid');
+          navbar.classList.add('navbar-transparent');
+        }
+      });
+    </script>
+  </body>
+</html>
