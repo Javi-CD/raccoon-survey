@@ -2,11 +2,12 @@ from __future__ import annotations
 
 from flask import Blueprint, jsonify, request
 
-from src.core.database import db
 from src.core.middlewares.rbac import role_required
 from src.core.models import Team
+from src.core.services import teams_service
 
 bp = Blueprint("teams", __name__)
+
 
 def serialize_team(team: Team) -> dict:
     """Serialize a team.
@@ -34,7 +35,7 @@ def list_teams() -> tuple[dict, int]:
     Returns:
         tuple[dict, int]: Serialized teams and HTTP status code.
     """
-    teams = Team.query.order_by(Team.created_at.desc()).all()
+    teams = teams_service.list_teams()
 
     return jsonify([serialize_team(t) for t in teams]), 200
 
@@ -54,9 +55,7 @@ def create_team() -> tuple[dict, int]:
     if not name:
         return jsonify({"message": "name is required"}), 400
 
-    team = Team(name=name, description=description)
-    db.session.add(team)
-    db.session.commit()
+    team = teams_service.create_team({"name": name, "description": description})
 
     return jsonify(serialize_team(team)), 201
 
@@ -72,7 +71,7 @@ def get_team(team_id: int) -> tuple[dict, int]:
     Returns:
         tuple[dict, int]: Serialized team and HTTP status code.
     """
-    team = Team.query.get(team_id)
+    team = teams_service.get_team(team_id)
     if not team:
         return jsonify({"message": "team not found"}), 404
 
@@ -90,7 +89,7 @@ def update_team(team_id: int) -> tuple[dict, int]:
     Returns:
         tuple[dict, int]: Serialized team and HTTP status code.
     """
-    team = Team.query.get(team_id)
+    team = teams_service.get_team(team_id)
     if not team:
         return jsonify({"message": "team not found"}), 404
 
@@ -99,14 +98,10 @@ def update_team(team_id: int) -> tuple[dict, int]:
     description = payload.get("description")
     state = payload.get("state")
 
-    if name is not None:
-        team.name = name
-    if description is not None:
-        team.description = description
-    if state is not None:
-        team.state = bool(state)
-
-    db.session.commit()
+    team = teams_service.update_team(
+        team_id,
+        {"name": name, "description": description, "state": state},
+    )
 
     return jsonify(serialize_team(team))
 
@@ -122,7 +117,7 @@ def change_team_state(team_id: int) -> tuple[dict, int]:
     Returns:
         tuple[dict, int]: Serialized team and HTTP status code.
     """
-    team = Team.query.get(team_id)
+    team = teams_service.get_team(team_id)
     if not team:
         return jsonify({"message": "team not found"}), 404
 
@@ -131,7 +126,6 @@ def change_team_state(team_id: int) -> tuple[dict, int]:
     if state is None:
         return jsonify({"message": "state is required"}), 400
 
-    team.state = bool(state)
-    db.session.commit()
+    team = teams_service.set_team_state(team_id, bool(state))
 
     return jsonify(serialize_team(team)), 200
