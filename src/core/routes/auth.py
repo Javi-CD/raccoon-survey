@@ -1,20 +1,15 @@
 from __future__ import annotations
 
-from datetime import timedelta
-
 from flask import Blueprint, current_app, g, jsonify, request
 from flask_jwt_extended import (
-    create_access_token,
-    create_refresh_token,
     get_jwt,
     get_jwt_identity,
     jwt_required,
 )
-from werkzeug.security import check_password_hash
 
 from src.core.middlewares.rbac import role_required
 from src.core.middlewares.user_required import user_required
-from src.core.services import jwt_blocklist
+from src.core.services import auth_service
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -38,33 +33,24 @@ def login():
     if not user:
         return jsonify({"message": "user not found"}), 404
 
-    if not user.role or getattr(user.role, "state", True) is False:
+    if not auth_service.verify_user_active_role(user):
         return jsonify({"message": "unauthorized"}), 403
 
-    if not check_password_hash(user.password_hash, password):
+    if not auth_service.check_password(user, password):
         return jsonify({"message": "invalid credentials"}), 401
 
-    claims = {
-        "role": user.role.name,
-        "team_id": user.team_id,
-        "name": user.name,
-    }
-
-    access_expires = timedelta(
-        seconds=int(current_app.config.get("JWT_ACCESS_TOKEN_EXPIRES", 900))
+    access_expires_seconds = int(
+        current_app.config.get("JWT_ACCESS_TOKEN_EXPIRES", 900)
     )
-    refresh_expires = timedelta(
-        seconds=int(current_app.config.get("JWT_REFRESH_TOKEN_EXPIRES", 2592000))
+    refresh_expires_seconds = int(
+        current_app.config.get("JWT_REFRESH_TOKEN_EXPIRES", 2592000)
     )
 
-    access_token = create_access_token(
-        identity=str(user.id), additional_claims=claims, expires_delta=access_expires
-    )
-    refresh_token = create_refresh_token(
-        identity=str(user.id), additional_claims=claims, expires_delta=refresh_expires
+    tokens = auth_service.create_tokens(
+        user, access_expires_seconds, refresh_expires_seconds
     )
 
-    return jsonify({"access_token": access_token, "refresh_token": refresh_token}), 200
+    return jsonify(tokens), 200
 
 
 @auth_bp.post("/refresh")
@@ -82,14 +68,12 @@ def refresh():
         "team_id": jwt_payload.get("team_id"),
         "name": jwt_payload.get("name"),
     }
-    access_expires = timedelta(
-        seconds=int(current_app.config.get("JWT_ACCESS_TOKEN_EXPIRES", 900))
+    access_expires_seconds = int(
+        current_app.config.get("JWT_ACCESS_TOKEN_EXPIRES", 900)
     )
-    access_token = create_access_token(
-        identity=identity, additional_claims=claims, expires_delta=access_expires
-    )
+    result = auth_service.refresh_access_token(identity, claims, access_expires_seconds)
 
-    return jsonify({"access_token": access_token}), 200
+    return jsonify(result), 200
 
 
 @auth_bp.post("/logout")
@@ -101,7 +85,7 @@ def logout():
         JSON: A JSON response confirming successful logout.
     """
     jti = get_jwt().get("jti")
-    jwt_blocklist.revoke_token(jti)
+    auth_service.revoke_token(jti)
 
     return jsonify({"message": "logout successful"}), 200
 
@@ -115,14 +99,7 @@ def me():
         JSON: A JSON response containing user profile information.
     """
     jwt_payload = get_jwt()
-    return (
-        jsonify(
-            {
-                "id": get_jwt_identity(),
-                "role": jwt_payload.get("role"),
-                "team_id": jwt_payload.get("team_id"),
-                "name": jwt_payload.get("name"),
-            }
-        ),
-        200,
-    )
+    identity = get_jwt_identity()
+    profile = auth_service.profile_from_jwt(identity, jwt_payload)
+
+    return jsonify(profile), 200
