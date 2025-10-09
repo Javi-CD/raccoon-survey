@@ -6,16 +6,27 @@ from typing import Any
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from werkzeug.security import check_password_hash
 
 from . import models as _models
+from .routes.auth import auth_bp
 
 try:
-    from flask_jwt_extended import JWTManager
+    from flask_jwt_extended import (
+        JWTManager,
+        create_access_token,
+        create_refresh_token,
+        get_jwt,
+        get_jwt_identity,
+        jwt_required,
+    )
 except ImportError:
     JWTManager = None
 
 from .config import get_config_class
 from .database import db
+from .models import User
+from .services import jwt_blocklist
 
 
 def create_app(config: dict[str, Any] | None = None) -> Flask:
@@ -50,7 +61,12 @@ def create_app(config: dict[str, Any] | None = None) -> Flask:
 
     # Initialize JWT if available
     if JWTManager is not None:
-        JWTManager(app)
+        jwt = JWTManager(app)
+
+        @jwt.token_in_blocklist_loader
+        def check_if_token_revoked(_jwt_header, jwt_payload):
+            jti = jwt_payload.get("jti")
+            return jwt_blocklist.is_token_revoked(jti)
 
     # Healthcheck endpoint
     @app.get("/api/v1/health")
@@ -60,6 +76,9 @@ def create_app(config: dict[str, Any] | None = None) -> Flask:
             "status": "200",
             "timestamp": datetime.datetime.now().isoformat(),
         }, 200
+
+
+    app.register_blueprint(auth_bp, url_prefix="/api/v1/auth")
 
     @app.errorhandler(404)
     def not_found(_: Exception) -> tuple[dict, int]:  # type: ignore[override]
