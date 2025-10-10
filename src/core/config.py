@@ -13,7 +13,6 @@ if load_dotenv is not None:
         dotenv_path=Path(__file__).resolve().parents[2] / ".env", override=False
     )
 
-
 from typing import Any, ClassVar
 
 
@@ -31,6 +30,8 @@ class BaseConfig:
     JWT_HEADER_NAME: ClassVar[str] = "Authorization"
     JWT_HEADER_TYPE: ClassVar[str] = "Bearer"
     JWT_SECRET_KEY: ClassVar[str] = os.getenv("JWT_SECRET_KEY", None)
+    JWT_ACCESS_TOKEN_EXPIRES: ClassVar[int] = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRES", "900"))
+    JWT_REFRESH_TOKEN_EXPIRES: ClassVar[int] = int(os.getenv("JWT_REFRESH_TOKEN_EXPIRES", "2592000"))
 
     # CORS
     CORS_ORIGINS: ClassVar[tuple[str, ...]] = tuple(
