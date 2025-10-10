@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2025-10-10
+
+### Added
+- feat(auth): implement JWT authentication with token expiration and blocklist
+- feat(questions): add service and routes for question management
+- feat(surveys): add surveys service and routes with CRUD operations
+- feat(teams): add teams service and routes with CRUD operations
+- feat(auth): implement jwt authentication with role-based access control
+- feat(auth): add JWT authentication with token revocation
+- feat(auth): add authentication routes
+- feat(auth): add authentication routes with jwt support
+- feat(auth): add in-memory JWT token blocklist service
+- feat(middleware): add user_required decorator for authentication
+- feat(rbac): add role-based access control middleware
+- feat(config): add JWT token expiration time configuration
+
+### Changed
+- refactor(routes): centralize route registration in core module
+- refactor(auth): move auth logic to service layer
+
 ## [1.1.1] - 2025-10-08
 
 ### Added
@@ -81,7 +101,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `SECURITY.md`
   - `CHANGELOG.md`
 
-[Unreleased]: https://github.com/Javi-CD/raccoon-survey/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/Javi-CD/raccoon-survey/compare/v1.2.0...HEAD
 [0.0.0]: https://github.com/Javi-CD/raccoon-survey/releases/tag/v0.0.0
 [1.0.1]: https://github.com/Javi-CD/raccoon-survey/releases/tag/v1.0.1
 [1.1.1]: https://github.com/Javi-CD/raccoon-survey/releases/tag/v1.1.1
+[1.2.0]: https://github.com/Javi-CD/raccoon-survey/releases/tag/v1.2.0
