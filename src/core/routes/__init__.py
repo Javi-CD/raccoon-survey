@@ -6,6 +6,7 @@ from .auth import auth_bp
 from .questions import bp as questions_bp
 from .surveys import bp as surveys_bp
 from .teams import bp as teams_bp
+from .tokens import bp as tokens_bp
 
 
 def register_routes(app: Flask) -> None:
@@ -20,6 +21,7 @@ def register_routes(app: Flask) -> None:
     app.register_blueprint(teams_bp, url_prefix="/api/v1/teams")
     app.register_blueprint(surveys_bp, url_prefix="/api/v1/surveys")
     app.register_blueprint(questions_bp, url_prefix="/api/v1/questions")
+    app.register_blueprint(tokens_bp, url_prefix="/api/v1/tokens")
 
 
 __all__ = ["register_routes"]
