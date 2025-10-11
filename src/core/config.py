@@ -30,8 +30,12 @@ class BaseConfig:
     JWT_HEADER_NAME: ClassVar[str] = "Authorization"
     JWT_HEADER_TYPE: ClassVar[str] = "Bearer"
     JWT_SECRET_KEY: ClassVar[str] = os.getenv("JWT_SECRET_KEY", None)
-    JWT_ACCESS_TOKEN_EXPIRES: ClassVar[int] = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRES", "900"))
-    JWT_REFRESH_TOKEN_EXPIRES: ClassVar[int] = int(os.getenv("JWT_REFRESH_TOKEN_EXPIRES", "2592000"))
+    JWT_ACCESS_TOKEN_EXPIRES: ClassVar[int] = int(
+        os.getenv("JWT_ACCESS_TOKEN_EXPIRES", "900")
+    )
+    JWT_REFRESH_TOKEN_EXPIRES: ClassVar[int] = int(
+        os.getenv("JWT_REFRESH_TOKEN_EXPIRES", "2592000")
+    )
 
     # CORS
     CORS_ORIGINS: ClassVar[tuple[str, ...]] = tuple(
@@ -51,9 +55,18 @@ class BaseConfig:
         "echo": DATABASE_ECHO,
     }
 
+    # Cleanup scheduler
+    CLEANUP_RUN_ON_START: ClassVar[bool] = os.getenv("CLEANUP_RUN_ON_START", "1") == "1"
+    CLEANUP_CRON_HOUR: ClassVar[int] = int(os.getenv("CLEANUP_CRON_HOUR", "3"))
+    CLEANUP_CRON_MINUTE: ClassVar[int] = int(os.getenv("CLEANUP_CRON_MINUTE", "0"))
+
     # Default Admin User (used by seed script)
-    DEFAULT_USER_ADMIN_EMAIL: ClassVar[str] = os.getenv("DEFAULT_USER_ADMIN_EMAIL", None)
-    DEFAULT_USER_ADMIN_PASSWORD: ClassVar[str] = os.getenv("DEFAULT_USER_ADMIN_PASSWORD", None)
+    DEFAULT_USER_ADMIN_EMAIL: ClassVar[str] = os.getenv(
+        "DEFAULT_USER_ADMIN_EMAIL", None
+    )
+    DEFAULT_USER_ADMIN_PASSWORD: ClassVar[str] = os.getenv(
+        "DEFAULT_USER_ADMIN_PASSWORD", None
+    )
     DEFAULT_USER_ADMIN_NAME: ClassVar[str] = os.getenv("DEFAULT_USER_ADMIN_NAME", None)
 
     if not JWT_SECRET_KEY:
