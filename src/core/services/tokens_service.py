@@ -1,10 +1,10 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 import csv
+from datetime import UTC, datetime
 import io
 import secrets
-from collections.abc import Iterable
-from datetime import UTC, datetime
 
 from sqlalchemy.exc import IntegrityError
 
