@@ -6,6 +6,7 @@ from .anonymous import bp as anonymous_bp
 from .auth import auth_bp
 from .maintenance import bp as maintenance_bp
 from .questions import bp as questions_bp
+from .reports import bp as reports_bp
 from .surveys import bp as surveys_bp
 from .teams import bp as teams_bp
 from .tokens import bp as tokens_bp
@@ -26,6 +27,7 @@ def register_routes(app: Flask) -> None:
     app.register_blueprint(tokens_bp, url_prefix="/api/v1/tokens")
     app.register_blueprint(maintenance_bp, url_prefix="/api/v1/maintenance")
     app.register_blueprint(anonymous_bp, url_prefix="/api/v1/anonymous")
+    app.register_blueprint(reports_bp, url_prefix="/api/v1/reports")
 
 
 __all__ = ["register_routes"]
