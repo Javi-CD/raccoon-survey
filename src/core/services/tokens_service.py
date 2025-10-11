@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
 import csv
-from datetime import UTC, datetime
 import io
 import secrets
+from collections.abc import Iterable
+from datetime import UTC, datetime
 
 from sqlalchemy.exc import IntegrityError
 
@@ -249,3 +249,40 @@ def export_tokens_csv(
         writer.writerow(r)
 
     return output.getvalue()
+
+
+def cleanup_expired_tokens(
+    *,
+    survey_id: int | None = None,
+    team_id: int | None = None,
+    dry_run: bool = False,
+    older_than: datetime | None = None,
+) -> dict:
+    """Clean up expired tokens.
+
+    Args:
+        survey_id (int | None): Optional filter by survey.
+        team_id (int | None): Optional filter by team.
+        dry_run (bool): If True, do not delete; only return the count.
+        older_than (datetime | None): Threshold time; defaults to now (UTC).
+
+    Returns:
+        dict: {"matched": int, "deleted": int}
+    """
+    threshold = older_than or datetime.now(UTC)
+    q = SurveyToken.query.filter(SurveyToken.expires_at < threshold)
+
+    if survey_id is not None:
+        q = q.filter(SurveyToken.survey_id == survey_id)
+    if team_id is not None:
+        q = q.filter(SurveyToken.team_id == team_id)
+
+    matched = q.count()
+
+    if dry_run:
+        return {"matched": matched, "deleted": 0}
+
+    deleted = q.delete(synchronize_session=False)
+    db.session.commit()
+
+    return {"matched": matched, "deleted": int(deleted)}
