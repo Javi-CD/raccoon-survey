@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from flask import Flask
 
+from .anonymous import bp as anonymous_bp
 from .auth import auth_bp
 from .maintenance import bp as maintenance_bp
 from .questions import bp as questions_bp
@@ -24,6 +25,7 @@ def register_routes(app: Flask) -> None:
     app.register_blueprint(questions_bp, url_prefix="/api/v1/questions")
     app.register_blueprint(tokens_bp, url_prefix="/api/v1/tokens")
     app.register_blueprint(maintenance_bp, url_prefix="/api/v1/maintenance")
+    app.register_blueprint(anonymous_bp, url_prefix="/api/v1/anonymous")
 
 
 __all__ = ["register_routes"]
