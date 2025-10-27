@@ -93,3 +93,8 @@ def resolver_page() -> str:
         str: Rendered HTML template for the resolver page.
     """
     return render_template("pages/public/solveSurveys.html")
+
+
+@bp.get("/docs")
+def api_docs_page() -> str:
+    return render_template("pages/public/docs.html")
