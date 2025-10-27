@@ -1,0 +1,55 @@
+/* global RS */
+document.addEventListener('DOMContentLoaded', async () => {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+  const userBtn = document.getElementById('userBtn');
+  const sidebarNameEl = document.getElementById('sidebarUserName');
+  const navbarNameSpan = userBtn ? userBtn.querySelector('span') : null;
+
+  const openSidebar = () => {
+    try {
+      if (sidebar && overlay) {
+        sidebar.classList.remove('translate-x-full');
+        overlay.classList.remove('hidden');
+      }
+    } catch (_) {
+      void 0;
+    }
+  };
+
+  const closeSidebar = () => {
+    try {
+      if (sidebar && overlay) {
+        sidebar.classList.add('translate-x-full');
+        overlay.classList.add('hidden');
+      }
+    } catch (_) {
+      void 0;
+    }
+  };
+
+  try {
+    if (userBtn) {
+      userBtn.addEventListener('click', openSidebar);
+    }
+    if (overlay) {
+      overlay.addEventListener('click', closeSidebar);
+    }
+  } catch (_) {
+    void 0;
+  }
+
+  try {
+    const profile = await RS.http.apiFetch('/auth/me', { method: 'GET' });
+    const name = (profile && profile.name) || 'Usuario';
+
+    if (sidebarNameEl) {
+      sidebarNameEl.textContent = name;
+    }
+    if (navbarNameSpan) {
+      navbarNameSpan.textContent = name;
+    }
+  } catch (_) {
+    void 0;
+  }
+});
