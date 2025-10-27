@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Raccoon Survey — Encuesta</title>
+
+    <meta name="rs-config" data-api-base-url="{{ CLIENT_API_BASE_URL }}" data-login-url="/login" data-home-url="/" />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: '#1e3a5f',
+              secondary: '#2d4a73',
+              accent: '#00a8e8',
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('ui.static', filename='img/raccoon_survey.ico') }}" />
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+    </style>
+
+    <style>
+      .animate-fadeIn {
+        animation: fadeIn 0.45s ease-in-out forwards;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100">
+    {% set navbar_public = true %} {% include 'components/navbar.html' %}
+
+    <!-- Survey Container -->
+    <div
+      class="w-full max-w-2xl bg-white p-8 rounded-2xl shadow-lg border border-gray-200 mx-auto mt-10"
+      id="resolver-container"
+    >
+      <!-- Progress bar -->
+      <div class="w-full bg-gray-200 h-2 rounded-full mb-6 overflow-hidden">
+        <div id="progressBar" class="h-2 bg-blue-900 transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <form id="surveyForm" class="space-y-6"></form>
+      <div id="resolver-status" class="mt-4 text-sm text-gray-600"></div>
+    </div>
+
+    <script>
+      // Elements
+      const steps = Array.from(document.querySelectorAll('.step'));
+      const nextBtns = Array.from(document.querySelectorAll('.next-btn'));
+      const prevBtns = Array.from(document.querySelectorAll('.prev-btn'));
+      const progressBar = document.getElementById('progressBar');
+      const form = document.getElementById('surveyForm');
+      let current = 0;
+
+      // Sample step index
+      function showStep(index) {
+        steps.forEach((s, i) => {
+          s.classList.toggle('hidden', i !== index);
+          if (i === index) {
+            s.classList.add('animate-fadeIn');
+            // remove the class after the animation so it can be played later
+            setTimeout(() => s.classList.remove('animate-fadeIn'), 500);
+          }
+        });
+        // Update bar
+        const pct = Math.round(((index + 1) / steps.length) * 100);
+        progressBar.style.width = `${pct}%`;
+      }
+
+      nextBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (current < steps.length - 1) {
+            current++;
+            showStep(current);
+          }
+        });
+      });
+
+      prevBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (current > 0) {
+            current--;
+            showStep(current);
+          }
+        });
+      });
+
+      // Initialize
+      showStep(current);
+    </script>
+    <script src="{{ url_for('ui.static', filename='js/dashboard/page-config.js') }}" defer></script>
+    <script src="{{ url_for('ui.static', filename='js/anonymous/resolver.js') }}" defer></script>
+  </body>
+</html>

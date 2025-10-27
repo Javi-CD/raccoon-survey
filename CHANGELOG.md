@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.12.12] - 2025-10-11
+
+### Added
+- feat(survey): add token-based anonymous survey submission system
+- feat: add token cleanup scheduler and anonymous survey endpoints
+- feat(survey): add token-based anonymous survey responses and cleanup scheduler
+- feat(reports): add reports module with summary and export endpoints
+- feat(reports): add reports service for survey and team summaries
+- feat(routes): add anonymous response submission endpoint
+- feat(responses): add service for submitting anonymous survey responses
+- feat(scheduler): add background cleanup scheduler for expired tokens
+- feat(maintenance): add maintenance routes for token cleanup
+- feat(tokens): add cleanup function for expired tokens
+- feat(tokens): add token generation, listing and export routes
+- feat(tokens): add service for survey token generation and management
+
 ## [1.2.0] - 2025-10-10
 
 ### Added
@@ -101,8 +117,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `SECURITY.md`
   - `CHANGELOG.md`
 
-[Unreleased]: https://github.com/Javi-CD/raccoon-survey/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/Javi-CD/raccoon-survey/compare/v1.12.12...HEAD
 [0.0.0]: https://github.com/Javi-CD/raccoon-survey/releases/tag/v0.0.0
 [1.0.1]: https://github.com/Javi-CD/raccoon-survey/releases/tag/v1.0.1
 [1.1.1]: https://github.com/Javi-CD/raccoon-survey/releases/tag/v1.1.1
 [1.2.0]: https://github.com/Javi-CD/raccoon-survey/releases/tag/v1.2.0
+[1.12.12]: https://github.com/Javi-CD/raccoon-survey/releases/tag/v1.12.12

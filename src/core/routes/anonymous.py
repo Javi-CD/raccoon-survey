@@ -45,3 +45,34 @@ def submit_anonymous() -> tuple[dict, int]:
         return jsonify({"message": str(e)}), 500
 
     return jsonify(result), 201
+
+
+@bp.get("/resolve")
+def resolve_anonymous() -> tuple[dict, int]:
+    """Upload anonymous survey and its questions by token.
+
+    Query parameters:
+    - token: str (required)
+    - survey_id: int (optional)
+
+    Returns:
+        tuple[dict, int]: JSON response with survey_id, token_id, and questions, status code 200 on success
+    """
+    token = request.args.get("token", type=str)
+    survey_id = request.args.get("survey_id", type=int)
+
+    if not token:
+        return jsonify({"message": "token is required"}), 400
+
+    try:
+        data = responses_service.get_anonymous_survey(
+            token_str=token, survey_id=survey_id
+        )
+    except LookupError as e:
+        return jsonify({"message": str(e)}), 404
+    except ValueError as e:
+        return jsonify({"message": str(e)}), 400
+    except RuntimeError as e:
+        return jsonify({"message": str(e)}), 500
+
+    return jsonify(data), 200

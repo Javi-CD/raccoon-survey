@@ -1,0 +1,52 @@
+{% set nav_active = nav_active | default('') %} {% set navbar_public = navbar_public | default(false) %}
+<header class="bg-white shadow-sm border-b border-gray-200 relative z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+      <!-- Logo -->
+      <div class="flex items-center gap-3">
+        <img
+          src="{{ url_for('ui.static', filename='img/raccoon_survey.png') }}"
+          alt="Logo Raccoon"
+          class="w-8 h-8 rounded-full object-cover"
+        />
+        <h1 class="text-xl font-bold text-primary">Raccoon Survey</h1>
+      </div>
+
+      {% if not navbar_public %}
+      <!-- Navigation -->
+      <nav class="hidden md:flex space-x-8">
+        <a
+          href="{{ url_for('ui.dashboard_page') }}"
+          class="{% if nav_active == 'dashboard' %}text-primary border-b-2 border-primary{% else %}text-gray-600{% endif %} font-medium transition-colors"
+        >
+          Dashboard
+        </a>
+        <a
+          href="{{ url_for('ui.surveys_page') }}"
+          class="{% if nav_active == 'surveys' %}text-primary border-b-2 border-primary{% else %}text-gray-600{% endif %} font-medium transition-colors"
+        >
+          Encuestas
+        </a>
+        <a
+          href="{{ url_for('ui.reports_page') }}"
+          class="{% if nav_active == 'reports' %}text-primary border-b-2 border-primary{% else %}text-gray-600{% endif %} font-medium transition-colors"
+        >
+          Reportes
+        </a>
+        <a href="#" class="text-gray-600 font-medium transition-colors">Configuración</a>
+      </nav>
+
+      <!-- User Menu -->
+      <div class="flex items-center gap-4">
+        <button class="p-2 text-gray-600 transition-colors"></button>
+        <button id="userBtn" class="flex items-center gap-2 cursor-pointer">
+          <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+            <i class="fas fa-user text-white text-sm"></i>
+          </div>
+          <span class="text-sm font-medium text-gray-700">Usuario</span>
+        </button>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</header>
