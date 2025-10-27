@@ -170,8 +170,20 @@ def _normalize_and_validate_responses(
         if qid not in question_map:
             raise ValueError("question_not_in_survey")
 
+        q = question_map[int(qid)]
+        # Normalize as string and trim spaces
+        ans_str = str(ans).strip()
+        # If the response is empty string
+        if ans_str == "":
+            # If the question is required, reject
+            if q.is_required:
+                raise ValueError(f"empty_required_answer:{qid}")
+
+            # If it is optional and empty, we do not count it or persist
+            continue
+
         provided_ids.add(int(qid))
-        normalized.append((int(qid), str(ans)))
+        normalized.append((int(qid), ans_str))
 
     if not required_ids.issubset(provided_ids):
         missing = sorted(required_ids - provided_ids)
@@ -286,3 +298,104 @@ def submit_anonymous_responses(
         "token_id": token.id,
         "survey_id": token.survey_id,
     }
+
+
+def _get_token_nonblocking(token_str: str) -> SurveyToken:
+    """Retrieve a SurveyToken without locking; raises LookupError if not found.
+
+    Args:
+        token_str (str): Survey token (UUID/string)
+
+    Raises:
+        LookupError: If the token is not found in the database.
+
+    Returns:
+        SurveyToken: The SurveyToken instance if found.
+
+    """
+    token = SurveyToken.query.filter_by(token=token_str).first()
+    if token is None:
+        raise LookupError("token_not_found")
+
+    return token
+
+
+def _serialize_question(q: Question) -> dict:
+    """Serialize a Question to a plain dictionary.
+
+    Args:
+        q (Question): The Question instance to serialize.
+
+    Returns:
+        dict: A dictionary representation of the Question.
+    """
+    return {
+        "id": q.id,
+        "survey_id": q.survey_id,
+        "text": q.text,
+        "type": q.type,
+        "options": q.options,
+        "is_required": q.is_required,
+        "order_position": q.order_position,
+    }
+
+
+def _build_anonymous_survey_payload(
+    survey: Survey, token: SurveyToken, questions: list[Question]
+) -> dict:
+    """Build the response payload for anonymous survey resolution.
+
+    Args:
+        survey (Survey): The Survey instance.
+        token (SurveyToken): The SurveyToken instance.
+        questions (list[Question]): List of active Question instances.
+
+    Returns:
+        dict: A dictionary payload for anonymous survey resolution.
+    """
+    return {
+        "survey": {
+            "id": survey.id,
+            "title": survey.title,
+            "description": survey.description,
+        },
+        "token": {
+            "id": token.id,
+            "token": token.token,
+            "is_used": token.is_used,
+            "expires_at": token.expires_at.isoformat() if token.expires_at else None,
+            "used_at": token.used_at.isoformat() if token.used_at else None,
+            "survey_id": token.survey_id,
+        },
+        "questions": [_serialize_question(q) for q in questions],
+    }
+
+
+def get_anonymous_survey(*, token_str: str, survey_id: int | None = None) -> dict:
+    """Get survey and active questions from a single-use token.
+
+    Validates membership, token freshness, and survey status (active and anonymous).
+
+    Args:
+        token_str (str): Survey token.
+        survey_id (int | None): Optional survey ID to validate membership.
+
+    Raises:
+        LookupError: If token not found.
+        ValueError: If token is not active or not anonymous.
+
+    Returns:
+        dict: { survey: {id, title, description}, token: { id, token, is_used, expires_at, used_at, survey_id }, questions: [ ... ] }
+    """
+    now = datetime.now(UTC)
+
+    # Retrieve non-blocking token in a dedicated helper
+    token = _get_token_nonblocking(token_str)
+
+    _validate_token_membership(token, survey_id)
+    _validate_token_freshness(token, now)
+
+    survey = _get_and_validate_survey(token)
+    questions = _get_active_questions(survey.id)
+
+    return _build_anonymous_survey_payload(survey, token, questions)

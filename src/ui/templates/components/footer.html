@@ -1,0 +1,31 @@
+{% set is_dark = (footer_variant|default('light')) == 'dark' %} {% set bg_class = 'bg-gray-900 text-white' if is_dark
+else 'bg-white' %} {% set outer_border_class = '' if is_dark else 'border-t border-gray-200 mt-16' %} {% set
+logo_text_class = 'text-white' if is_dark else 'text-primary' %} {% set link_text_class = 'text-gray-400' if is_dark
+else 'text-gray-600' %} {% set link_hover_class = 'hover:text-white' if is_dark else 'hover:text-primary' %}
+
+<footer class="{{ bg_class }} {{ outer_border_class }} py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col md:flex-row justify-between items-center">
+      <div class="flex items-center gap-3 mb-4 md:mb-0">
+        <img
+          src="{{ url_for('ui.static', filename='img/raccoon_survey.png') }}"
+          alt="Logo Raccoon"
+          class="w-6 h-6 rounded-full object-cover"
+        />
+        <span class="text-lg font-bold {{ logo_text_class }}">Raccoon Survey</span>
+      </div>
+
+      <div class="flex gap-6 text-sm {{ link_text_class }}">
+        <a href="#" class="transition-colors {{ link_hover_class }}">Ayuda</a>
+        <a href="#" class="transition-colors {{ link_hover_class }}">Soporte</a>
+        <a href="#" class="transition-colors {{ link_hover_class }}">Política de Privacidad</a>
+      </div>
+    </div>
+
+    {% if is_dark %}
+    <div class="mt-4 pt-4 border-t border-gray-800 text-center text-sm text-gray-400">
+      &copy; 2025 Raccoon Survey - Todos los derechos reservados
+    </div>
+    {% endif %}
+  </div>
+</footer>
