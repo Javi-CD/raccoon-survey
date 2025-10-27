@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iniciar Sesión - Raccoon Survey</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: '#1e3a5f',
+              secondary: '#2d4a73',
+              accent: '#00a8e8',
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('ui.static', filename='img/raccoon_survey.ico') }}" />
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+    </style>
+  </head>
+
+  <body class="h-full bg-gradient-to-br from-gray-50 to-gray-100">
+    <div class="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+
+      <!-- Header with Logo -->
+      <div class="sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="flex justify-center">
+          <img
+            src="{{ url_for('ui.static', filename='img/raccoon_survey.png') }}"
+            alt="Logo Raccoon"
+            class="w-16 h-16 rounded-full object-cover"
+          />
+        </div>
+        <h2 class="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">Iniciar Sesión</h2>
+        <p class="mt-2 text-center text-sm text-gray-600">Accede a tu cuenta de Raccoon Survey</p>
+      </div>
+
+      <!-- Login Form -->
+      <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="bg-white py-8 px-4 shadow-xl rounded-xl border border-gray-200 sm:px-10">
+          <form id="loginForm" class="space-y-6" action="#" method="POST">
+            
+            <!-- Email Field -->
+            <div>
+              <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Correo Electrónico</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="fas fa-envelope text-gray-400"></i>
+                </div>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  required
+                  class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                  placeholder="example@email.com"
+                />
+              </div>
+            </div>
+
+            <!-- Password Field -->
+            <div>
+              <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Contraseña</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="fas fa-lock text-gray-400"></i>
+                </div>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autocomplete="current-password"
+                  required
+                  class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                  placeholder="••••••••"
+                />
+              </div>
+            </div>
+            <div>
+              <button
+                class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-primary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-200 transform hover:-translate-y-0.5"
+              >
+                <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                  <i class="fas fa-sign-in-alt text-primary-light group-hover:text-white"></i>
+                </span>
+                Iniciar Sesión
+              </button>
+            </div>
+
+          <!-- Sign Up Link -->
+          <div class="mt-6">
+            <div class="relative">
+              <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-gray-300"></div>
+              </div>
+              <div class="relative flex justify-center text-sm">
+                <span class="px-2 bg-white text-gray-500">¿No tienes cuenta?</span>
+              </div>
+            </div>
+
+            <div class="mt-6">
+              <a
+                href="#"
+                class="w-full flex justify-center py-3 px-4 border border-primary text-sm font-medium rounded-lg text-primary bg-white hover:bg-gray-50 transition-colors"
+              >
+                Crear cuenta gratuita
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Additional Links -->
+        <div class="mt-8 text-center">
+          <div class="flex justify-center space-x-6 text-sm">
+            <a href="{{ url_for('ui.home') }}" class="text-gray-600 hover:text-primary transition-colors">
+              <i class="fas fa-arrow-left mr-1"></i>
+              Volver al inicio
+            </a>
+            <a href="#" class="text-gray-600 hover:text-primary transition-colors">Ayuda</a>
+            <a href="#" class="text-gray-600 hover:text-primary transition-colors">Contacto</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+{% set footer_variant = 'dark' %}
+{% include 'components/footer.html' %}
+  </body>
+  <script type="module">
+    const API_BASE_URL = '{{ CLIENT_API_BASE_URL }}';
+    const form = document.getElementById('loginForm');
+    const email = document.getElementById('email');
+    const password = document.getElementById('password');
+
+    form?.addEventListener('submit', async e => {
+      e.preventDefault();
+      const payload = {
+        email: email?.value?.trim() || '',
+        password: password?.value || '',
+      };
+      try {
+        const resp = await fetch(`${API_BASE_URL}/auth/login`, {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify(payload),
+        });
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok) {
+          alert(data?.message || 'Error de autenticación');
+          return;
+        }
+
+        try {
+          sessionStorage.setItem('rs_access_token', data.access_token || '');
+          sessionStorage.setItem('rs_refresh_token', data.refresh_token || '');
+          const ACCESS_MAX_AGE = 900; // 15 minutes
+          const REFRESH_MAX_AGE = 2592000; // 30 days
+
+          if (data.access_token) {
+            document.cookie = `rs_access_token=${encodeURIComponent(data.access_token)}; Max-Age=${ACCESS_MAX_AGE}; Path=/; SameSite=Lax`;
+          }
+          if (data.refresh_token) {
+            document.cookie = `rs_refresh_token=${encodeURIComponent(data.refresh_token)}; Max-Age=${REFRESH_MAX_AGE}; Path=/; SameSite=Lax`;
+          }
+          document.cookie = `rs_has_session=1; Max-Age=${REFRESH_MAX_AGE}; Path=/; SameSite=Lax`;
+        } catch (_) {
+          void 0;
+        }
+        window.location.href = "{{ url_for('ui.surveys_page') }}";
+      } catch (err) {
+        alert('No se pudo iniciar sesión');
+      }
+    });
+  </script>
+</html>

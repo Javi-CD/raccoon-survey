@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="es" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Encuestas - Raccoon Survey</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: '#1e3a5f',
+              secondary: '#2d4a73',
+              accent: '#00a8e8',
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('ui.static', filename='img/raccoon_survey.ico') }}" />
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+    </style>
+    <!-- Page Config -->
+    <meta
+      name="rs-config"
+      data-api-base-url="{{ CLIENT_API_BASE_URL }}"
+      data-login-url="{{ url_for('ui.login_page') }}"
+      data-home-url="{{ url_for('ui.home') }}"
+    />
+    <script src="{{ url_for('ui.static', filename='js/dashboard/page-config.js') }}"></script>
+    <script src="{{ url_for('ui.static', filename='js/dashboard/auth-check.js') }}"></script>
+    <script src="{{ url_for('ui.static', filename='js/lib/http.js') }}"></script>
+    <script src="{{ url_for('ui.static', filename='js/lib/utils.js') }}"></script>
+  </head>
+
+  {% set nav_active = 'surveys' %} {% include 'components/navbar.html' %} {% include 'components/sidebar.html' %}
+  <script src="{{ url_for('ui.static', filename='js/dashboard/sidebar.js') }}"></script>
+
+  <main class="max-w-7xl mx-auto p-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">Encuestas</h2>
+
+    <!-- Metrics -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-gray-500 text-sm">Encuestas Totales</h3>
+        <p id="surveysTotal" class="text-2xl font-bold text-gray-800">—</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-gray-500 text-sm">Respuestas Totales</h3>
+        <p id="responsesTotal" class="text-2xl font-bold text-gray-800">—</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-gray-500 text-sm">Tasa de Respuesta</h3>
+        <p id="responseRate" class="text-2xl font-bold text-gray-800">—</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-gray-500 text-sm">Encuestas Activas</h3>
+        <p id="activeSurveysTotal" class="text-2xl font-bold text-gray-800">—</p>
+      </div>
+    </div>
+
+    <!-- Survey Grid -->
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="surveyGrid"></section>
+  </main>
+
+  {% include 'components/footer.html' %}
+
+  <!-- Survey List -->
+  <script type="module">
+    const cfgEl = document.querySelector('meta[name="rs-config"]');
+    const API_BASE_URL = (cfgEl && cfgEl.dataset.apiBaseUrl) || '';
+
+    const surveysTotalEl = document.querySelector('#surveysTotal');
+    const responsesTotalEl = document.querySelector('#responsesTotal');
+    const responseRateEl = document.querySelector('#responseRate');
+    const activeSurveysEl = document.querySelector('#activeSurveysTotal');
+    const grid = document.querySelector('#surveyGrid');
+
+    const fmtDate = iso => {
+      try {
+        const d = new Date(iso);
+        return d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+      } catch (_) {
+        return '—';
+      }
+    };
+
+    try {
+      const surveys = await RS.http.apiFetch('/surveys/', { method: 'GET' });
+      const list = Array.isArray(surveys) ? surveys : [];
+
+      surveysTotalEl.textContent = String(list.length);
+      const activeCount = list.filter(s => !!s.state).length;
+      activeSurveysEl.textContent = String(activeCount);
+
+      let responsesAcc = 0;
+      let tokensAcc = 0;
+      const rendered = [];
+
+      for (const s of list) {
+        let used = 0;
+        let totalTokens = 0;
+
+        try {
+          const tokens = await RS.http.apiFetch(`/tokens/${s.id}/list?include_expired=true`, { method: 'GET' });
+          totalTokens = Array.isArray(tokens) ? tokens.length : 0;
+          used = Array.isArray(tokens) ? tokens.filter(t => !!t.is_used).length : 0;
+        } catch (_) {
+          void 0;
+        }
+        responsesAcc += used;
+        tokensAcc += totalTokens;
+
+        const statusLabel = s.state ? 'Activa' : 'Inactiva';
+        const statusClass = s.state ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800';
+        const createdAtTxt = fmtDate(s.created_at);
+        const rate = totalTokens ? Math.round((used / totalTokens) * 100) : 0;
+
+        rendered.push(`
+          <div class="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-shadow">
+            <div class="p-6">
+              <div class="flex items-start justify-between mb-4">
+                <div class="flex-1">
+                  <h3 class="text-lg font-semibold text-gray-900 mb-2">${s.title}</h3>
+                  <p class="text-sm text-gray-600">${s.description || ''}</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass}">${statusLabel}</span>
+                  <button class="p-1 text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button>
+                </div>
+              </div>
+
+              <div class="space-y-3 mb-6">
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Respuestas</span>
+                  <span class="font-medium text-gray-900">${used}</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Tasa de respuesta</span>
+                  <span class="font-medium text-gray-900">${rate}%</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Creada</span>
+                  <span class="font-medium text-gray-900">${createdAtTxt}</span>
+                </div>
+              </div>
+
+              <div class="flex gap-2">
+                <a href="{{ url_for('ui.reports_page') }}" class="px-3 py-2 bg-primary text-white rounded hover:bg-secondary">Ver reportes</a>
+              </div>
+            </div>
+          </div>
+        `);
+      }
+
+      responsesTotalEl.textContent = String(responsesAcc);
+      const rateGlobal = tokensAcc ? Math.round((responsesAcc / tokensAcc) * 100) : 0;
+      responseRateEl.textContent = `${String(rateGlobal)}%`;
+      grid.innerHTML = rendered.join('');
+    } catch (err) {
+      console.warn('Error al cargar encuestas', err);
+    }
+  </script>
+
+  <!-- Survey creation module -->
+  <script type="module" src="{{ url_for('ui.static', filename='js/surveys/create-modal.js') }}"></script>
+  <script src="{{ url_for('ui.static', filename='js/dashboard/logout.js') }}"></script>
+</html>
