@@ -78,6 +78,10 @@ def create_app(config: dict[str, Any] | None = None) -> Flask:
 
     register_routes(app)
 
+    @app.context_processor
+    def inject_client_api_base_url():
+        return {"CLIENT_API_BASE_URL": "/api/v1"}
+
     @app.errorhandler(404)
     def not_found(_: Exception) -> tuple[dict, int]:  # type: ignore[override]
         return jsonify(
