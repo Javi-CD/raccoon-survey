@@ -6,6 +6,7 @@ from src.ui.routes.pages import bp as ui_bp
 
 from .anonymous import bp as anonymous_bp
 from .auth import auth_bp
+from .docs import bp as docs_bp
 from .maintenance import bp as maintenance_bp
 from .metrics import bp as metrics_bp
 from .questions import bp as questions_bp
@@ -32,6 +33,7 @@ def register_routes(app: Flask) -> None:
     app.register_blueprint(anonymous_bp, url_prefix="/api/v1/anonymous")
     app.register_blueprint(reports_bp, url_prefix="/api/v1/reports")
     app.register_blueprint(metrics_bp, url_prefix="/api/v1/metrics")
+    app.register_blueprint(docs_bp, url_prefix="/api/v1")
     app.register_blueprint(ui_bp)
 
 

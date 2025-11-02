@@ -1,0 +1,773 @@
+{
+  "openapi": "3.0.3",
+  "info": { "title": "Raccoon Survey API", "version": "1.12.12" },
+  "servers": [{ "url": "/api/v1" }],
+  "components": {
+    "securitySchemes": { "bearerAuth": { "type": "http", "scheme": "bearer", "bearerFormat": "JWT" } },
+
+    "schemas": {
+      "LoginReq": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": { "email": { "type": "string", "format": "email" }, "password": { "type": "string" } }
+      },
+
+      "LoginResp": {
+        "type": "object",
+        "properties": { "access_token": { "type": "string" }, "refresh_token": { "type": "string" } }
+      },
+
+      "Profile": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "role": { "type": "string" },
+          "team_id": { "type": "integer", "nullable": true },
+          "name": { "type": "string" }
+        }
+      },
+
+      "Survey": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "title": { "type": "string" },
+          "team_id": { "type": "integer" },
+          "state": { "type": "boolean" }
+        }
+      },
+
+      "Question": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "survey_id": { "type": "integer" },
+          "text": { "type": "string" },
+          "type": { "type": "string" }
+        }
+      },
+
+      "Team": {
+        "type": "object",
+        "properties": { "id": { "type": "integer" }, "name": { "type": "string" }, "state": { "type": "boolean" } }
+      },
+
+      "TokenItem": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "token": { "type": "string" },
+          "expires_at": { "type": "string", "format": "date-time" }
+        }
+      },
+
+      "AnonSubmit": {
+        "type": "object",
+        "required": ["token", "responses"],
+        "properties": {
+          "token": { "type": "string" },
+          "survey_id": { "type": "integer" },
+          "responses": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": { "question_id": { "type": "integer" }, "answer": { "type": "string" } }
+            }
+          }
+        }
+      },
+
+      "Category": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "state": { "type": "boolean" },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+
+      "Role": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "state": { "type": "boolean" },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "team_id": { "type": "integer", "nullable": true },
+          "role_id": { "type": "integer", "nullable": true },
+          "name": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "password_hash": { "type": "string", "writeOnly": true },
+          "state": { "type": "boolean" },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+
+      "SurveyToken": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "survey_id": { "type": "integer" },
+          "team_id": { "type": "integer" },
+          "token": { "type": "string" },
+          "employee_identifier": { "type": "string" },
+          "is_used": { "type": "boolean" },
+          "used_at": { "type": "string", "format": "date-time" },
+          "expires_at": { "type": "string", "format": "date-time" },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+
+      "Response": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "question_id": { "type": "integer" },
+          "survey_token_id": { "type": "integer" },
+          "answer": { "type": "string" },
+          "state": { "type": "boolean" },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+
+      "QuestionCategory": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "question_id": { "type": "integer" },
+          "category_id": { "type": "integer" },
+          "assigned_by_user_id": { "type": "integer" },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+
+      "AuditLog": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "entity_type": { "type": "string" },
+          "entity_id": { "type": "integer" },
+          "action": { "type": "string" },
+          "changed_by_user_id": { "type": "integer" },
+          "ip_address": { "type": "string" },
+          "previous_data": { "type": "object" },
+          "new_data": { "type": "object" },
+          "metadata": { "type": "object" },
+          "triggered_by": { "type": "string" },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  },
+
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Login",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/LoginReq" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/LoginResp" } } }
+          },
+          "400": { "description": "Bad request" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "User profile",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Profile" } } }
+          }
+        }
+      }
+    },
+
+    "/surveys": {
+      "get": {
+        "tags": ["Surveys"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Survey" } } }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Surveys"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["title", "team_id"],
+                "properties": { "title": { "type": "string" }, "team_id": { "type": "integer" } }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Survey" } } }
+          },
+          "400": { "description": "Bad request" }
+        }
+      }
+    },
+    "/surveys/{survey_id}": {
+      "get": {
+        "tags": ["Surveys"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "survey_id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Survey" } } }
+          },
+          "404": { "description": "Not found" }
+        }
+      },
+      "put": {
+        "tags": ["Surveys"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "survey_id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string" },
+                  "description": { "type": "string" },
+                  "is_anonymous": { "type": "boolean" },
+                  "team_id": { "type": "integer" },
+                  "created_by_user_id": { "type": "integer" },
+                  "expires_at": { "type": "string", "format": "date-time" },
+                  "state": { "type": "boolean" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Survey" } } }
+          },
+          "404": { "description": "Not found" },
+          "400": { "description": "Bad request" }
+        }
+      }
+    },
+    "/surveys/{survey_id}/state": {
+      "patch": {
+        "tags": ["Surveys"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "survey_id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "type": "object", "required": ["state"], "properties": { "state": { "type": "boolean" } } }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Survey" } } }
+          },
+          "404": { "description": "Not found" },
+          "400": { "description": "Bad request" }
+        }
+      }
+    },
+
+    "/questions": {
+      "get": {
+        "tags": ["Questions"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Question" } }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Questions"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["survey_id", "text", "type"],
+                "properties": {
+                  "survey_id": { "type": "integer" },
+                  "text": { "type": "string" },
+                  "type": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Question" } } }
+          }
+        }
+      }
+    },
+    "/questions/{question_id}": {
+      "get": {
+        "tags": ["Questions"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "question_id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Question" } } }
+          },
+          "404": { "description": "Not found" }
+        }
+      },
+      "put": {
+        "tags": ["Questions"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "question_id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "survey_id": { "type": "integer" },
+                  "text": { "type": "string" },
+                  "type": { "type": "string" },
+                  "options": { "type": "array", "items": { "type": "string" } },
+                  "is_required": { "type": "boolean" },
+                  "order_position": { "type": "integer" },
+                  "state": { "type": "boolean" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Question" } } }
+          },
+          "404": { "description": "Not found" },
+          "400": { "description": "Bad request" }
+        }
+      }
+    },
+    "/questions/{question_id}/state": {
+      "patch": {
+        "tags": ["Questions"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "question_id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "type": "object", "required": ["state"], "properties": { "state": { "type": "boolean" } } }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Question" } } }
+          },
+          "404": { "description": "Not found" },
+          "400": { "description": "Bad request" }
+        }
+      }
+    },
+
+    "/teams": {
+      "get": {
+        "tags": ["Teams"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Team" } } }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Teams"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "type": "object", "required": ["name"], "properties": { "name": { "type": "string" } } }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Team" } } }
+          }
+        }
+      }
+    },
+    "/teams/{team_id}": {
+      "get": {
+        "tags": ["Teams"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "team_id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Team" } } }
+          },
+          "404": { "description": "Not found" }
+        }
+      },
+      "put": {
+        "tags": ["Teams"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "team_id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "description": { "type": "string" },
+                  "state": { "type": "boolean" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Team" } } }
+          },
+          "404": { "description": "Not found" }
+        }
+      }
+    },
+    "/teams/{team_id}/state": {
+      "patch": {
+        "tags": ["Teams"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "team_id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "type": "object", "required": ["state"], "properties": { "state": { "type": "boolean" } } }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Team" } } }
+          },
+          "404": { "description": "Not found" },
+          "400": { "description": "Bad request" }
+        }
+      }
+    },
+
+    "/tokens/{survey_id}/generate": {
+      "post": {
+        "tags": ["Tokens"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "survey_id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["expires_at"],
+                "properties": {
+                  "count": { "type": "integer" },
+                  "expires_at": { "type": "string", "format": "date-time" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/TokenItem" } }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tokens/{survey_id}/list": {
+      "get": {
+        "tags": ["Tokens"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "survey_id", "in": "path", "required": true, "schema": { "type": "integer" } },
+          { "name": "is_used", "in": "query", "required": false, "schema": { "type": "boolean" } },
+          { "name": "include_expired", "in": "query", "required": false, "schema": { "type": "boolean" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/TokenItem" } }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tokens/{survey_id}/export": {
+      "get": {
+        "tags": ["Tokens"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "survey_id", "in": "path", "required": true, "schema": { "type": "integer" } },
+          { "name": "is_used", "in": "query", "required": false, "schema": { "type": "boolean" } },
+          { "name": "include_expired", "in": "query", "required": false, "schema": { "type": "boolean" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "text/csv": { "schema": { "type": "string" } } }
+          }
+        }
+      }
+    },
+
+    "/anonymous/responses": {
+      "post": {
+        "tags": ["Anonymous"],
+        "summary": "Submit anonymous responses",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AnonSubmit" } } }
+        },
+        "responses": {
+          "201": { "description": "Created" },
+          "400": { "description": "Bad request" },
+          "404": { "description": "Not found" }
+        }
+      }
+    },
+    "/anonymous/resolve": {
+      "get": {
+        "tags": ["Anonymous"],
+        "summary": "Resolve survey by token",
+        "parameters": [
+          { "name": "token", "in": "query", "required": true, "schema": { "type": "string" } },
+          { "name": "survey_id", "in": "query", "required": false, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "OK", "content": { "application/json": { "schema": { "type": "object" } } } },
+          "400": { "description": "Bad request" },
+          "404": { "description": "Not found" }
+        }
+      }
+    },
+
+    "/auth/logout": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Logout and revoke token",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "type": "object", "properties": { "message": { "type": "string" } } } }
+            }
+          },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Refresh access token",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object", "properties": { "access_token": { "type": "string" } } }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+
+    "/metrics/dashboard": {
+      "get": {
+        "tags": ["Metrics"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "OK", "content": { "application/json": { "schema": { "type": "object" } } } }
+        }
+      }
+    },
+
+    "/reports/surveys/{survey_id}/summary": {
+      "get": {
+        "tags": ["Reports"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "survey_id", "in": "path", "required": true, "schema": { "type": "integer" } },
+          { "name": "team_id", "in": "query", "required": false, "schema": { "type": "integer" } },
+          {
+            "name": "date_from",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          { "name": "date_to", "in": "query", "required": false, "schema": { "type": "string", "format": "date-time" } }
+        ],
+        "responses": {
+          "200": { "description": "OK", "content": { "application/json": { "schema": { "type": "object" } } } },
+          "404": { "description": "Not found" },
+          "400": { "description": "Bad request" }
+        }
+      }
+    },
+    "/reports/teams/{team_id}/summary": {
+      "get": {
+        "tags": ["Reports"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "team_id", "in": "path", "required": true, "schema": { "type": "integer" } },
+          { "name": "survey_id", "in": "query", "required": false, "schema": { "type": "integer" } },
+          {
+            "name": "date_from",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          { "name": "date_to", "in": "query", "required": false, "schema": { "type": "string", "format": "date-time" } }
+        ],
+        "responses": {
+          "200": { "description": "OK", "content": { "application/json": { "schema": { "type": "object" } } } },
+          "404": { "description": "Not found" },
+          "400": { "description": "Bad request" }
+        }
+      }
+    },
+    "/reports/export": {
+      "get": {
+        "tags": ["Reports"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "survey_id", "in": "query", "required": false, "schema": { "type": "integer" } },
+          { "name": "team_id", "in": "query", "required": false, "schema": { "type": "integer" } },
+          {
+            "name": "date_from",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          { "name": "date_to", "in": "query", "required": false, "schema": { "type": "string", "format": "date-time" } }
+        ],
+        "responses": {
+          "200": { "description": "OK", "content": { "text/csv": { "schema": { "type": "string" } } } },
+          "404": { "description": "Not found" },
+          "400": { "description": "Bad request" }
+        }
+      }
+    },
+
+    "/maintenance/tokens/cleanup": {
+      "post": {
+        "tags": ["Maintenance"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "survey_id": { "type": "integer" },
+                  "team_id": { "type": "integer" },
+                  "dry_run": { "type": "boolean" },
+                  "older_than": { "type": "string", "format": "date-time" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "matched": { "type": "integer" }, "deleted": { "type": "integer" } }
+                }
+              }
+            }
+          },
+          "400": { "description": "Bad request" }
+        }
+      }
+    }
+  }
+}
