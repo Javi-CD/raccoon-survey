@@ -4,6 +4,12 @@ from src.core.database import db
 
 
 class Response(db.Model):
+    """Response model.
+
+    Args:
+        db (SQLAlchemy): The SQLAlchemy database instance.
+    """
+
     __tablename__ = "responses"
 
     id = db.Column(db.Integer, primary_key=True)

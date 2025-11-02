@@ -4,6 +4,12 @@ from src.core.database import db
 
 
 class AuditLog(db.Model):
+    """Audit log model.
+
+    Args:
+        db (SQLAlchemy): The SQLAlchemy database instance.
+    """
+
     __tablename__ = "audit_logs"
 
     id = db.Column(db.Integer, primary_key=True)

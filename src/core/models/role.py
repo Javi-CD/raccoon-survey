@@ -4,6 +4,12 @@ from src.core.database import db
 
 
 class Role(db.Model):
+    """Role model.
+
+    Args:
+        db (SQLAlchemy): The SQLAlchemy database instance.
+    """
+
     __tablename__ = "roles"
 
     id = db.Column(db.Integer, primary_key=True)

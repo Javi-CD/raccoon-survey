@@ -4,6 +4,12 @@ from src.core.database import db
 
 
 class Category(db.Model):
+    """Category model.
+
+    Args:
+        db (SQLAlchemy): The SQLAlchemy database instance.
+    """
+
     __tablename__ = "categories"
 
     id = db.Column(db.Integer, primary_key=True)
