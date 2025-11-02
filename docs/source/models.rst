@@ -5,6 +5,7 @@ Models
    :members:
    :undoc-members:
    :show-inheritance:
+   :noindex:
 
 .. automodule:: src.core.models.audit_log
    :members:

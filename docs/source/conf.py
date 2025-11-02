@@ -53,8 +53,18 @@ templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 # Html Theme
-html_theme = "alabaster"
+html_theme = "sphinx_rtd_theme"
+html_theme_options = {
+    "collapse_navigation": False,
+    "navigation_depth": 4,
+    "sticky_navigation": True,
+    "logo_only": True,
+}
 html_static_path = ["_static"]
+html_logo = "_static/raccoon_survey.png"
+html_css_files = [
+    "custom.css",
+]
 
 # Autodoc / Autosummary
 autosummary_generate = True
@@ -77,19 +87,15 @@ os.environ.setdefault("FLASK_ENV", "testing")
 os.environ.setdefault("DATABASE_URL", "sqlite:///:memory:")
 os.environ.setdefault(
     "SECRET_KEY",
+    "DNEjDTSsxOxwawnYYiYIlSp6F8oNRSqTQ0XOiM-VCshhigcYBZk6dgMeGe_iHJx6rJSfiwEC-0xj48TmFZSy4w",
 )
 os.environ.setdefault(
     "JWT_SECRET_KEY",
+    "qRbR8HKnEjsBPg-cZRjCYQSeHVZrY_PwZETIXguOp2AZLVSIr-Z5RzpMBWgk1vyWb2OS65oFu8O70fB08ELgAQ",
 )
-os.environ.setdefault(
-    "DEFAULT_USER_ADMIN_EMAIL",
-)
-os.environ.setdefault(
-    "DEFAULT_USER_ADMIN_PASSWORD",
-)
-os.environ.setdefault(
-    "DEFAULT_USER_ADMIN_NAME",
-)
+os.environ.setdefault("DEFAULT_USER_ADMIN_EMAIL", "admin@docs.local")
+os.environ.setdefault("DEFAULT_USER_ADMIN_PASSWORD", "pass_doc_local")
+os.environ.setdefault("DEFAULT_USER_ADMIN_NAME", "Docs Admin")
 os.environ.setdefault("FLASK_DEBUG", "0")
 os.environ.setdefault("CORS_ORIGINS", "*")
 

@@ -620,6 +620,7 @@ dependencies = [
     { name = "python-dotenv" },
     { name = "sphinx" },
     { name = "sphinx-autobuild" },
+    { name = "sphinx-rtd-theme" },
     { name = "sphinxcontrib-openapi" },
     { name = "typing" },
 ]
@@ -654,6 +655,7 @@ requires-dist = [
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.1.0" },
     { name = "sphinx", specifier = ">=8.2.3" },
     { name = "sphinx-autobuild", specifier = ">=2025.8.25" },
+    { name = "sphinx-rtd-theme", specifier = ">=3.0.2" },
     { name = "sphinxcontrib-openapi", specifier = ">=0.8.4" },
     { name = "typing", specifier = ">=3.10.0.0" },
 ]
@@ -882,6 +884,20 @@ wheels = [
 ]
 
 [[package]]
+name = "sphinx-rtd-theme"
+version = "3.0.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "docutils" },
+    { name = "sphinx" },
+    { name = "sphinxcontrib-jquery" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/91/44/c97faec644d29a5ceddd3020ae2edffa69e7d00054a8c7a6021e82f20335/sphinx_rtd_theme-3.0.2.tar.gz", hash = "sha256:b7457bc25dda723b20b086a670b9953c859eab60a2a03ee8eb2bb23e176e5f85", size = 7620463, upload-time = "2024-11-13T11:06:04.545Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/85/77/46e3bac77b82b4df5bb5b61f2de98637724f246b4966cfc34bc5895d852a/sphinx_rtd_theme-3.0.2-py2.py3-none-any.whl", hash = "sha256:422ccc750c3a3a311de4ae327e82affdaf59eb695ba4936538552f3b00f4ee13", size = 7655561, upload-time = "2024-11-13T11:06:02.094Z" },
+]
+
+[[package]]
 name = "sphinxcontrib-applehelp"
 version = "2.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -919,6 +935,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/be/ef/82d3cfafb7febce4f7df8dcf3cde9d072350b41066e05a4f559b4e9105d0/sphinxcontrib-httpdomain-1.8.1.tar.gz", hash = "sha256:6c2dfe6ca282d75f66df333869bb0ce7331c01b475db6809ff9d107b7cdfe04b", size = 19266, upload-time = "2022-11-14T17:22:13.425Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/02/49/aad47b8cf27a0d7703f1311aad8c368bb22866ddee1a2d2cd3f69bc45e0c/sphinxcontrib_httpdomain-1.8.1-py2.py3-none-any.whl", hash = "sha256:21eefe1270e4d9de8d717cc89ee92cc4871b8736774393bafc5e38a6bb77b1d5", size = 25513, upload-time = "2022-11-14T17:22:10.555Z" },
+]
+
+[[package]]
+name = "sphinxcontrib-jquery"
+version = "4.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "sphinx" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/de/f3/aa67467e051df70a6330fe7770894b3e4f09436dea6881ae0b4f3d87cad8/sphinxcontrib-jquery-4.1.tar.gz", hash = "sha256:1620739f04e36a2c779f1a131a2dfd49b2fd07351bf1968ced074365933abc7a", size = 122331, upload-time = "2023-03-14T15:01:01.944Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/76/85/749bd22d1a68db7291c89e2ebca53f4306c3f205853cf31e9de279034c3c/sphinxcontrib_jquery-4.1-py2.py3-none-any.whl", hash = "sha256:f936030d7d0147dd026a4f2b5a57343d233f1fc7b363f68b3d4f1cb0993878ae", size = 121104, upload-time = "2023-03-14T15:01:00.356Z" },
 ]
 
 [[package]]
