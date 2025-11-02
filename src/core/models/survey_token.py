@@ -4,6 +4,12 @@ from src.core.database import db
 
 
 class SurveyToken(db.Model):
+    """Survey token model.
+
+    Args:
+        db (SQLAlchemy): The SQLAlchemy database instance.
+    """
+
     __tablename__ = "survey_tokens"
 
     id = db.Column(db.Integer, primary_key=True)
