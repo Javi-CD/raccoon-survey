@@ -16,6 +16,10 @@ dependencies = [
     "python-dotenv>=1.0.1",
     "typing>=3.10.0.0",
     "apscheduler>=3.10.4",
+    "sphinx>=8.2.3",
+    "sphinxcontrib-openapi>=0.8.4",
+    "sphinx-autobuild>=2025.8.25",
+    "sphinx-rtd-theme>=3.0.2",
 ]
 
 [project.optional-dependencies]

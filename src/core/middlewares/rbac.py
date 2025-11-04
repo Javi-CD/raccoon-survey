@@ -1,3 +1,10 @@
+# Copyright (C) 2025 Raccoon Survey org
+# This file is part of Raccoon Survey.
+# Raccoon Survey is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License v3 as published by
+# the Free Software Foundation.
+# See the LICENSE file distributed with this program for details.
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -8,15 +15,18 @@ from flask_jwt_extended import get_jwt, jwt_required
 
 
 def role_required(*allowed_roles: str) -> Callable:
-    """Decorator that enforces JWT auth and role-based access.
+    """Enforce JWT auth and role-based access for a view.
 
-    Usage:
+    Example:
+
+    .. code-block:: python
+
         @role_required("admin", "rrhh")
         def view():
-            ...
+            pass
 
     Args:
-        allowed_roles (str): A list of roles that are allowed to access the decorated function.
+        allowed_roles (str): Roles allowed to access the decorated function.
 
     Returns:
         Callable: The decorated function.
