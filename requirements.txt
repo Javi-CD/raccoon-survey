@@ -1,0 +1,9 @@
+flask==3.1.2
+flask-cors==6.0.1
+flask-jwt-extended==4.7.1
+flask-sqlalchemy==3.1.1
+sqlalchemy==2.0.43
+alembic==1.16.5
+apscheduler==3.11.0
+python-dotenv==1.1.1
+psycopg2-binary==2.9.10

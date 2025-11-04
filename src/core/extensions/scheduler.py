@@ -1,3 +1,10 @@
+# Copyright (C) 2025 Raccoon Survey org
+# This file is part of Raccoon Survey.
+# Raccoon Survey is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License v3 as published by
+# the Free Software Foundation.
+# See the LICENSE file distributed with this program for details.
+
 from __future__ import annotations
 
 import atexit
@@ -30,8 +37,29 @@ def create_scheduler(app: Flask) -> BackgroundScheduler:
                 app.logger.exception("cleanup_expired_tokens failed", exc_info=e)
 
     # Read schedule from config
-    hour = int(app.config.get("CLEANUP_CRON_HOUR", 3))
-    minute = int(app.config.get("CLEANUP_CRON_MINUTE", 0))
+    try:
+        raw_hour = app.config.get("CLEANUP_CRON_HOUR", 3)
+        raw_minute = app.config.get("CLEANUP_CRON_MINUTE", 0)
+        hour = int(raw_hour)
+        minute = int(raw_minute)
+    except Exception:
+        app.logger.warning(
+            "Invalid CLEANUP_CRON_* values: hour=%r minute=%r; using defaults 3:00",
+            raw_hour,
+            raw_minute,
+        )
+        hour, minute = 3, 0
+
+    if hour < 0 or hour > 23:
+        app.logger.warning(
+            "CLEANUP_CRON_HOUR out of range (%s). Clamping to 3.", hour
+        )
+        hour = 3
+    if minute < 0 or minute > 59:
+        app.logger.warning(
+            "CLEANUP_CRON_MINUTE out of range (%s). Clamping to 0.", minute
+        )
+        minute = 0
 
     # Run daily at configured time
     scheduler.add_job(

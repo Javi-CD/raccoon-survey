@@ -1,0 +1,17 @@
+/* Reduce logo size in sidebar and top nav */
+.wy-side-nav-search img,
+.wy-side-nav-search .logo img {
+  max-height: 72px;
+  width: auto;
+}
+
+.wy-nav-top img,
+.wy-nav-top .logo img {
+  max-height: 54px;
+  width: auto;
+}
+
+/* Softer background color for the main content container */
+.wy-nav-content {
+  background-color: #f7f8fa; /* light, subtle gray */
+}

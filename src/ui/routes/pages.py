@@ -1,3 +1,10 @@
+# Copyright (C) 2025 Raccoon Survey org
+# This file is part of Raccoon Survey.
+# Raccoon Survey is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License v3 as published by
+# the Free Software Foundation.
+# See the LICENSE file distributed with this program for details.
+
 from __future__ import annotations
 
 from flask import Blueprint, redirect, render_template, request, url_for
@@ -93,3 +100,8 @@ def resolver_page() -> str:
         str: Rendered HTML template for the resolver page.
     """
     return render_template("pages/public/solveSurveys.html")
+
+
+@bp.get("/docs")
+def api_docs_page() -> str:
+    return render_template("pages/public/docs.html")
