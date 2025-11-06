@@ -141,6 +141,12 @@ autodoc_mock_imports = [
     "dotenv",
     "psycopg2",
     "redis",
+    "flask",
+    "flask_sqlalchemy",
+    "flask_jwt_extended",
+    "flask_cors",
+    "sqlalchemy",
+    "apscheduler",
 ]
 
 todo_include_todos = True
