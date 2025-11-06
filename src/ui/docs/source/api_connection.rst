@@ -17,7 +17,3 @@ La interfaz se comunica con el backend mediante peticiones HTTP usando la **Fetc
    })
    .catch(error => console.error('Error:', error));
 
-**Endpoints comunes:**
-- `/api/tasks` → obtiene las tareas disponibles.
-- `/api/projects` → consulta o crea proyectos.
-- `/api/users` → gestión de usuarios y roles.

@@ -12,8 +12,8 @@ Raccoon Survey UI documentation
    :maxdepth: 2
    :caption: Contents:
 
-   introduccion
-   estructura_frontend
-   componentes
-   estilos
-   api_conexion
+   introduction
+   frontend_structure
+   components
+   styles
+   api_connection
