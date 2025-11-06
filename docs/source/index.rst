@@ -12,3 +12,8 @@ Contenidos
 
    modules
    api/openapi
+
+UI
+--
+
+`Documentación de la UI <ui/index.html>`_
