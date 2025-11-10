@@ -131,7 +131,7 @@ See the LICENSE file distributed with this program for details.
 
               <div class="flex flex-wrap gap-4">
                 <a
-                  href="{{url_for('auth.login')}}"
+                  href="{{ url_for('ui.login_page') }}"
                   class="px-7 py-3 bg-primary hover:bg-secondary text-white font-semibold rounded-lg transition-all transform hover:-translate-y-1"
                 >
                   <i class="mr-2"></i>
@@ -240,7 +240,6 @@ See the LICENSE file distributed with this program for details.
         </div>
       </div>
     </section>
-    x
 
     <!-- CTA Section -->
     <section id="cta" class="py-24 bg-gradient-to-r from-primary to-secondary text-white">
@@ -366,6 +365,37 @@ See the LICENSE file distributed with this program for details.
         } else {
           navbar.classList.remove('navbar-solid');
           navbar.classList.add('navbar-transparent');
+        }
+      });
+    </script>
+
+    <!-- Scroll to CTA centered when navigating -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const ctaSection = document.getElementById('cta');
+        if (!ctaSection) {
+          return;
+        }
+
+        const links = document.querySelectorAll('a[href="#cta"]');
+        links.forEach(link => {
+          link.addEventListener('click', event => {
+            event.preventDefault();
+            ctaSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            try {
+              history.replaceState(null, '', '#cta');
+            } catch (_) {
+              /* ignore */
+            }
+          });
+        });
+
+        // If page loads with #cta in the URL, center it as well
+        if (window.location.hash === '#cta') {
+          // Use a small delay to allow initial layout to settle
+          setTimeout(() => {
+            ctaSection.scrollIntoView({ behavior: 'auto', block: 'center' });
+          }, 0);
         }
       });
     </script>
