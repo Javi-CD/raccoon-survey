@@ -86,11 +86,112 @@ See the LICENSE file distributed with this program for details.
       </div>
     </div>
 
+    <!-- Actions -->
+    <div class="mb-6 flex justify-end">
+      <button id="openModalBtn" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition">
+        <i class="fas fa-plus mr-2"></i>
+        Nueva Encuesta
+      </button>
+    </div>
+
     <!-- Survey Grid -->
     <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="surveyGrid"></section>
   </main>
 
   {% include 'components/footer.html' %}
+
+  <!-- Create Survey Drawer Modal -->
+  <div id="modal" class="fixed inset-0 hidden z-50">
+    <!-- Overlay -->
+    <div id="modalOverlay" class="absolute inset-0 bg-black/30"></div>
+
+    <!-- Right Drawer Panel -->
+    <div
+      id="modalPanel"
+      class="absolute right-0 top-0 h-full w-full sm:w-[560px] max-w-[90vw] bg-white shadow-xl transform translate-x-full transition-transform duration-300 overflow-y-auto"
+    >
+      <!-- Header -->
+      <div class="flex items-center justify-between p-4 border-b">
+        <h3 class="text-lg font-semibold text-gray-800">Crear nueva encuesta</h3>
+        <button id="closeModalBtn" class="text-gray-500 hover:text-gray-700">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <form id="createSurveyForm" class="p-4 space-y-4">
+        <div>
+          <label for="surveyTitle" class="block text-sm font-medium text-gray-700">
+            Título
+            <span class="text-red-500">*</span>
+          </label>
+          <input
+            id="surveyTitle"
+            type="text"
+            class="mt-1 w-full border rounded px-3 py-2"
+            placeholder="Ej. Clima Laboral Q1"
+            required
+          />
+        </div>
+
+        <div>
+          <label for="surveyDescription" class="block text-sm font-medium text-gray-700">Descripción</label>
+          <textarea
+            id="surveyDescription"
+            class="mt-1 w-full border rounded px-3 py-2"
+            rows="3"
+            placeholder="Descripción breve"
+          ></textarea>
+        </div>
+
+        <div>
+          <label for="surveyStatus" class="block text-sm font-medium text-gray-700">Estado</label>
+          <select id="surveyStatus" class="mt-1 w-full border rounded px-3 py-2">
+            <option value="active">Activa</option>
+            <option value="inactive">Inactiva</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="surveyTeamId" class="block text-sm font-medium text-gray-700">Equipo</label>
+          <select id="surveyTeamId" class="mt-1 w-full border rounded px-3 py-2" required>
+            <option value="">Selecciona un equipo</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="surveyExpiresAt" class="block text-sm font-medium text-gray-700">Expira (fecha y hora)</label>
+          <input type="datetime-local" id="surveyExpiresAt" class="mt-1 w-full border rounded px-3 py-2" />
+        </div>
+
+        <!-- Questions -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-medium text-gray-700">Preguntas</span>
+            <button type="button" id="addQuestionBtn" class="text-primary hover:text-secondary text-sm">
+              <i class="fas fa-plus mr-1"></i>
+              Añadir pregunta
+            </button>
+          </div>
+          <div id="questionsList" class="space-y-3"></div>
+        </div>
+
+        <!-- Footer -->
+        <div class="flex justify-end gap-3 border-t pt-4">
+          <button type="button" id="closeModalBtn2" class="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-50">
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            id="saveSurveyBtn"
+            class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary"
+          >
+            Guardar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <!-- Survey List -->
   <script type="module">
@@ -114,10 +215,18 @@ See the LICENSE file distributed with this program for details.
 
     try {
       const surveys = await RS.http.apiFetch('/surveys/', { method: 'GET' });
-      const list = Array.isArray(surveys) ? surveys : [];
+      const now = new Date();
+      const list = Array.isArray(surveys)
+        ? surveys.filter(s => {
+            const active = !!s.state;
+            const exp = s.expires_at ? new Date(s.expires_at) : null;
+            const notExpired = !exp || exp >= now;
+            return active && notExpired;
+          })
+        : [];
 
       surveysTotalEl.textContent = String(list.length);
-      const activeCount = list.filter(s => !!s.state).length;
+      const activeCount = list.length;
       activeSurveysEl.textContent = String(activeCount);
 
       let responsesAcc = 0;
@@ -141,6 +250,7 @@ See the LICENSE file distributed with this program for details.
         const statusLabel = s.state ? 'Activa' : 'Inactiva';
         const statusClass = s.state ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800';
         const createdAtTxt = fmtDate(s.created_at);
+        const expiresAtTxt = fmtDate(s.expires_at);
         const rate = totalTokens ? Math.round((used / totalTokens) * 100) : 0;
 
         rendered.push(`
@@ -151,9 +261,13 @@ See the LICENSE file distributed with this program for details.
                   <h3 class="text-lg font-semibold text-gray-900 mb-2">${s.title}</h3>
                   <p class="text-sm text-gray-600">${s.description || ''}</p>
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 relative">
                   <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass}">${statusLabel}</span>
-                  <button class="p-1 text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button>
+                  <button class="p-1 text-gray-400 hover:text-gray-600 survey-menu-btn" data-survey-id="${s.id}"><i class="fas fa-ellipsis-v"></i></button>
+                  <div class="survey-menu hidden absolute right-0 top-6 w-40 bg-white border rounded shadow z-10">
+                    <button class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 survey-edit-btn" data-survey-id="${s.id}">Editar encuesta</button>
+                    <button class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 survey-delete-btn" data-survey-id="${s.id}">Eliminar encuesta</button>
+                  </div>
                 </div>
               </div>
 
@@ -165,6 +279,10 @@ See the LICENSE file distributed with this program for details.
                 <div class="flex justify-between text-sm">
                   <span class="text-gray-600">Tasa de respuesta</span>
                   <span class="font-medium text-gray-900">${rate}%</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Expira</span>
+                  <span class="font-medium text-gray-900">${expiresAtTxt}</span>
                 </div>
                 <div class="flex justify-between text-sm">
                   <span class="text-gray-600">Creada</span>
@@ -189,7 +307,100 @@ See the LICENSE file distributed with this program for details.
     }
   </script>
 
+  <!-- Edit Survey Drawer Modal -->
+  <div id="editModal" class="fixed inset-0 hidden z-50">
+    <!-- Overlay -->
+    <div id="editModalOverlay" class="absolute inset-0 bg-black/30"></div>
+
+    <!-- Right Drawer Panel -->
+    <div
+      id="editModalPanel"
+      class="absolute right-0 top-0 h-full w-full sm:w-[560px] max-w-[90vw] bg-white shadow-xl transform translate-x-full transition-transform duration-300 overflow-y-auto"
+    >
+      <!-- Header -->
+      <div class="flex items-center justify-between p-4 border-b">
+        <h3 class="text-lg font-semibold text-gray-800">Editar encuesta</h3>
+        <button id="editCloseBtn" class="text-gray-500 hover:text-gray-700">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <form id="editSurveyForm" class="p-4 space-y-4">
+        <input type="hidden" id="editSurveyId" />
+
+        <div>
+          <label for="editSurveyTitle" class="block text-sm font-medium text-gray-700">
+            Título
+            <span class="text-red-500">*</span>
+          </label>
+          <input
+            id="editSurveyTitle"
+            type="text"
+            class="mt-1 w-full border rounded px-3 py-2"
+            placeholder="Ej. Clima Laboral Q1"
+            required
+          />
+        </div>
+
+        <div>
+          <label for="editSurveyDescription" class="block text-sm font-medium text-gray-700">Descripción</label>
+          <textarea
+            id="editSurveyDescription"
+            class="mt-1 w-full border rounded px-3 py-2"
+            rows="3"
+            placeholder="Descripción breve"
+          ></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="editSurveyStatus" class="block text-sm font-medium text-gray-700">Estado</label>
+            <select id="editSurveyStatus" class="mt-1 w-full border rounded px-3 py-2">
+              <option value="active">Activa</option>
+              <option value="inactive">Inactiva</option>
+            </select>
+          </div>
+          <div>
+            <label for="editSurveyExpiresAt" class="block text-sm font-medium text-gray-700">
+              Expira (fecha y hora)
+            </label>
+            <input type="datetime-local" id="editSurveyExpiresAt" class="mt-1 w-full border rounded px-3 py-2" />
+          </div>
+        </div>
+
+        <!-- Preguntas -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-medium text-gray-700">Preguntas</span>
+            <button type="button" id="editAddQuestionBtn" class="text-primary hover:text-secondary text-sm">
+              <i class="fas fa-plus mr-1"></i>
+              Añadir pregunta
+            </button>
+          </div>
+          <div id="editQuestionsList" class="space-y-3"></div>
+        </div>
+
+        <!-- Footer -->
+        <div class="flex justify-end gap-3 border-t pt-4">
+          <button type="button" id="editCloseBtn2" class="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-50">
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            id="editSaveSurveyBtn"
+            class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary"
+          >
+            Guardar cambios
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Survey creation module -->
   <script type="module" src="{{ url_for('ui.static', filename='js/surveys/create-modal.js') }}"></script>
+  <!-- Survey edit module -->
+  <script type="module" src="{{ url_for('ui.static', filename='js/surveys/edit-modal.js') }}"></script>
   <script src="{{ url_for('ui.static', filename='js/dashboard/logout.js') }}"></script>
 </html>
