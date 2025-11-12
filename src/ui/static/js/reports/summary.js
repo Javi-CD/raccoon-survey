@@ -62,19 +62,23 @@ See the LICENSE file distributed with this program for details.
       const rows = await RS.http.apiFetch('/surveys', { method: 'GET' });
       surveySelect.innerHTML = '';
 
-      if (!Array.isArray(rows) || rows.length === 0) {
+      const active = (Array.isArray(rows) ? rows : []).filter(
+        s => s && s.state === true
+      );
+
+      if (active.length === 0) {
         const opt = document.createElement('option');
         opt.value = '';
-        opt.textContent = 'No hay encuestas';
+        opt.textContent = 'No hay encuestas activas';
 
         surveySelect.appendChild(opt);
         return;
       }
 
-      for (const s of rows) {
+      for (const s of active) {
         const opt = document.createElement('option');
         opt.value = String(s.id);
-        opt.textContent = `${s.title} (ID: ${s.id})`;
+        opt.textContent = s.title || 'Survey';
         surveySelect.appendChild(opt);
       }
     } catch (err) {
