@@ -7,6 +7,8 @@
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
+
 from src.core.database import db
 from src.core.models import Survey
 
@@ -22,7 +24,7 @@ def list_surveys(team_id: int | None = None) -> list[Survey]:
     """
     query = Survey.query
     if team_id is not None:
-        query = query.filter(Survey.team_id == team_id)
+        query = query.filter(Survey.team_id == team_id)  # pyright: ignore[reportGeneralTypeIssues]
 
     return query.order_by(Survey.created_at.desc()).all()
 
@@ -37,12 +39,12 @@ def create_survey(data: dict) -> Survey:
         Survey: Created survey.
     """
     survey = Survey(
-        team_id=data.get("team_id"),
-        created_by_user_id=data.get("created_by_user_id"),
-        title=data.get("title"),
-        description=data.get("description"),
-        is_anonymous=bool(data.get("is_anonymous", True)),
-        expires_at=data.get("expires_at"),
+        team_id=data.get("team_id"),  # pyright: ignore[reportCallIssue]
+        created_by_user_id=data.get("created_by_user_id"),  # pyright: ignore[reportCallIssue]
+        title=data.get("title"),  # pyright: ignore[reportCallIssue]
+        description=data.get("description"),  # pyright: ignore[reportCallIssue]
+        is_anonymous=bool(data.get("is_anonymous", True)),  # pyright: ignore[reportCallIssue]
+        expires_at=data.get("expires_at"),  # pyright: ignore[reportCallIssue]
     )
     db.session.add(survey)
     db.session.commit()
@@ -113,8 +115,31 @@ def set_survey_state(survey_id: int, state: bool) -> Survey | None:
     return survey
 
 
+def deactivate_expired_surveys(now: datetime | None = None) -> dict:
+    """Set state=False for surveys whose expires_at is in the past.
+
+    Args:
+        now (datetime | None): Reference datetime (UTC). Defaults to current UTC.
+
+    Returns:
+        dict: {"matched": int, "updated": int}
+    """
+    ref = now or datetime.now(UTC)
+    q = (
+        Survey.query.filter(Survey.state.is_(True))
+        .filter(Survey.expires_at.isnot(None))
+        .filter(Survey.expires_at < ref)
+    )
+    matched = q.count()
+    updated = q.update({Survey.state: False}, synchronize_session=False)
+    db.session.commit()
+
+    return {"matched": int(matched), "updated": int(updated)}
+
+
 __all__ = [
     "create_survey",
+    "deactivate_expired_surveys",
     "get_survey",
     "list_surveys",
     "set_survey_state",

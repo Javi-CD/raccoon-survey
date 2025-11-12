@@ -7,11 +7,28 @@ the Free Software Foundation.
 See the LICENSE file distributed with this program for details.
 */
 
+/* eslint-disable no-console */
+/* eslint-disable no-alert */
+
 /* global RS */
 (() => {
   const RS_ENV = window.RS_ENV || {};
   const RS_CONFIG = window.RS_CONFIG || {};
   const API_BASE_URL = RS_ENV.API_BASE_URL || RS_CONFIG.apiBaseUrl || '';
+
+  const toDatetimeLocalFromDate = d => {
+    try {
+      const pad = n => String(n).padStart(2, '0');
+      const yyyy = d.getFullYear();
+      const mm = pad(d.getMonth() + 1);
+      const dd = pad(d.getDate());
+      const hh = pad(d.getHours());
+      const mi = pad(d.getMinutes());
+      return `${yyyy}-${mm}-${dd}T${hh}:${mi}`;
+    } catch (_) {
+      return '';
+    }
+  };
 
   const getTeamProfile = async () => {
     const profile = await RS.http.apiFetch('/auth/me', { method: 'GET' });
@@ -228,23 +245,43 @@ See the LICENSE file distributed with this program for details.
 
   const bindModal = () => {
     const modal = document.getElementById('modal');
+    const overlay = document.getElementById('modalOverlay');
+    const panel = document.getElementById('modalPanel');
     const openBtn = document.getElementById('openModalBtn');
     const closeBtn = document.getElementById('closeModalBtn');
     const closeBtn2 = document.getElementById('closeModalBtn2');
+    const teamSelect = document.getElementById('surveyTeamId');
     const form = document.getElementById('createSurveyForm');
     const addQuestionBtn = document.getElementById('addQuestionBtn');
     const questionsList = document.getElementById('questionsList');
     const saveBtn = document.getElementById('saveSurveyBtn');
+    const expiresEl = document.getElementById('surveyExpiresAt');
 
-    if (!modal || !form || !questionsList) {
+    if (!modal || !panel || !form || !questionsList) {
       return;
     }
 
     function open() {
       modal.classList.remove('hidden');
+      panel.classList.remove('translate-x-full');
+      panel.classList.add('translate-x-0');
+      try {
+        document.body.style.overflow = 'hidden';
+      } catch (_) {
+        void 0;
+      }
     }
     function close() {
-      modal.classList.add('hidden');
+      panel.classList.add('translate-x-full');
+      panel.classList.remove('translate-x-0');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 300);
+      try {
+        document.body.style.overflow = '';
+      } catch (_) {
+        void 0;
+      }
     }
 
     if (openBtn) {
@@ -256,9 +293,65 @@ See the LICENSE file distributed with this program for details.
     if (closeBtn2) {
       closeBtn2.addEventListener('click', close);
     }
+    if (overlay) {
+      overlay.addEventListener('click', close);
+    }
 
-    // First question by default
+    // Load equipment for the selector
+    const loadTeams = async () => {
+      if (!teamSelect) {
+        return;
+      }
+
+      try {
+        teamSelect.innerHTML = '';
+        const rows = await RS.http.apiFetch('/teams', { method: 'GET' });
+
+        if (!Array.isArray(rows) || rows.length === 0) {
+          const opt = document.createElement('option');
+          opt.value = '';
+          opt.textContent = 'No hay equipos disponible';
+          teamSelect.appendChild(opt);
+          return;
+        }
+
+        const profile = await getTeamProfile().catch(() => ({ team_id: null }));
+
+        for (const t of rows) {
+          const opt = document.createElement('option');
+          opt.value = String(t.id);
+          opt.textContent = `${t.name} (ID: ${t.id})`;
+          teamSelect.appendChild(opt);
+        }
+
+        // Preselect the user's computer if it exists in the list
+        if (profile && profile.team_id) {
+          teamSelect.value = String(profile.team_id);
+        }
+      } catch (err) {
+        console.error('Error al cargar equipos:', err);
+        teamSelect.innerHTML = '';
+        const opt = document.createElement('option');
+        opt.value = '';
+        opt.textContent = 'Error al cargar equipos';
+        teamSelect.appendChild(opt);
+      }
+    };
+
+    // Default first question
     questionsList.appendChild(createQuestionItem('text'));
+
+    // Load equipment when initializing the modal
+    loadTeams();
+
+    // Prevent selecting past dates
+    if (expiresEl) {
+      try {
+        expiresEl.min = toDatetimeLocalFromDate(new Date());
+      } catch (_) {
+        // ignore
+      }
+    }
 
     if (addQuestionBtn) {
       addQuestionBtn.addEventListener('click', () => {
@@ -279,7 +372,25 @@ See the LICENSE file distributed with this program for details.
           document.getElementById('surveyDescription').value || ''
         ).trim();
         const status = document.getElementById('surveyStatus').value;
+        const expiresAt = (
+          document.getElementById('surveyExpiresAt')?.value || ''
+        ).trim();
+        const teamIdStr = (teamSelect && teamSelect.value) || '';
+        const teamId = Number(teamIdStr) || 0;
         const state = status === 'active';
+
+        // Validate expiration is in the future
+        if (expiresAt) {
+          const exp = new Date(expiresAt);
+          const now = new Date();
+          if (exp < now) {
+            alert('La fecha de expiración debe ser futura.');
+            if (saveBtn) {
+              saveBtn.disabled = false;
+            }
+            return;
+          }
+        }
 
         const questions = collectQuestions(questionsList);
         const errors = validateSurvey(title, questions);
@@ -290,19 +401,23 @@ See the LICENSE file distributed with this program for details.
           }
           return;
         }
+        if (!teamId) {
+          alert('Selecciona un equipo para la encuesta.');
+          if (saveBtn) {
+            saveBtn.disabled = false;
+          }
+          return;
+        }
 
         const profile = await getTeamProfile();
-        if (!profile.team_id) {
-          throw new Error('No se encontró el equipo del usuario (team_id).');
-        }
 
         const surveyPayload = {
           title,
           description: description || null,
-          team_id: profile.team_id,
+          team_id: teamId,
           is_anonymous: true,
           created_by_user_id: profile.id || null,
-          expires_at: null,
+          expires_at: expiresAt || null,
         };
 
         await createSurveyAndQuestions(surveyPayload, state, questions);

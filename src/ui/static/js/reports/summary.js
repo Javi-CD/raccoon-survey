@@ -18,6 +18,10 @@ See the LICENSE file distributed with this program for details.
   const tokensTBody = document.getElementById('tokensTableBody');
   const dateFromEl = document.getElementById('dateFrom');
   const dateToEl = document.getElementById('dateTo');
+  const generateBtn = document.getElementById('generateTokensBtn');
+  const tokensCountEl = document.getElementById('tokensCount');
+  const tokensExpireAtEl = document.getElementById('tokensExpireAt');
+  const tokensIdentifiersEl = document.getElementById('tokensIdentifiers');
 
   const fmtDate = iso => {
     if (!iso) {
@@ -238,6 +242,68 @@ See the LICENSE file distributed with this program for details.
     }
   };
 
+  const generateTokens = async () => {
+    const surveyId = Number(surveySelect.value);
+    if (!surveyId) {
+      alert('Selecciona una encuesta primero');
+      return;
+    }
+
+    const count =
+      Number(tokensCountEl && tokensCountEl.value ? tokensCountEl.value : 0) ||
+      0;
+    const expVal =
+      tokensExpireAtEl && tokensExpireAtEl.value ? tokensExpireAtEl.value : '';
+    const identifiersRaw =
+      tokensIdentifiersEl && tokensIdentifiersEl.value
+        ? tokensIdentifiersEl.value
+        : '';
+    const employee_identifiers = identifiersRaw
+      ? identifiersRaw
+          .split(/\r?\n/) // one per line
+          .map(s => (s || '').trim())
+          .filter(Boolean)
+      : undefined;
+
+    if (count <= 0) {
+      alert('La cantidad debe ser mayor a 0');
+      return;
+    }
+    if (!expVal) {
+      alert('Debes indicar fecha y hora de expiración');
+      return;
+    }
+    if (employee_identifiers && employee_identifiers.length !== count) {
+      alert(
+        'La cantidad de identificadores debe coincidir con la cantidad de tokens'
+      );
+      return;
+    }
+
+    const payload = {
+      count,
+      expires_at: expVal,
+    };
+    if (employee_identifiers) {
+      payload.employee_identifiers = employee_identifiers;
+    }
+
+    try {
+      await RS.http.apiFetch(`/tokens/${surveyId}/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      alert('Tokens generados correctamente');
+      await loadTokens();
+    } catch (err) {
+      console.error(err);
+      alert(
+        err && err.message ? err.message : 'Ocurrió un error al generar tokens'
+      );
+    }
+  };
+
   const exportSummaryCsv = async () => {
     const surveyId = Number(surveySelect.value);
     if (!surveyId) {
@@ -329,6 +395,9 @@ See the LICENSE file distributed with this program for details.
 
     exportCsvBtn.addEventListener('click', exportSummaryCsv);
     exportTokensCsvBtn.addEventListener('click', exportTokensCsv);
+    if (generateBtn) {
+      generateBtn.addEventListener('click', generateTokens);
+    }
   };
 
   document.addEventListener('DOMContentLoaded', init);

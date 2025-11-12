@@ -13,7 +13,7 @@ import os
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask
 
-from src.core.services import tokens_service
+from src.core.services import surveys_service, tokens_service
 
 
 def create_scheduler(app: Flask) -> BackgroundScheduler:
@@ -36,6 +36,14 @@ def create_scheduler(app: Flask) -> BackgroundScheduler:
             except Exception as e:
                 app.logger.exception("cleanup_expired_tokens failed", exc_info=e)
 
+    def _run_expire_surveys():
+        with app.app_context():
+            try:
+                result = surveys_service.deactivate_expired_surveys()
+                app.logger.info(f"deactivate_expired_surveys ran: {result}")
+            except Exception as e:
+                app.logger.exception("deactivate_expired_surveys failed", exc_info=e)
+
     # Read schedule from config
     try:
         raw_hour = app.config.get("CLEANUP_CRON_HOUR", 3)
@@ -45,15 +53,13 @@ def create_scheduler(app: Flask) -> BackgroundScheduler:
     except Exception:
         app.logger.warning(
             "Invalid CLEANUP_CRON_* values: hour=%r minute=%r; using defaults 3:00",
-            raw_hour,
-            raw_minute,
+            raw_hour,  # pyright: ignore[reportPossiblyUnboundVariable]
+            raw_minute,  # pyright: ignore[reportPossiblyUnboundVariable]
         )
         hour, minute = 3, 0
 
     if hour < 0 or hour > 23:
-        app.logger.warning(
-            "CLEANUP_CRON_HOUR out of range (%s). Clamping to 3.", hour
-        )
+        app.logger.warning("CLEANUP_CRON_HOUR out of range (%s). Clamping to 3.", hour)
         hour = 3
     if minute < 0 or minute > 59:
         app.logger.warning(
@@ -68,6 +74,16 @@ def create_scheduler(app: Flask) -> BackgroundScheduler:
         hour=hour,
         minute=minute,
         id="cleanup_expired_tokens_daily",
+        replace_existing=True,
+        misfire_grace_time=3600,
+    )
+
+    scheduler.add_job(
+        _run_expire_surveys,
+        trigger="cron",
+        hour=hour,
+        minute=minute,
+        id="deactivate_expired_surveys_daily",
         replace_existing=True,
         misfire_grace_time=3600,
     )
@@ -103,6 +119,14 @@ def start_scheduler(app: Flask, debug: bool | None = None) -> None:
             except Exception as e:
                 app.logger.exception(
                     "cleanup_expired_tokens failed on startup", exc_info=e
+                )
+
+            try:
+                result2 = surveys_service.deactivate_expired_surveys()
+                app.logger.info(f"deactivate_expired_surveys ran (startup): {result2}")
+            except Exception as e:
+                app.logger.exception(
+                    "deactivate_expired_surveys failed on startup", exc_info=e
                 )
 
     # Gracefully shutdown scheduler on app exit
