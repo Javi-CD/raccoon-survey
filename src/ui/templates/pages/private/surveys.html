@@ -145,10 +145,9 @@ See the LICENSE file distributed with this program for details.
         </div>
 
         <div>
-          <label for="surveyStatus" class="block text-sm font-medium text-gray-700">Estado</label>
-          <select id="surveyStatus" class="mt-1 w-full border rounded px-3 py-2">
-            <option value="active">Activa</option>
-            <option value="inactive">Inactiva</option>
+          <label for="surveyCategoryId" class="block text-sm font-medium text-gray-700">Categoría</label>
+          <select id="surveyCategoryId" class="mt-1 w-full border rounded px-3 py-2" required>
+            <option value="">Selecciona una categoría</option>
           </select>
         </div>
 
@@ -247,8 +246,6 @@ See the LICENSE file distributed with this program for details.
         responsesAcc += used;
         tokensAcc += totalTokens;
 
-        const statusLabel = s.state ? 'Activa' : 'Inactiva';
-        const statusClass = s.state ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800';
         const createdAtTxt = fmtDate(s.created_at);
         const expiresAtTxt = fmtDate(s.expires_at);
         const rate = totalTokens ? Math.round((used / totalTokens) * 100) : 0;
@@ -262,7 +259,6 @@ See the LICENSE file distributed with this program for details.
                   <p class="text-sm text-gray-600">${s.description || ''}</p>
                 </div>
                 <div class="flex items-center gap-2 relative">
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass}">${statusLabel}</span>
                   <button class="p-1 text-gray-400 hover:text-gray-600 survey-menu-btn" data-survey-id="${s.id}"><i class="fas fa-ellipsis-v"></i></button>
                   <div class="survey-menu hidden absolute right-0 top-6 w-40 bg-white border rounded shadow z-10">
                     <button class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 survey-edit-btn" data-survey-id="${s.id}">Editar encuesta</button>
@@ -355,10 +351,9 @@ See the LICENSE file distributed with this program for details.
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label for="editSurveyStatus" class="block text-sm font-medium text-gray-700">Estado</label>
-            <select id="editSurveyStatus" class="mt-1 w-full border rounded px-3 py-2">
-              <option value="active">Activa</option>
-              <option value="inactive">Inactiva</option>
+            <label for="editSurveyCategoryId" class="block text-sm font-medium text-gray-700">Categoría</label>
+            <select id="editSurveyCategoryId" class="mt-1 w-full border rounded px-3 py-2" required>
+              <option value="">Selecciona una categoría</option>
             </select>
           </div>
           <div>
