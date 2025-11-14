@@ -21,7 +21,7 @@ const EditModal = (() => {
   const idEl = document.getElementById('editSurveyId');
   const titleEl = document.getElementById('editSurveyTitle');
   const descEl = document.getElementById('editSurveyDescription');
-  const statusEl = document.getElementById('editSurveyStatus');
+  const categorySel = document.getElementById('editSurveyCategoryId');
   const expiresEl = document.getElementById('editSurveyExpiresAt');
 
   // Ensure RS client is available to avoid runtime ReferenceError
@@ -82,7 +82,6 @@ const EditModal = (() => {
     idEl.value = s.id;
     titleEl.value = s.title || '';
     descEl.value = s.description || '';
-    statusEl.value = s.state ? 'active' : 'inactive';
     expiresEl.value = toDatetimeLocal(s.expires_at);
   };
 
@@ -295,6 +294,36 @@ const EditModal = (() => {
     return RS.http.apiFetch(`/surveys/${id}`, { method: 'GET' });
   };
 
+  const loadCategories = async () => {
+    if (!categorySel) {
+      return;
+    }
+    try {
+      categorySel.innerHTML = '';
+      const rows = await RS.http.apiFetch('/categories', { method: 'GET' });
+      if (!Array.isArray(rows) || rows.length === 0) {
+        const opt = document.createElement('option');
+        opt.value = '';
+        opt.textContent = 'No hay categorías disponibles';
+        categorySel.appendChild(opt);
+        return;
+      }
+      for (const c of rows) {
+        const opt = document.createElement('option');
+        opt.value = String(c.id);
+        opt.textContent = c.name;
+        categorySel.appendChild(opt);
+      }
+    } catch (err) {
+      console.error('Error al cargar categorías:', err);
+      categorySel.innerHTML = '';
+      const opt = document.createElement('option');
+      opt.value = '';
+      opt.textContent = 'Error al cargar categorías';
+      categorySel.appendChild(opt);
+    }
+  };
+
   const save = async () => {
     const id = Number(idEl.value);
     if (!id) {
@@ -315,7 +344,7 @@ const EditModal = (() => {
       title: titleEl.value.trim(),
       description: descEl.value.trim() || null,
       expires_at: expiresVal,
-      state: statusEl.value === 'active',
+      // Keep surveys active by default
     };
 
     if (!payload.title) {
@@ -495,6 +524,9 @@ const EditModal = (() => {
         }
       });
     }
+
+    // load categories when starting editing modal
+    loadCategories();
   };
 
   return { init };
