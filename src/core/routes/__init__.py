@@ -19,9 +19,11 @@ from .maintenance import bp as maintenance_bp
 from .metrics import bp as metrics_bp
 from .questions import bp as questions_bp
 from .reports import bp as reports_bp
+from .roles import bp as roles_bp
 from .surveys import bp as surveys_bp
 from .teams import bp as teams_bp
 from .tokens import bp as tokens_bp
+from .users import bp as users_bp
 
 
 def register_routes(app: Flask) -> None:
@@ -34,6 +36,7 @@ def register_routes(app: Flask) -> None:
     """
     app.register_blueprint(auth_bp, url_prefix="/api/v1/auth")
     app.register_blueprint(teams_bp, url_prefix="/api/v1/teams")
+    app.register_blueprint(users_bp, url_prefix="/api/v1/users")
     app.register_blueprint(surveys_bp, url_prefix="/api/v1/surveys")
     app.register_blueprint(questions_bp, url_prefix="/api/v1/questions")
     app.register_blueprint(tokens_bp, url_prefix="/api/v1/tokens")
@@ -42,6 +45,7 @@ def register_routes(app: Flask) -> None:
     app.register_blueprint(anonymous_bp, url_prefix="/api/v1/anonymous")
     app.register_blueprint(reports_bp, url_prefix="/api/v1/reports")
     app.register_blueprint(metrics_bp, url_prefix="/api/v1/metrics")
+    app.register_blueprint(roles_bp, url_prefix="/api/v1/roles")
     app.register_blueprint(docs_bp, url_prefix="/api/v1")
     app.register_blueprint(ui_bp)
 
