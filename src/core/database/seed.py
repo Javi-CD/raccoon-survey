@@ -318,7 +318,7 @@ def seed() -> dict[str, int]:
     """
     # Base entities
     admin_role = get_or_create_role("admin", "Administrator role")
-    hr_role = get_or_create_role("hr", "Human Resources role")  # noqa: F841
+    hr_role = get_or_create_role("rrhh", "Human Resources role")  # noqa: F841
 
     team_hr = get_or_create_team("HR", "Human Resources Team")
 
