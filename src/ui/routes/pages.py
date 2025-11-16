@@ -18,7 +18,7 @@ bp = Blueprint(
 )
 
 # Private routes that require an active session
-PRIVATE_UI_PATHS = {"/dashboard", "/surveys", "/reports"}
+PRIVATE_UI_PATHS = {"/dashboard", "/surveys", "/reports", "/config"}
 
 
 @bp.before_app_request
@@ -90,6 +90,16 @@ def reports_page() -> str:
         str: Rendered HTML template for the reports page.
     """
     return render_template("pages/private/reports.html")
+
+
+@bp.get("/config")
+def config_page() -> str:
+    """Render the configuration page.
+
+    Returns:
+        str: Rendered HTML template for the configuration page.
+    """
+    return render_template("pages/private/config.html")
 
 
 @bp.get("/solve")

@@ -251,6 +251,7 @@ See the LICENSE file distributed with this program for details.
     const closeBtn = document.getElementById('closeModalBtn');
     const closeBtn2 = document.getElementById('closeModalBtn2');
     const teamSelect = document.getElementById('surveyTeamId');
+    const categorySelect = document.getElementById('surveyCategoryId');
     const form = document.getElementById('createSurveyForm');
     const addQuestionBtn = document.getElementById('addQuestionBtn');
     const questionsList = document.getElementById('questionsList');
@@ -297,7 +298,7 @@ See the LICENSE file distributed with this program for details.
       overlay.addEventListener('click', close);
     }
 
-    // Load equipment for the selector
+    // Load teams for the selector
     const loadTeams = async () => {
       if (!teamSelect) {
         return;
@@ -338,11 +339,46 @@ See the LICENSE file distributed with this program for details.
       }
     };
 
+    // Load categories for the selector
+    const loadCategories = async () => {
+      if (!categorySelect) {
+        return;
+      }
+
+      try {
+        categorySelect.innerHTML = '';
+        const rows = await RS.http.apiFetch('/categories', { method: 'GET' });
+
+        if (!Array.isArray(rows) || rows.length === 0) {
+          const opt = document.createElement('option');
+          opt.value = '';
+          opt.textContent = 'No hay categorías disponibles';
+          categorySelect.appendChild(opt);
+          return;
+        }
+
+        for (const c of rows) {
+          const opt = document.createElement('option');
+          opt.value = String(c.id);
+          opt.textContent = c.name;
+          categorySelect.appendChild(opt);
+        }
+      } catch (err) {
+        console.error('Error al cargar categorías:', err);
+        categorySelect.innerHTML = '';
+        const opt = document.createElement('option');
+        opt.value = '';
+        opt.textContent = 'Error al cargar categorías';
+        categorySelect.appendChild(opt);
+      }
+    };
+
     // Default first question
     questionsList.appendChild(createQuestionItem('text'));
 
-    // Load equipment when initializing the modal
+    // Load select data when initializing the modal
     loadTeams();
+    loadCategories();
 
     // Prevent selecting past dates
     if (expiresEl) {
@@ -371,13 +407,13 @@ See the LICENSE file distributed with this program for details.
         const description = (
           document.getElementById('surveyDescription').value || ''
         ).trim();
-        const status = document.getElementById('surveyStatus').value;
         const expiresAt = (
           document.getElementById('surveyExpiresAt')?.value || ''
         ).trim();
         const teamIdStr = (teamSelect && teamSelect.value) || '';
         const teamId = Number(teamIdStr) || 0;
-        const state = status === 'active';
+        const state = true; // save active by default
+        const categoryIdStr = (categorySelect && categorySelect.value) || '';
 
         // Validate expiration is in the future
         if (expiresAt) {
@@ -403,6 +439,14 @@ See the LICENSE file distributed with this program for details.
         }
         if (!teamId) {
           alert('Selecciona un equipo para la encuesta.');
+          if (saveBtn) {
+            saveBtn.disabled = false;
+          }
+          return;
+        }
+
+        if (!categoryIdStr) {
+          alert('Selecciona una categoría para la encuesta.');
           if (saveBtn) {
             saveBtn.disabled = false;
           }

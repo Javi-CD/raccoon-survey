@@ -42,7 +42,15 @@ See the LICENSE file distributed with this program for details.
         >
           Reportes
         </a>
-        <a href="#" class="text-gray-600 font-medium transition-colors">Configuración</a>
+        <a
+          href="{{ url_for('ui.config_page') }}"
+          id="nav-config"
+          data-nav="config"
+          style="display: none"
+          class="{% if nav_active == 'config' %}text-primary border-b-2 border-primary{% else %}text-gray-600{% endif %} font-medium transition-colors"
+        >
+          Configuración
+        </a>
       </nav>
 
       <!-- User Menu -->
@@ -59,3 +67,5 @@ See the LICENSE file distributed with this program for details.
     </div>
   </div>
 </header>
+
+<script type="module" src="{{ url_for('ui.static', filename='js/dashboard/nav-admin-link.js') }}"></script>
