@@ -6,3 +6,151 @@ it under the terms of the GNU General Public License v3 as published by
 the Free Software Foundation.
 See the LICENSE file distributed with this program for details.
 -->
+
+<!doctype html>
+<html lang="es" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Configuración - Raccoon Survey</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: '#1e3a5f',
+              secondary: '#2d4a73',
+              accent: '#00a8e8',
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('ui.static', filename='img/raccoon_survey.ico') }}" />
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+    </style>
+    <!-- Page Config -->
+    <meta
+      name="rs-config"
+      data-api-base-url="{{ CLIENT_API_BASE_URL }}"
+      data-login-url="{{ url_for('ui.login_page') }}"
+      data-home-url="{{ url_for('ui.home') }}"
+    />
+    <script src="{{ url_for('ui.static', filename='js/dashboard/page-config.js') }}"></script>
+    <script src="{{ url_for('ui.static', filename='js/dashboard/auth-check.js') }}"></script>
+    <script src="{{ url_for('ui.static', filename='js/lib/http.js') }}"></script>
+    <script src="{{ url_for('ui.static', filename='js/lib/utils.js') }}"></script>
+  </head>
+
+  {% set nav_active = 'config' %}
+  {% include 'components/navbar.html' %}
+  {% include 'components/sidebar.html' %}
+  <script src="{{ url_for('ui.static', filename='js/dashboard/sidebar.js') }}"></script>
+
+  <main class="max-w-7xl mx-auto p-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">Configuración</h2>
+
+    <!-- Users Section -->
+    <section class="bg-white p-6 rounded-lg shadow-md mb-8">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-xl font-semibold text-gray-800">Usuarios</h3>
+        <button id="createUserBtn" class="px-4 py-2 bg-primary text-white rounded hover:bg-secondary" aria-label="Crear usuario">+ Nuevo Usuario</button>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rol</th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Equipo</th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+              <th class="px-4 py-2"></th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody" class="bg-white divide-y divide-gray-200"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Teams Section -->
+    <section class="bg-white p-6 rounded-lg shadow-md mb-8">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-xl font-semibold text-gray-800">Equipos</h3>
+        <button id="createTeamBtn" class="px-4 py-2 bg-primary text-white rounded hover:bg-secondary" aria-label="Crear equipo">+ Nuevo Equipo</button>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descripción</th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+              <th class="px-4 py-2"></th>
+            </tr>
+          </thead>
+          <tbody id="teamsTableBody" class="bg-white divide-y divide-gray-200"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="bg-white p-6 rounded-lg shadow-md">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-xl font-semibold text-gray-800">Categorías</h3>
+        <button id="createCategoryBtn" class="px-4 py-2 bg-primary text-white rounded hover:bg-secondary" aria-label="Crear categoría">+ Nueva Categoría</button>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descripción</th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+              <th class="px-4 py-2"></th>
+            </tr>
+          </thead>
+          <tbody id="categoriesTableBody" class="bg-white divide-y divide-gray-200"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  {% include 'components/footer.html' %}
+
+  <!-- Simple Modals -->
+  <div id="configModals" class="hidden"></div>
+
+  <script src="{{ url_for('ui.static', filename='js/config/index.js') }}" type="module"></script>
+  <script>
+    // Light initialization to indicate active section in sidebar if applicable
+    document.addEventListener('DOMContentLoaded', () => {
+      const link = document.querySelector('[data-nav="config"]');
+      if (link) {
+        link.classList.add('bg-gray-100');
+      }
+    });
+  </script>
+  </body>
+</html>
