@@ -44,6 +44,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (overlay) {
       overlay.addEventListener('click', closeSidebar);
     }
+    if (sidebar) {
+      const links = sidebar.querySelectorAll('a');
+      links.forEach(link => {
+        link.addEventListener('click', () => {
+          closeSidebar();
+        });
+      });
+    }
   } catch (_) {
     void 0;
   }
