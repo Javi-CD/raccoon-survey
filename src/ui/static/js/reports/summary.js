@@ -11,6 +11,7 @@ See the LICENSE file distributed with this program for details.
 (() => {
   // UI elements
   const surveySelect = document.getElementById('surveySelect');
+  const surveySelectArrow = document.getElementById('surveySelectArrow');
   const refreshBtn = document.getElementById('refreshSummaryBtn');
   const exportCsvBtn = document.getElementById('exportCsvBtn');
   const exportTokensCsvBtn = document.getElementById('exportTokensCsvBtn');
@@ -85,6 +86,19 @@ See the LICENSE file distributed with this program for details.
         opt.value = String(s.id);
         opt.textContent = s.title || 'Survey';
         surveySelect.appendChild(opt);
+      }
+      // Visual indicator of the selector's open status
+      if (surveySelect && surveySelectArrow) {
+        const rotateUp = () =>
+          surveySelectArrow.classList.add('rotate-180', 'text-primary');
+        const rotateDown = () =>
+          surveySelectArrow.classList.remove('rotate-180', 'text-primary');
+        surveySelect.addEventListener('focus', rotateUp);
+        surveySelect.addEventListener('click', rotateUp);
+        surveySelect.addEventListener('blur', rotateDown);
+        surveySelect.addEventListener('change', () =>
+          setTimeout(rotateDown, 150)
+        );
       }
     } catch (err) {
       surveySelect.innerHTML = '';
