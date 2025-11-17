@@ -59,12 +59,23 @@ document.addEventListener('DOMContentLoaded', async () => {
   try {
     const profile = await RS.http.apiFetch('/auth/me', { method: 'GET' });
     const name = (profile && profile.name) || 'Usuario';
+    const role = (profile && profile.role) || '';
 
     if (sidebarNameEl) {
       sidebarNameEl.textContent = name;
     }
     if (navbarNameSpan) {
       navbarNameSpan.textContent = name;
+    }
+
+    try {
+      if (String(role).toLowerCase() === 'admin') {
+        document.querySelectorAll('[data-nav="config"]').forEach(el => {
+          el.style.display = 'inline';
+        });
+      }
+    } catch (_) {
+      void 0;
     }
   } catch (_) {
     void 0;
