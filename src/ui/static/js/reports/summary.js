@@ -141,7 +141,7 @@ See the LICENSE file distributed with this program for details.
           btn.innerHTML = '<i class="fa-solid fa-check"></i>';
           setTimeout(() => {
             btn.classList.remove('text-green-600');
-            btn.innerHTML = prev || '<i class="fa-solid fa-copy"></i>';
+            btn.innerHTML = prev || '<i class="fa-regular fa-copy"></i>';
           }, 1200);
         })
         .catch(() => alert('No se pudo copiar.'));
@@ -346,7 +346,7 @@ See the LICENSE file distributed with this program for details.
         </td>
         <td class="px-2 sm:px-4 py-2 text-center">
           <button class="inline-flex items-center justify-center w-8 h-8 rounded-md bg-primary/5 hover:bg-primary/10 text-primary hover:text-secondary" data-link="${link}" aria-label="Copiar enlace" title="Copiar enlace">
-            <i class="fa-solid fa-copy"></i>
+            <i class="fa-regular fa-copy"></i>
           </button>
         </td>
       `;
