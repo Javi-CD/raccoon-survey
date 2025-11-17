@@ -264,8 +264,10 @@ See the LICENSE file distributed with this program for details.
 
     function open() {
       modal.classList.remove('hidden');
-      panel.classList.remove('translate-x-full');
-      panel.classList.add('translate-x-0');
+      requestAnimationFrame(() => {
+        panel.classList.remove('translate-x-full');
+        panel.classList.add('translate-x-0');
+      });
       try {
         document.body.style.overflow = 'hidden';
       } catch (_) {

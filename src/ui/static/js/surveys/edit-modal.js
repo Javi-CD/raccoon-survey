@@ -75,7 +75,7 @@ const EditModal = (() => {
     setTimeout(() => {
       modal.classList.add('hidden');
       document.body.style.overflow = '';
-    }, 250);
+    }, 300);
   };
 
   const fillForm = s => {
