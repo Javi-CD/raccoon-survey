@@ -19,10 +19,93 @@ See the LICENSE file distributed with this program for details.
   const tokensTBody = document.getElementById('tokensTableBody');
   const dateFromEl = document.getElementById('dateFrom');
   const dateToEl = document.getElementById('dateTo');
+  const dateFromIcon = document.getElementById('dateFromIcon');
+  const dateToIcon = document.getElementById('dateToIcon');
   const generateBtn = document.getElementById('generateTokensBtn');
   const tokensCountEl = document.getElementById('tokensCount');
   const tokensExpireAtEl = document.getElementById('tokensExpireAt');
+  const tokensExpireAtIcon = document.getElementById('tokensExpireAtIcon');
   const tokensIdentifiersEl = document.getElementById('tokensIdentifiers');
+
+  // Initialize datepickers with Flatpickr if available
+  try {
+    if (window.flatpickr && dateFromEl && dateToEl) {
+      const cfg = {
+        altInput: true,
+        altFormat: 'd/m/Y',
+        dateFormat: 'Y-m-d',
+        locale: 'es',
+        disableMobile: true,
+      };
+      window.flatpickr(dateFromEl, cfg);
+      window.flatpickr(dateToEl, cfg);
+
+      if (dateFromIcon) {
+        dateFromIcon.addEventListener('click', () => {
+          try {
+            if (dateFromEl) {
+              dateFromEl.focus();
+              if (dateFromEl._flatpickr) {
+                dateFromEl._flatpickr.open();
+              }
+            }
+          } catch (_) {
+            return;
+          }
+        });
+      }
+      if (dateToIcon) {
+        dateToIcon.addEventListener('click', () => {
+          try {
+            if (dateToEl) {
+              dateToEl.focus();
+              if (dateToEl._flatpickr) {
+                dateToEl._flatpickr.open();
+              }
+            }
+          } catch (_) {
+            return;
+          }
+        });
+      }
+    }
+  } catch (_) {
+    return;
+  }
+
+  // Initialize Flatpickr for token expiration with time
+  try {
+    if (window.flatpickr && tokensExpireAtEl) {
+      const cfgTokens = {
+        enableTime: true,
+        time_24hr: false,
+        altInput: true,
+        altFormat: 'd/m/Y h:i K',
+        dateFormat: 'Y-m-d H:i',
+        minuteIncrement: 1,
+        locale: 'es',
+        disableMobile: true,
+      };
+      window.flatpickr(tokensExpireAtEl, cfgTokens);
+
+      if (tokensExpireAtIcon) {
+        tokensExpireAtIcon.addEventListener('click', () => {
+          try {
+            if (tokensExpireAtEl) {
+              tokensExpireAtEl.focus();
+              if (tokensExpireAtEl._flatpickr) {
+                tokensExpireAtEl._flatpickr.open();
+              }
+            }
+          } catch (_) {
+            return;
+          }
+        });
+      }
+    }
+  } catch (_) {
+    // ignore if flatpickr not available
+  }
 
   const fmtDate = iso => {
     if (!iso) {
