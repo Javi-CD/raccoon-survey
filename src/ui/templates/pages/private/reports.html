@@ -148,7 +148,19 @@ See the LICENSE file distributed with this program for details.
 
     <!-- Summary container -->
     <section class="bg-white rounded-lg shadow p-6" id="summarySection">
-      <h3 class="text-lg font-semibold text-gray-800 mb-4">Totales por pregunta y distribución</h3>
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-800">Totales por pregunta y distribución</h3>
+        <button
+          id="summaryToggleBtn"
+          type="button"
+          class="inline-flex items-center justify-center w-8 h-8 rounded-md bg-primary/5 hover:bg-primary/10 text-primary hover:text-secondary transition"
+          aria-controls="summaryContainer"
+          aria-expanded="true"
+          title="Contraer/expandir sección"
+        >
+          <i id="summaryToggleIcon" class="fa-solid fa-chevron-up"></i>
+        </button>
+      </div>
       <div id="summaryContainer" class="space-y-6"></div>
     </section>
 

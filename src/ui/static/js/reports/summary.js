@@ -16,6 +16,8 @@ See the LICENSE file distributed with this program for details.
   const exportCsvBtn = document.getElementById('exportCsvBtn');
   const exportTokensCsvBtn = document.getElementById('exportTokensCsvBtn');
   const summaryContainer = document.getElementById('summaryContainer');
+  const summaryToggleBtn = document.getElementById('summaryToggleBtn');
+  const summaryToggleIcon = document.getElementById('summaryToggleIcon');
   const tokensTBody = document.getElementById('tokensTableBody');
   const dateFromEl = document.getElementById('dateFrom');
   const dateToEl = document.getElementById('dateTo');
@@ -507,6 +509,73 @@ See the LICENSE file distributed with this program for details.
     exportTokensCsvBtn.addEventListener('click', exportTokensCsv);
     if (generateBtn) {
       generateBtn.addEventListener('click', generateTokens);
+    }
+
+    // Toggle collapse/expand for Summary section
+    if (summaryToggleBtn && summaryContainer) {
+      summaryContainer.style.transition = 'height 300ms ease, opacity 300ms ease';
+      summaryContainer.style.overflow = 'hidden';
+      summaryContainer.style.willChange = 'height, opacity';
+      let collapsed = false;
+      let animating = false;
+
+      const setIconAndAria = () => {
+        summaryToggleBtn.setAttribute('aria-expanded', String(!collapsed));
+        if (summaryToggleIcon) {
+          summaryToggleIcon.className = collapsed
+            ? 'fa-solid fa-chevron-down'
+            : 'fa-solid fa-chevron-up';
+        }
+      };
+
+      // Initial state visible
+      summaryContainer.style.height = 'auto';
+      summaryContainer.style.opacity = '1';
+      setIconAndAria();
+
+      const collapse = () => {
+        if (animating) return;
+        animating = true;
+        collapsed = true;
+        const current = summaryContainer.scrollHeight;
+        summaryContainer.style.height = `${current}px`;
+        requestAnimationFrame(() => {
+          summaryContainer.style.height = '0px';
+          summaryContainer.style.opacity = '0';
+        });
+        setIconAndAria();
+      };
+
+      const expand = () => {
+        if (animating) return;
+        animating = true;
+        collapsed = false;
+        summaryContainer.style.height = '0px';
+        summaryContainer.style.opacity = '0';
+        const target = summaryContainer.scrollHeight;
+        requestAnimationFrame(() => {
+          summaryContainer.style.height = `${target}px`;
+          summaryContainer.style.opacity = '1';
+        });
+        setIconAndAria();
+      };
+
+      summaryContainer.addEventListener('transitionend', e => {
+        if (e.propertyName === 'height') {
+          if (!collapsed) {
+            summaryContainer.style.height = 'auto';
+          }
+          animating = false;
+        }
+      });
+
+      summaryToggleBtn.addEventListener('click', () => {
+        if (collapsed) {
+          expand();
+        } else {
+          collapse();
+        }
+      });
     }
   };
 
