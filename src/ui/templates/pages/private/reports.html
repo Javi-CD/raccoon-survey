@@ -56,6 +56,39 @@ See the LICENSE file distributed with this program for details.
         font-size: 0.95rem;
         padding: 0.5rem 0.75rem;
       }
+      /* Botón sin fondo que se rellena con azul tenue */
+      .btn-outline-fill {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid #93c5fd; /* blue-300 */
+        background: transparent;
+        color: #1e3a5f; /* primary */
+        transition:
+          color 200ms ease,
+          border-color 200ms ease;
+      }
+      .btn-outline-fill::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: #bfdbfe; /* blue-200 */
+        transform: scaleX(0);
+        transform-origin: left center;
+        transition: transform 300ms ease;
+        z-index: 0;
+      }
+      .btn-outline-fill:hover,
+      .btn-outline-fill:focus {
+        border-color: #60a5fa; /* blue-400 */
+      }
+      .btn-outline-fill:hover::before,
+      .btn-outline-fill:focus::before {
+        transform: scaleX(1);
+      }
+      .btn-outline-fill > .btn-content {
+        position: relative;
+        z-index: 1;
+      }
     </style>
 
     <!-- page config - auth check -->
@@ -140,8 +173,11 @@ See the LICENSE file distributed with this program for details.
         <button id="refreshSummaryBtn" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary">
           Actualizar
         </button>
-        <button id="exportCsvBtn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
-          Exportar CSV
+        <button id="exportCsvBtn" class="btn-outline-fill px-4 py-2 rounded-lg inline-flex items-center gap-2">
+          <span class="btn-content">
+            <i class="fa-solid"></i>
+            Exportar CSV
+          </span>
         </button>
       </div>
     </section>
@@ -168,8 +204,11 @@ See the LICENSE file distributed with this program for details.
     <section class="bg-white rounded-lg shadow p-6" id="tokensSection">
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-lg font-semibold text-gray-800">Tokens disponibles para distribuir</h3>
-        <button id="exportTokensCsvBtn" class="px-4 py-2 bg-blue-900 text-white rounded-lg hover:bg-blue-950">
-          Exportar tokens CSV
+        <button id="exportTokensCsvBtn" class="btn-outline-fill px-4 py-2 rounded-lg inline-flex items-center gap-2">
+          <span class="btn-content">
+            <i class="fa-solid"></i>
+            Exportar tokens CSV
+          </span>
         </button>
       </div>
       <!-- Generate Tokens Form -->
@@ -231,7 +270,7 @@ See the LICENSE file distributed with this program for details.
             <tr>
               <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Token</th>
               <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Expira</th>
-              <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Enlace para cliente</th>
+              <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Enlace para distribuir</th>
               <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Acción</th>
             </tr>
           </thead>

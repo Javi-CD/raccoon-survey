@@ -513,7 +513,8 @@ See the LICENSE file distributed with this program for details.
 
     // Toggle collapse/expand for Summary section
     if (summaryToggleBtn && summaryContainer) {
-      summaryContainer.style.transition = 'height 300ms ease, opacity 300ms ease';
+      summaryContainer.style.transition =
+        'height 300ms ease, opacity 300ms ease';
       summaryContainer.style.overflow = 'hidden';
       summaryContainer.style.willChange = 'height, opacity';
       let collapsed = false;
@@ -534,7 +535,9 @@ See the LICENSE file distributed with this program for details.
       setIconAndAria();
 
       const collapse = () => {
-        if (animating) return;
+        if (animating) {
+          return;
+        }
         animating = true;
         collapsed = true;
         const current = summaryContainer.scrollHeight;
@@ -547,7 +550,9 @@ See the LICENSE file distributed with this program for details.
       };
 
       const expand = () => {
-        if (animating) return;
+        if (animating) {
+          return;
+        }
         animating = true;
         collapsed = false;
         summaryContainer.style.height = '0px';
