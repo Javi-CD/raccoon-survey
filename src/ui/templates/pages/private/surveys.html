@@ -42,6 +42,11 @@ See the LICENSE file distributed with this program for details.
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 
+    <!-- Flatpickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css" />
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+
     <style>
       body {
         font-family: 'Inter', sans-serif;
@@ -108,7 +113,7 @@ See the LICENSE file distributed with this program for details.
     <!-- Right Drawer Panel -->
     <div
       id="modalPanel"
-      class="absolute right-0 top-0 h-full w-full sm:w-[560px] max-w-[90vw] bg-white shadow-xl transform translate-x-full transition-transform duration-300 overflow-y-auto"
+      class="absolute right-0 top-0 h-full w-full sm:w-[560px] max-w-[90vw] bg-white shadow-xl transform translate-x-full transition-transform duration-300 ease-in-out overflow-y-auto"
     >
       <!-- Header -->
       <div class="flex items-center justify-between p-4 border-b">
@@ -146,31 +151,84 @@ See the LICENSE file distributed with this program for details.
 
         <div>
           <label for="surveyCategoryId" class="block text-sm font-medium text-gray-700">Categoría</label>
-          <select id="surveyCategoryId" class="mt-1 w-full border rounded px-3 py-2" required>
-            <option value="">Selecciona una categoría</option>
-          </select>
+          <div class="relative">
+            <select
+              id="surveyCategoryId"
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 pr-10 appearance-none bg-white text-gray-800 focus:border-primary focus:ring-2 focus:ring-primary/30 transition"
+              required
+            >
+              <option value="">Selecciona una categoría</option>
+            </select>
+            <span
+              id="surveyCategoryArrow"
+              class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 transition-transform duration-200"
+              aria-hidden="true"
+            >
+              <i class="fa-solid fa-chevron-down"></i>
+            </span>
+          </div>
         </div>
 
         <div>
           <label for="surveyTeamId" class="block text-sm font-medium text-gray-700">Equipo</label>
-          <select id="surveyTeamId" class="mt-1 w-full border rounded px-3 py-2" required>
-            <option value="">Selecciona un equipo</option>
-          </select>
+          <div class="relative">
+            <select
+              id="surveyTeamId"
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 pr-10 appearance-none bg-white text-gray-800 focus:border-primary focus:ring-2 focus:ring-primary/30 transition"
+              required
+            >
+              <option value="">Selecciona un equipo</option>
+            </select>
+            <span
+              id="surveyTeamArrow"
+              class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 transition-transform duration-200"
+              aria-hidden="true"
+            >
+              <i class="fa-solid fa-chevron-down"></i>
+            </span>
+          </div>
         </div>
 
         <div>
           <label for="surveyExpiresAt" class="block text-sm font-medium text-gray-700">Expira (fecha y hora)</label>
-          <input type="datetime-local" id="surveyExpiresAt" class="mt-1 w-full border rounded px-3 py-2" />
+          <div class="relative">
+            <input
+              type="text"
+              id="surveyExpiresAt"
+              placeholder="dd/mm/aaaa hh:mm AM/PM"
+              class="w-full border border-gray-300 rounded-lg pl-3 pr-10 py-2 bg-white text-gray-800 focus:border-primary focus:ring-2 focus:ring-primary/30 transition"
+            />
+            <button
+              id="surveyExpiresAtIcon"
+              type="button"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-primary transition"
+              aria-label="Abrir calendario"
+              title="Abrir calendario"
+            >
+              <i class="fa-regular fa-calendar"></i>
+            </button>
+          </div>
         </div>
 
         <!-- Questions -->
         <div class="space-y-2">
-          <div class="flex items-center justify-between">
+          <div class="flex items-center justify-between sticky top-0 bg-white z-10 py-2 border-b">
             <span class="text-sm font-medium text-gray-700">Preguntas</span>
-            <button type="button" id="addQuestionBtn" class="text-primary hover:text-secondary text-sm">
-              <i class="fas fa-plus mr-1"></i>
-              Añadir pregunta
-            </button>
+            <div class="flex items-center gap-2">
+              <button type="button" id="addQuestionBtn" class="text-primary hover:text-secondary text-sm">
+                <i class="fas fa-plus mr-1"></i>
+                Añadir pregunta
+              </button>
+              <button
+                type="button"
+                id="questionsToggleBtn"
+                aria-controls="questionsList"
+                aria-expanded="true"
+                class="w-8 h-8 inline-flex items-center justify-center rounded-md border border-gray-200 hover:bg-gray-50"
+              >
+                <i id="questionsToggleIcon" class="fas fa-chevron-up text-gray-600"></i>
+              </button>
+            </div>
           </div>
           <div id="questionsList" class="space-y-3"></div>
         </div>
@@ -311,7 +369,7 @@ See the LICENSE file distributed with this program for details.
     <!-- Right Drawer Panel -->
     <div
       id="editModalPanel"
-      class="absolute right-0 top-0 h-full w-full sm:w-[560px] max-w-[90vw] bg-white shadow-xl transform translate-x-full transition-transform duration-300 overflow-y-auto"
+      class="absolute right-0 top-0 h-full w-full sm:w-[560px] max-w-[90vw] bg-white shadow-xl transform translate-x-full transition-transform duration-300 ease-in-out overflow-y-auto"
     >
       <!-- Header -->
       <div class="flex items-center justify-between p-4 border-b">
@@ -352,26 +410,66 @@ See the LICENSE file distributed with this program for details.
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label for="editSurveyCategoryId" class="block text-sm font-medium text-gray-700">Categoría</label>
-            <select id="editSurveyCategoryId" class="mt-1 w-full border rounded px-3 py-2" required>
-              <option value="">Selecciona una categoría</option>
-            </select>
+            <div class="relative">
+              <select
+                id="editSurveyCategoryId"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 pr-10 appearance-none bg-white text-gray-800 focus:border-primary focus:ring-2 focus:ring-primary/30 transition"
+                required
+              >
+                <option value="">Selecciona una categoría</option>
+              </select>
+              <span
+                id="editSurveyCategoryArrow"
+                class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 transition-transform duration-200"
+                aria-hidden="true"
+              >
+                <i class="fa-solid fa-chevron-down"></i>
+              </span>
+            </div>
           </div>
           <div>
             <label for="editSurveyExpiresAt" class="block text-sm font-medium text-gray-700">
               Expira (fecha y hora)
             </label>
-            <input type="datetime-local" id="editSurveyExpiresAt" class="mt-1 w-full border rounded px-3 py-2" />
+            <div class="relative">
+              <input
+                type="text"
+                id="editSurveyExpiresAt"
+                placeholder="dd/mm/aaaa hh:mm AM/PM"
+                class="w-full border border-gray-300 rounded-lg pl-3 pr-10 py-2 bg-white text-gray-800 focus:border-primary focus:ring-2 focus:ring-primary/30 transition"
+              />
+              <button
+                id="editSurveyExpiresAtIcon"
+                type="button"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-primary transition"
+                aria-label="Abrir calendario"
+                title="Abrir calendario"
+              >
+                <i class="fa-regular fa-calendar"></i>
+              </button>
+            </div>
           </div>
         </div>
 
         <!-- Preguntas -->
         <div class="space-y-2">
-          <div class="flex items-center justify-between">
+          <div class="flex items-center justify-between sticky top-0 bg-white z-10 py-2 border-b">
             <span class="text-sm font-medium text-gray-700">Preguntas</span>
-            <button type="button" id="editAddQuestionBtn" class="text-primary hover:text-secondary text-sm">
-              <i class="fas fa-plus mr-1"></i>
-              Añadir pregunta
-            </button>
+            <div class="flex items-center gap-2">
+              <button type="button" id="editAddQuestionBtn" class="text-primary hover:text-secondary text-sm">
+                <i class="fas fa-plus mr-1"></i>
+                Añadir pregunta
+              </button>
+              <button
+                type="button"
+                id="editQuestionsToggleBtn"
+                aria-controls="editQuestionsList"
+                aria-expanded="true"
+                class="w-8 h-8 inline-flex items-center justify-center rounded-md border border-gray-200 hover:bg-gray-50"
+              >
+                <i id="editQuestionsToggleIcon" class="fas fa-chevron-up text-gray-600"></i>
+              </button>
+            </div>
           </div>
           <div id="editQuestionsList" class="space-y-3"></div>
         </div>

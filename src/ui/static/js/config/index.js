@@ -19,8 +19,24 @@ const boot = async () => {
     await loadTeams();
     wireCategoryCreateButton();
     await loadCategories();
+
+    // Signal that the configuration has finished loading
+    try {
+      if (window.RS && typeof window.RS.dataReady === 'function') {
+        window.RS.dataReady();
+      }
+    } catch (_) {
+      /* noop */
+    }
   } catch (e) {
     console.error('config boot error:', e);
+    try {
+      if (window.RS && typeof window.RS.dataReady === 'function') {
+        window.RS.dataReady();
+      }
+    } catch (_) {
+      /* noop */
+    }
   }
 };
 

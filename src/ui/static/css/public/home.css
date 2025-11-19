@@ -1,0 +1,115 @@
+/*
+Copyright (C) 2025 Raccoon Survey org
+This file is part of Raccoon Survey.
+Raccoon Survey is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License v3 as published by
+the Free Software Foundation.
+See the LICENSE file distributed with this program for details.
+*/
+
+body {
+  font-family: Inter, sans-serif;
+}
+
+/* Overall scale: slightly larger on desktop */
+html {
+  font-size: 17px; /* ~6% larger than 16px */
+}
+
+@media (min-width: 1024px) {
+  html {
+    font-size: 21px; /* a little bigger on desktop */
+  }
+}
+
+/* Additional scaling for large screens (≥1920px width) */
+@media (min-width: 1920px) {
+  html {
+    font-size: 20px; /* slight increment to 1920×1080 */
+  }
+}
+
+@media (max-width: 640px) {
+  html {
+    font-size: 16px; /* maintains legibility on mobile */
+  }
+}
+
+/* Navbar styles */
+.navbar-transparent {
+  background: transparent;
+  backdrop-filter: none;
+  border-bottom: none;
+  box-shadow: none;
+}
+
+.navbar-solid {
+  background: rgb(255 255 255 / 95%);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgb(229 231 235 / 100%);
+  box-shadow:
+    0 1px 3px 0 rgb(0 0 0 / 10%),
+    0 1px 2px 0 rgb(0 0 0 / 6%);
+}
+
+.navbar-transition {
+  transition: all 0.3s ease-in-out;
+}
+
+.mobile-menu {
+  will-change: transform, opacity;
+}
+
+/* Hover/auto fill blue for 'Login'  */
+.link-fill {
+  position: relative; /* takes up full width */
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 0;
+  color: #374151; /* gray-700 */
+  background-image: linear-gradient(90deg, #1e3a5f 0%, #1e3a5f 100%);
+  background-repeat: no-repeat;
+  background-size: 0% 100%;
+  transition:
+    background-size 220ms ease-in-out,
+    color 220ms ease-in-out;
+}
+
+.link-fill:hover {
+  background-size: 100% 100%;
+  color: #fff;
+}
+
+.link-fill.fill-active {
+  background-size: 100% 100%;
+  color: #fff;
+}
+
+/* Hover line animation on desktop navbar links */
+@media (min-width: 768px) {
+  .navbar-links a {
+    position: relative;
+  }
+
+  .navbar-links a::before,
+  .navbar-links a::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -6px;
+    height: 2px;
+    width: 0;
+    background: currentcolor; /* uses text color */
+    transition: width 200ms ease;
+  }
+
+  .navbar-links a::before {
+    transform: translateX(-100%);
+  }
+
+  .navbar-links a:hover::before,
+  .navbar-links a:hover::after {
+    width: 50%; /* two lines grow from center to edges */
+  }
+}

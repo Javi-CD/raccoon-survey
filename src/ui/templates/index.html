@@ -42,38 +42,14 @@ See the LICENSE file distributed with this program for details.
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 
-    <style>
-      body {
-        font-family: 'Inter', sans-serif;
-      }
-
-      /* Navbar styles */
-      .navbar-transparent {
-        background: transparent !important;
-        backdrop-filter: none !important;
-        border-bottom: none !important;
-        box-shadow: none !important;
-      }
-
-      .navbar-solid {
-        background: rgba(255, 255, 255, 0.95) !important;
-        backdrop-filter: blur(12px) !important;
-        border-bottom: 1px solid rgba(229, 231, 235, 1) !important;
-        box-shadow:
-          0 1px 3px 0 rgba(0, 0, 0, 0.1),
-          0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
-      }
-
-      .navbar-transition {
-        transition: all 0.3s ease-in-out;
-      }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('ui.static', filename='css/public/home.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('ui.static', filename='css/common/skeleton.css') }}" />
   </head>
 
   <body class="bg-white text-gray-900 overflow-x-hidden">
     <!-- Header -->
     <header id="navbar" class="fixed top-0 left-0 w-full z-50 navbar-transparent navbar-transition py-4">
-      <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
+      <div class="max-w-7xl mx-auto pl-6 pr-3 md:px-6 flex justify-between items-center">
         <div class="flex items-center gap-3">
           <img
             src="{{ url_for('ui.static', filename='img/raccoon_survey.png') }}"
@@ -83,7 +59,17 @@ See the LICENSE file distributed with this program for details.
           <h1 class="text-2xl font-bold text-primary tracking-tight">Raccoon Survey</h1>
         </div>
 
-        <nav class="hidden md:flex">
+        <!-- Hamburger Button (mobile) -->
+        <button
+          id="hamburgerBtn"
+          class="md:hidden ml-auto p-2 text-gray-900 focus:outline-none"
+          aria-label="Abrir menú"
+        >
+          <i id="iconBars" class="fa-solid fa-bars text-2xl text-gray-900 transition-transform duration-200"></i>
+          <i id="iconX" class="fa-solid fa-xmark text-2xl text-gray-900 transition-transform duration-200 hidden"></i>
+        </button>
+
+        <nav class="hidden md:flex navbar-links">
           <ul class="flex gap-8">
             <li><a href="#hero" class="text-gray-600 hover:text-primary font-medium transition-colors">Inicio</a></li>
             <li>
@@ -104,10 +90,38 @@ See the LICENSE file distributed with this program for details.
         <div class="flex gap-3 items-center">
           <a
             href="{{ url_for('ui.login_page') }}"
-            class="px-6 py-3 bg-primary hover:bg-secondary text-white font-semibold rounded-lg transition-all transform hover:-translate-y-0.5"
+            class="hidden md:inline-flex px-6 py-3 bg-primary hover:bg-secondary text-white font-semibold rounded-lg transition-all transform hover:-translate-y-0.5"
           >
             Iniciar Sesión
           </a>
+        </div>
+      </div>
+
+      <!-- Dropdown mobile menu -->
+      <div
+        id="mobileMenu"
+        class="mobile-menu md:hidden hidden opacity-0 -translate-y-2 transition-all duration-200 bg-white/95 backdrop-blur border-t border-gray-200"
+      >
+        <div class="max-w-7xl mx-auto px-6 py-4">
+          <ul class="flex flex-col gap-4">
+            <li><a href="#hero" class="text-gray-700 hover:text-primary font-medium transition-colors">Inicio</a></li>
+            <li>
+              <a href="#features" class="text-gray-700 hover:text-primary font-medium transition-colors">
+                Características
+              </a>
+            </li>
+            <li>
+              <a href="#about" class="text-gray-700 hover:text-primary font-medium transition-colors">Sobre Nosotros</a>
+            </li>
+            <li><a href="#cta" class="text-gray-700 hover:text-primary font-medium transition-colors">CTA</a></li>
+            <li>
+              <a href="#contact" class="text-gray-700 hover:text-primary font-medium transition-colors">Contacto</a>
+            </li>
+            <li>
+              <div class="border-t border-gray-200 my-2"></div>
+              <a href="{{ url_for('ui.login_page') }}" class="link-fill font-semibold">Iniciar sesión</a>
+            </li>
+          </ul>
         </div>
       </div>
     </header>
@@ -129,7 +143,7 @@ See the LICENSE file distributed with this program for details.
                 Protección total de la privacidad garantizada.
               </p>
 
-              <div class="flex flex-wrap gap-4">
+              <div class="flex flex-wrap gap-4 justify-center lg:justify-start">
                 <a
                   href="{{ url_for('ui.login_page') }}"
                   class="px-7 py-3 bg-primary hover:bg-secondary text-white font-semibold rounded-lg transition-all transform hover:-translate-y-1"
@@ -152,6 +166,10 @@ See the LICENSE file distributed with this program for details.
         </div>
       </div>
     </section>
+
+    <!-- Mobile Hamburger Script -->
+    <script type="module" src="{{ url_for('ui.static', filename='js/public/hamburger.js') }}"></script>
+    <script type="module" src="{{ url_for('ui.static', filename='js/common/skeleton.js') }}"></script>
 
     <!-- Features Section -->
     <section id="features" class="py-24 bg-white">
