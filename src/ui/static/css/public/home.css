@@ -85,3 +85,31 @@ html {
   background-size: 100% 100%;
   color: #fff;
 }
+
+/* Hover line animation on desktop navbar links */
+@media (min-width: 768px) {
+  .navbar-links a {
+    position: relative;
+  }
+
+  .navbar-links a::before,
+  .navbar-links a::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -6px;
+    height: 2px;
+    width: 0;
+    background: currentcolor; /* uses text color */
+    transition: width 200ms ease;
+  }
+
+  .navbar-links a::before {
+    transform: translateX(-100%);
+  }
+
+  .navbar-links a:hover::before,
+  .navbar-links a:hover::after {
+    width: 50%; /* two lines grow from center to edges */
+  }
+}

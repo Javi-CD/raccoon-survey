@@ -1,0 +1,36 @@
+/*
+Copyright (C) 2025 Raccoon Survey org
+This file is part of Raccoon Survey.
+Raccoon Survey is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License v3 as published by
+the Free Software Foundation.
+See the LICENSE file distributed with this program for details.
+*/
+
+/* Hover line animation for navbar links */
+@media (min-width: 768px) {
+  header nav a {
+    position: relative;
+  }
+
+  header nav a::before,
+  header nav a::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -6px;
+    height: 2px;
+    width: 0;
+    background: currentcolor; /* use text color */
+    transition: width 200ms ease;
+  }
+
+  header nav a::before {
+    transform: translateX(-100%);
+  }
+
+  header nav a:hover::before,
+  header nav a:hover::after {
+    width: 50%; /* two lines grow from the center to the edges */
+  }
+}
