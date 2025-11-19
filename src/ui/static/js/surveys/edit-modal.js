@@ -7,8 +7,10 @@ the Free Software Foundation.
 See the LICENSE file distributed with this program for details.
 */
 
+/* eslint-disable wrap-iife */
+
 /* global RS */
-const EditModal = (() => {
+const EditModal = (function () {
   const modal = document.getElementById('editModal');
   const overlay = document.getElementById('editModalOverlay');
   const panel = document.getElementById('editModalPanel');
@@ -17,12 +19,18 @@ const EditModal = (() => {
   const form = document.getElementById('editSurveyForm');
   const addQuestionBtn = document.getElementById('editAddQuestionBtn');
   const questionsList = document.getElementById('editQuestionsList');
+  const questionsToggleBtn = document.getElementById('editQuestionsToggleBtn');
+  const questionsToggleIcon = document.getElementById(
+    'editQuestionsToggleIcon'
+  );
 
   const idEl = document.getElementById('editSurveyId');
   const titleEl = document.getElementById('editSurveyTitle');
   const descEl = document.getElementById('editSurveyDescription');
-  const statusEl = document.getElementById('editSurveyStatus');
+  const categorySel = document.getElementById('editSurveyCategoryId');
   const expiresEl = document.getElementById('editSurveyExpiresAt');
+  const categoryArrow = document.getElementById('editSurveyCategoryArrow');
+  const expiresIcon = document.getElementById('editSurveyExpiresAtIcon');
 
   // Ensure RS client is available to avoid runtime ReferenceError
   if (!window.RS || !RS.http) {
@@ -75,14 +83,13 @@ const EditModal = (() => {
     setTimeout(() => {
       modal.classList.add('hidden');
       document.body.style.overflow = '';
-    }, 250);
+    }, 300);
   };
 
   const fillForm = s => {
     idEl.value = s.id;
     titleEl.value = s.title || '';
     descEl.value = s.description || '';
-    statusEl.value = s.state ? 'active' : 'inactive';
     expiresEl.value = toDatetimeLocal(s.expires_at);
   };
 
@@ -295,6 +302,36 @@ const EditModal = (() => {
     return RS.http.apiFetch(`/surveys/${id}`, { method: 'GET' });
   };
 
+  const loadCategories = async () => {
+    if (!categorySel) {
+      return;
+    }
+    try {
+      categorySel.innerHTML = '';
+      const rows = await RS.http.apiFetch('/categories', { method: 'GET' });
+      if (!Array.isArray(rows) || rows.length === 0) {
+        const opt = document.createElement('option');
+        opt.value = '';
+        opt.textContent = 'No hay categorías disponibles';
+        categorySel.appendChild(opt);
+        return;
+      }
+      for (const c of rows) {
+        const opt = document.createElement('option');
+        opt.value = String(c.id);
+        opt.textContent = c.name;
+        categorySel.appendChild(opt);
+      }
+    } catch (err) {
+      console.error('Error al cargar categorías:', err);
+      categorySel.innerHTML = '';
+      const opt = document.createElement('option');
+      opt.value = '';
+      opt.textContent = 'Error al cargar categorías';
+      categorySel.appendChild(opt);
+    }
+  };
+
   const save = async () => {
     const id = Number(idEl.value);
     if (!id) {
@@ -315,7 +352,7 @@ const EditModal = (() => {
       title: titleEl.value.trim(),
       description: descEl.value.trim() || null,
       expires_at: expiresVal,
-      state: statusEl.value === 'active',
+      // Keep surveys active by default
     };
 
     if (!payload.title) {
@@ -456,13 +493,52 @@ const EditModal = (() => {
       return;
     }
 
-    // Avoid selecting past dates in the expiration field
-    if (expiresEl) {
-      try {
-        expiresEl.min = toDatetimeLocal(new Date().toISOString());
-      } catch (_) {
-        // ignore formatting issues
+    // Initialize Flatpickr for expiration
+    try {
+      if (window.flatpickr && expiresEl) {
+        const cfgTokens = {
+          enableTime: true,
+          time_24hr: false,
+          altInput: true,
+          altFormat: 'd/m/Y h:i K',
+          dateFormat: 'Y-m-d H:i',
+          minuteIncrement: 1,
+          locale: 'es',
+          disableMobile: true,
+        };
+        window.flatpickr(expiresEl, cfgTokens);
+
+        if (expiresIcon) {
+          expiresIcon.addEventListener('click', () => {
+            try {
+              expiresEl.focus();
+              if (expiresEl._flatpickr) {
+                expiresEl._flatpickr.open();
+              }
+            } catch (_) {
+              return;
+            }
+          });
+        }
       }
+    } catch (_) {
+      // ignore
+    }
+    try {
+      if (categorySel && categoryArrow) {
+        const rotateUp = () =>
+          categoryArrow.classList.add('rotate-180', 'text-primary');
+        const rotateDown = () =>
+          categoryArrow.classList.remove('rotate-180', 'text-primary');
+        categorySel.addEventListener('focus', rotateUp);
+        categorySel.addEventListener('click', rotateUp);
+        categorySel.addEventListener('blur', rotateDown);
+        categorySel.addEventListener('change', () =>
+          setTimeout(rotateDown, 150)
+        );
+      }
+    } catch (_) {
+      // ignore
     }
 
     document.addEventListener('click', onDocumentClick);
@@ -488,6 +564,87 @@ const EditModal = (() => {
       }
     });
 
+    // Collapse/Expand logic for Questions section (Edit)
+    try {
+      if (questionsList && questionsToggleBtn && questionsToggleIcon) {
+        let collapsed = false;
+        let animating = false;
+        questionsList.style.overflow = 'hidden';
+        questionsList.style.transition =
+          'height 300ms ease, opacity 300ms ease';
+        questionsList.style.willChange = 'height, opacity';
+
+        const setIcon = () => {
+          questionsToggleIcon.classList.toggle('fa-chevron-up', !collapsed);
+          questionsToggleIcon.classList.toggle('fa-chevron-down', collapsed);
+          questionsToggleBtn.setAttribute('aria-expanded', String(!collapsed));
+        };
+        setIcon();
+
+        const expand = () => {
+          if (animating) {
+            return;
+          }
+          animating = true;
+          questionsList.classList.remove('hidden');
+          questionsList.style.opacity = '0';
+          const target = questionsList.scrollHeight;
+          questionsList.style.height = '0px';
+          requestAnimationFrame(() => {
+            questionsList.style.opacity = '1';
+            questionsList.style.height = `${target}px`;
+          });
+        };
+
+        const collapse = () => {
+          if (animating) {
+            return;
+          }
+          animating = true;
+          const current = questionsList.scrollHeight;
+          questionsList.style.height = `${current}px`;
+          requestAnimationFrame(() => {
+            questionsList.style.opacity = '0';
+            questionsList.style.height = '0px';
+          });
+        };
+
+        questionsList.addEventListener('transitionend', () => {
+          animating = false;
+          if (!collapsed) {
+            questionsList.style.height = 'auto';
+            questionsList.style.opacity = '1';
+          } else {
+            if (
+              questionsList.childElementCount === 0 ||
+              questionsList.scrollHeight === 0
+            ) {
+              questionsList.classList.add('hidden');
+            }
+          }
+        });
+
+        questionsToggleBtn.addEventListener('click', () => {
+          collapsed = !collapsed;
+          setIcon();
+          if (
+            questionsList.childElementCount === 0 ||
+            questionsList.scrollHeight === 0
+          ) {
+            questionsList.classList.toggle('hidden', collapsed);
+            return;
+          }
+          if (collapsed) {
+            collapse();
+          } else {
+            expand();
+          }
+        });
+      }
+    } catch (_) {
+      // ignore
+    }
+
     if (addQuestionBtn) {
       addQuestionBtn.addEventListener('click', () => {
         if (questionsList) {
@@ -495,6 +652,9 @@ const EditModal = (() => {
         }
       });
     }
+
+    // load categories when starting editing modal
+    loadCategories();
   };
 
   return { init };

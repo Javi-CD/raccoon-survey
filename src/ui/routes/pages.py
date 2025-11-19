@@ -7,7 +7,17 @@
 
 from __future__ import annotations
 
-from flask import Blueprint, redirect, render_template, request, url_for
+from flask import (
+    Blueprint,
+    abort,
+    current_app,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
+
+from src.ui.middlewares.handle_global_errors import register_global_error_handlers
 
 bp = Blueprint(
     "ui",
@@ -17,8 +27,11 @@ bp = Blueprint(
     static_url_path="/ui/static",
 )
 
+# Register global error handlers in the blueprint
+register_global_error_handlers(bp)
+
 # Private routes that require an active session
-PRIVATE_UI_PATHS = {"/dashboard", "/surveys", "/reports"}
+PRIVATE_UI_PATHS = {"/dashboard", "/surveys", "/reports", "/config"}
 
 
 @bp.before_app_request
@@ -35,10 +48,13 @@ def _guard_private_ui_pages() -> None:
             access = request.cookies.get("rs_access_token") or ""
             refresh = request.cookies.get("rs_refresh_token") or ""
 
-            if not (has_session or (access and refresh)):
-                return redirect(url_for("ui.login_page"))
+            is_authenticated = has_session or (access and refresh)
+
+            if not is_authenticated:
+                return abort(401)
 
     except Exception:
+        # Fallback
         return redirect(url_for("ui.login_page"))
 
 
@@ -92,6 +108,16 @@ def reports_page() -> str:
     return render_template("pages/private/reports.html")
 
 
+@bp.get("/config")
+def config_page() -> str:
+    """Render the configuration page.
+
+    Returns:
+        str: Rendered HTML template for the configuration page.
+    """
+    return render_template("pages/private/config.html")
+
+
 @bp.get("/solve")
 def resolver_page() -> str:
     """Render the resolver page.
@@ -105,3 +131,32 @@ def resolver_page() -> str:
 @bp.get("/docs")
 def api_docs_page() -> str:
     return render_template("pages/public/docs.html")
+
+
+# ---------------------------------
+# Bug Testing Routes
+# ---------------------------------
+@bp.get("/error/<int:code>")
+def preview_error(code: int):
+    """Preview error pages in development environment.
+
+    Args:
+        code (int): HTTP status code to preview.
+
+    Returns:
+        str: Rendered HTML template for the error page.
+    """
+    try:
+        # Only enable if the app is in debug or non-production mode
+        is_debug = current_app.debug or (current_app.env or "").lower() != "production"
+        if not is_debug:
+            return redirect(url_for("ui.home"))
+
+    except Exception:  # noqa: S110
+        # If the environment cannot be determined, allow in local mode
+        pass
+
+    if code in (400, 401, 404, 500):
+        abort(code)
+
+    abort(404)

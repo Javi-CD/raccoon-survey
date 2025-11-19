@@ -9,9 +9,10 @@ See the LICENSE file distributed with this program for details.
 
 /* eslint-disable no-console */
 /* eslint-disable no-alert */
+/* eslint-disable wrap-iife */
 
 /* global RS */
-(() => {
+(function () {
   const RS_ENV = window.RS_ENV || {};
   const RS_CONFIG = window.RS_CONFIG || {};
   const API_BASE_URL = RS_ENV.API_BASE_URL || RS_CONFIG.apiBaseUrl || '';
@@ -251,11 +252,17 @@ See the LICENSE file distributed with this program for details.
     const closeBtn = document.getElementById('closeModalBtn');
     const closeBtn2 = document.getElementById('closeModalBtn2');
     const teamSelect = document.getElementById('surveyTeamId');
+    const categorySelect = document.getElementById('surveyCategoryId');
     const form = document.getElementById('createSurveyForm');
     const addQuestionBtn = document.getElementById('addQuestionBtn');
     const questionsList = document.getElementById('questionsList');
+    const questionsToggleBtn = document.getElementById('questionsToggleBtn');
+    const questionsToggleIcon = document.getElementById('questionsToggleIcon');
     const saveBtn = document.getElementById('saveSurveyBtn');
     const expiresEl = document.getElementById('surveyExpiresAt');
+    const teamArrow = document.getElementById('surveyTeamArrow');
+    const categoryArrow = document.getElementById('surveyCategoryArrow');
+    const expiresIcon = document.getElementById('surveyExpiresAtIcon');
 
     if (!modal || !panel || !form || !questionsList) {
       return;
@@ -263,8 +270,10 @@ See the LICENSE file distributed with this program for details.
 
     function open() {
       modal.classList.remove('hidden');
-      panel.classList.remove('translate-x-full');
-      panel.classList.add('translate-x-0');
+      requestAnimationFrame(() => {
+        panel.classList.remove('translate-x-full');
+        panel.classList.add('translate-x-0');
+      });
       try {
         document.body.style.overflow = 'hidden';
       } catch (_) {
@@ -296,8 +305,125 @@ See the LICENSE file distributed with this program for details.
     if (overlay) {
       overlay.addEventListener('click', close);
     }
+    // Initialize Flatpickr for expiration
+    try {
+      if (window.flatpickr && expiresEl) {
+        const cfgTokens = {
+          enableTime: true,
+          time_24hr: false,
+          altInput: true,
+          altFormat: 'd/m/Y h:i K',
+          dateFormat: 'Y-m-d H:i',
+          minuteIncrement: 1,
+          locale: 'es',
+          disableMobile: true,
+        };
+        window.flatpickr(expiresEl, cfgTokens);
 
-    // Load equipment for the selector
+        if (expiresIcon) {
+          expiresIcon.addEventListener('click', () => {
+            try {
+              expiresEl.focus();
+              if (expiresEl._flatpickr) {
+                expiresEl._flatpickr.open();
+              }
+            } catch (_) {
+              return;
+            }
+          });
+        }
+      }
+    } catch (_) {
+      // ignore
+    }
+
+    // Arrow rotation animation for selects (same pattern as Reportes)
+    try {
+      const wireArrow = (selectEl, arrowEl) => {
+        if (!selectEl || !arrowEl) {
+          return;
+        }
+        const rotateUp = () =>
+          arrowEl.classList.add('rotate-180', 'text-primary');
+        const rotateDown = () =>
+          arrowEl.classList.remove('rotate-180', 'text-primary');
+        selectEl.addEventListener('focus', rotateUp);
+        selectEl.addEventListener('click', rotateUp);
+        selectEl.addEventListener('blur', rotateDown);
+        selectEl.addEventListener('change', () => setTimeout(rotateDown, 150));
+      };
+      wireArrow(teamSelect, teamArrow);
+      wireArrow(categorySelect, categoryArrow);
+
+      // Collapse/Expand logic for Questions section (Create)
+      (function wireQuestionsCollapse() {
+        if (!questionsList || !questionsToggleBtn || !questionsToggleIcon) {
+          return;
+        }
+        let collapsed = false;
+        let animating = false;
+        questionsList.style.overflow = 'hidden';
+        questionsList.style.transition =
+          'height 300ms ease, opacity 300ms ease';
+        questionsList.style.willChange = 'height, opacity';
+
+        const setIcon = () => {
+          questionsToggleIcon.classList.toggle('fa-chevron-up', !collapsed);
+          questionsToggleIcon.classList.toggle('fa-chevron-down', collapsed);
+          questionsToggleBtn.setAttribute('aria-expanded', String(!collapsed));
+        };
+        setIcon();
+
+        const expand = () => {
+          if (animating) {
+            return;
+          }
+          animating = true;
+          questionsList.style.opacity = '0';
+          const target = questionsList.scrollHeight;
+          questionsList.style.height = '0px';
+          requestAnimationFrame(() => {
+            questionsList.style.opacity = '1';
+            questionsList.style.height = `${target}px`;
+          });
+        };
+
+        const collapse = () => {
+          if (animating) {
+            return;
+          }
+          animating = true;
+          const current = questionsList.scrollHeight;
+          questionsList.style.height = `${current}px`;
+          requestAnimationFrame(() => {
+            questionsList.style.opacity = '0';
+            questionsList.style.height = '0px';
+          });
+        };
+
+        questionsList.addEventListener('transitionend', () => {
+          animating = false;
+          if (!collapsed) {
+            questionsList.style.height = 'auto';
+            questionsList.style.opacity = '1';
+          }
+        });
+
+        questionsToggleBtn.addEventListener('click', () => {
+          collapsed = !collapsed;
+          setIcon();
+          if (collapsed) {
+            collapse();
+          } else {
+            expand();
+          }
+        });
+      })();
+    } catch (_) {
+      // ignore
+    }
+
+    // Load teams for the selector
     const loadTeams = async () => {
       if (!teamSelect) {
         return;
@@ -320,7 +446,7 @@ See the LICENSE file distributed with this program for details.
         for (const t of rows) {
           const opt = document.createElement('option');
           opt.value = String(t.id);
-          opt.textContent = `${t.name} (ID: ${t.id})`;
+          opt.textContent = t.name || '';
           teamSelect.appendChild(opt);
         }
 
@@ -338,11 +464,46 @@ See the LICENSE file distributed with this program for details.
       }
     };
 
+    // Load categories for the selector
+    const loadCategories = async () => {
+      if (!categorySelect) {
+        return;
+      }
+
+      try {
+        categorySelect.innerHTML = '';
+        const rows = await RS.http.apiFetch('/categories', { method: 'GET' });
+
+        if (!Array.isArray(rows) || rows.length === 0) {
+          const opt = document.createElement('option');
+          opt.value = '';
+          opt.textContent = 'No hay categorías disponibles';
+          categorySelect.appendChild(opt);
+          return;
+        }
+
+        for (const c of rows) {
+          const opt = document.createElement('option');
+          opt.value = String(c.id);
+          opt.textContent = c.name;
+          categorySelect.appendChild(opt);
+        }
+      } catch (err) {
+        console.error('Error al cargar categorías:', err);
+        categorySelect.innerHTML = '';
+        const opt = document.createElement('option');
+        opt.value = '';
+        opt.textContent = 'Error al cargar categorías';
+        categorySelect.appendChild(opt);
+      }
+    };
+
     // Default first question
     questionsList.appendChild(createQuestionItem('text'));
 
-    // Load equipment when initializing the modal
+    // Load select data when initializing the modal
     loadTeams();
+    loadCategories();
 
     // Prevent selecting past dates
     if (expiresEl) {
@@ -371,13 +532,13 @@ See the LICENSE file distributed with this program for details.
         const description = (
           document.getElementById('surveyDescription').value || ''
         ).trim();
-        const status = document.getElementById('surveyStatus').value;
         const expiresAt = (
           document.getElementById('surveyExpiresAt')?.value || ''
         ).trim();
         const teamIdStr = (teamSelect && teamSelect.value) || '';
         const teamId = Number(teamIdStr) || 0;
-        const state = status === 'active';
+        const state = true; // save active by default
+        const categoryIdStr = (categorySelect && categorySelect.value) || '';
 
         // Validate expiration is in the future
         if (expiresAt) {
@@ -403,6 +564,14 @@ See the LICENSE file distributed with this program for details.
         }
         if (!teamId) {
           alert('Selecciona un equipo para la encuesta.');
+          if (saveBtn) {
+            saveBtn.disabled = false;
+          }
+          return;
+        }
+
+        if (!categoryIdStr) {
+          alert('Selecciona una categoría para la encuesta.');
           if (saveBtn) {
             saveBtn.disabled = false;
           }

@@ -11,7 +11,7 @@ See the LICENSE file distributed with this program for details.
   id="sidebar"
   class="fixed top-0 right-0 w-64 h-full bg-white shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out z-50"
 >
-  <!-- Header del Sidebar -->
+  <!-- Header -->
   <div class="p-6 flex flex-col items-center border-b border-gray-200 bg-blue-900">
     <img
       src="{{ url_for('ui.static', filename='img/resources/userIcon.png') }}"
@@ -21,10 +21,38 @@ See the LICENSE file distributed with this program for details.
     <h2 class="text-lg font-bold text-white"><span id="sidebarUserName">Usuario</span></h2>
   </div>
 
-  <!-- Opciones -->
+  <!-- Options -->
   <nav class="p-6 flex flex-col gap-4">
-    <a href="#" class="text-gray-700 hover:text-gray-900 font-medium transition-colors">Perfil</a>
-    <a href="#" class="text-gray-700 hover:text-gray-900 font-medium transition-colors">Ajustes</a>
+    <!-- Navigate (Mobile) -->
+    <a
+      href="{{ url_for('ui.dashboard_page') }}"
+      class="font-medium transition-colors {% if nav_active == 'dashboard' %}text-primary{% else %}text-gray-700 hover:text-primary{% endif %}"
+    >
+      Dashboard
+    </a>
+    <a
+      href="{{ url_for('ui.surveys_page') }}"
+      class="font-medium transition-colors {% if nav_active == 'surveys' %}text-primary{% else %}text-gray-700 hover:text-primary{% endif %}"
+    >
+      Encuestas
+    </a>
+    <a
+      href="{{ url_for('ui.reports_page') }}"
+      class="font-medium transition-colors {% if nav_active == 'reports' %}text-primary{% else %}text-gray-700 hover:text-primary{% endif %}"
+    >
+      Reportes
+    </a>
+    <a
+      href="{{ url_for('ui.config_page') }}"
+      id="sidebar-config"
+      data-nav="config"
+      style="display: none"
+      class="font-medium transition-colors {% if nav_active == 'config' %}text-primary{% else %}text-gray-700 hover:text-primary{% endif %}"
+    >
+      Configuración
+    </a>
+
+    <div class="border-t border-gray-200"></div>
     <a
       href="{{ url_for('ui.home') }}"
       id="logout-link"

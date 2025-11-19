@@ -11,17 +11,103 @@ See the LICENSE file distributed with this program for details.
 (() => {
   // UI elements
   const surveySelect = document.getElementById('surveySelect');
+  const surveySelectArrow = document.getElementById('surveySelectArrow');
   const refreshBtn = document.getElementById('refreshSummaryBtn');
   const exportCsvBtn = document.getElementById('exportCsvBtn');
   const exportTokensCsvBtn = document.getElementById('exportTokensCsvBtn');
   const summaryContainer = document.getElementById('summaryContainer');
+  const summaryToggleBtn = document.getElementById('summaryToggleBtn');
+  const summaryToggleIcon = document.getElementById('summaryToggleIcon');
   const tokensTBody = document.getElementById('tokensTableBody');
   const dateFromEl = document.getElementById('dateFrom');
   const dateToEl = document.getElementById('dateTo');
+  const dateFromIcon = document.getElementById('dateFromIcon');
+  const dateToIcon = document.getElementById('dateToIcon');
   const generateBtn = document.getElementById('generateTokensBtn');
   const tokensCountEl = document.getElementById('tokensCount');
   const tokensExpireAtEl = document.getElementById('tokensExpireAt');
+  const tokensExpireAtIcon = document.getElementById('tokensExpireAtIcon');
   const tokensIdentifiersEl = document.getElementById('tokensIdentifiers');
+
+  // Initialize datepickers with Flatpickr if available
+  try {
+    if (window.flatpickr && dateFromEl && dateToEl) {
+      const cfg = {
+        altInput: true,
+        altFormat: 'd/m/Y',
+        dateFormat: 'Y-m-d',
+        locale: 'es',
+        disableMobile: true,
+      };
+      window.flatpickr(dateFromEl, cfg);
+      window.flatpickr(dateToEl, cfg);
+
+      if (dateFromIcon) {
+        dateFromIcon.addEventListener('click', () => {
+          try {
+            if (dateFromEl) {
+              dateFromEl.focus();
+              if (dateFromEl._flatpickr) {
+                dateFromEl._flatpickr.open();
+              }
+            }
+          } catch (_) {
+            return;
+          }
+        });
+      }
+      if (dateToIcon) {
+        dateToIcon.addEventListener('click', () => {
+          try {
+            if (dateToEl) {
+              dateToEl.focus();
+              if (dateToEl._flatpickr) {
+                dateToEl._flatpickr.open();
+              }
+            }
+          } catch (_) {
+            return;
+          }
+        });
+      }
+    }
+  } catch (_) {
+    return;
+  }
+
+  // Initialize Flatpickr for token expiration with time
+  try {
+    if (window.flatpickr && tokensExpireAtEl) {
+      const cfgTokens = {
+        enableTime: true,
+        time_24hr: false,
+        altInput: true,
+        altFormat: 'd/m/Y h:i K',
+        dateFormat: 'Y-m-d H:i',
+        minuteIncrement: 1,
+        locale: 'es',
+        disableMobile: true,
+      };
+      window.flatpickr(tokensExpireAtEl, cfgTokens);
+
+      if (tokensExpireAtIcon) {
+        tokensExpireAtIcon.addEventListener('click', () => {
+          try {
+            if (tokensExpireAtEl) {
+              tokensExpireAtEl.focus();
+              if (tokensExpireAtEl._flatpickr) {
+                tokensExpireAtEl._flatpickr.open();
+              }
+            }
+          } catch (_) {
+            return;
+          }
+        });
+      }
+    }
+  } catch (_) {
+    // ignore if flatpickr not available
+  }
 
   const fmtDate = iso => {
     if (!iso) {
@@ -50,8 +136,13 @@ See the LICENSE file distributed with this program for details.
 
       Promise.resolve(copyPromise)
         .then(() => {
-          btn.textContent = 'Copiado!';
-          setTimeout(() => (btn.textContent = 'Copiar enlace'), 1200);
+          const prev = btn.innerHTML;
+          btn.classList.add('text-green-600');
+          btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+          setTimeout(() => {
+            btn.classList.remove('text-green-600');
+            btn.innerHTML = prev || '<i class="fa-regular fa-copy"></i>';
+          }, 1200);
         })
         .catch(() => alert('No se pudo copiar.'));
     });
@@ -62,20 +153,37 @@ See the LICENSE file distributed with this program for details.
       const rows = await RS.http.apiFetch('/surveys', { method: 'GET' });
       surveySelect.innerHTML = '';
 
-      if (!Array.isArray(rows) || rows.length === 0) {
+      const active = (Array.isArray(rows) ? rows : []).filter(
+        s => s && s.state === true
+      );
+
+      if (active.length === 0) {
         const opt = document.createElement('option');
         opt.value = '';
-        opt.textContent = 'No hay encuestas';
+        opt.textContent = 'No hay encuestas activas';
 
         surveySelect.appendChild(opt);
         return;
       }
 
-      for (const s of rows) {
+      for (const s of active) {
         const opt = document.createElement('option');
         opt.value = String(s.id);
-        opt.textContent = `${s.title} (ID: ${s.id})`;
+        opt.textContent = s.title || 'Survey';
         surveySelect.appendChild(opt);
+      }
+      // Visual indicator of the selector's open status
+      if (surveySelect && surveySelectArrow) {
+        const rotateUp = () =>
+          surveySelectArrow.classList.add('rotate-180', 'text-primary');
+        const rotateDown = () =>
+          surveySelectArrow.classList.remove('rotate-180', 'text-primary');
+        surveySelect.addEventListener('focus', rotateUp);
+        surveySelect.addEventListener('click', rotateUp);
+        surveySelect.addEventListener('blur', rotateDown);
+        surveySelect.addEventListener('change', () =>
+          setTimeout(rotateDown, 150)
+        );
       }
     } catch (err) {
       surveySelect.innerHTML = '';
@@ -229,13 +337,17 @@ See the LICENSE file distributed with this program for details.
       const link = `${baseResolveUrl}?token=${encodeURIComponent(t.token)}`;
 
       tr.innerHTML = `
-        <td class="px-4 py-2 text-sm text-gray-800">${t.token}</td>
-        <td class="px-4 py-2 text-sm text-gray-800">${fmtDate(t.expires_at)}</td>
-        <td class="px-4 py-2 text-sm text-blue-700 underline break-all">
-          <a href="${link}" target="_blank" rel="noopener">${link}</a>
+        <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-800">
+          <span class="inline-block max-w-[8rem] sm:max-w-[16rem] truncate" title="${t.token}">${t.token}</span>
         </td>
-        <td class="px-4 py-2">
-          <button class="px-3 py-1 bg-primary text-white rounded hover:bg-secondary" data-link="${link}">Copiar enlace</button>
+        <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-800">${fmtDate(t.expires_at)}</td>
+        <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-blue-700 underline">
+          <a class="inline-block max-w-[10rem] sm:max-w-[24rem] truncate" href="${link}" target="_blank" rel="noopener" title="${link}">${link}</a>
+        </td>
+        <td class="px-2 sm:px-4 py-2 text-center">
+          <button class="inline-flex items-center justify-center w-8 h-8 rounded-md bg-primary/5 hover:bg-primary/10 text-primary hover:text-secondary" data-link="${link}" aria-label="Copiar enlace" title="Copiar enlace">
+            <i class="fa-regular fa-copy"></i>
+          </button>
         </td>
       `;
       tokensTBody.appendChild(tr);
@@ -384,6 +496,15 @@ See the LICENSE file distributed with this program for details.
     await loadSummary();
     await loadTokens();
 
+    // Initial data ready: notify to hide the skeleton
+    try {
+      if (window.RS && typeof window.RS.dataReady === 'function') {
+        window.RS.dataReady();
+      }
+    } catch (_) {
+      /* noop */
+    }
+
     surveySelect.addEventListener('change', async () => {
       await loadSummary();
       await loadTokens();
@@ -397,6 +518,78 @@ See the LICENSE file distributed with this program for details.
     exportTokensCsvBtn.addEventListener('click', exportTokensCsv);
     if (generateBtn) {
       generateBtn.addEventListener('click', generateTokens);
+    }
+
+    // Toggle collapse/expand for Summary section
+    if (summaryToggleBtn && summaryContainer) {
+      summaryContainer.style.transition =
+        'height 300ms ease, opacity 300ms ease';
+      summaryContainer.style.overflow = 'hidden';
+      summaryContainer.style.willChange = 'height, opacity';
+      let collapsed = false;
+      let animating = false;
+
+      const setIconAndAria = () => {
+        summaryToggleBtn.setAttribute('aria-expanded', String(!collapsed));
+        if (summaryToggleIcon) {
+          summaryToggleIcon.className = collapsed
+            ? 'fa-solid fa-chevron-down'
+            : 'fa-solid fa-chevron-up';
+        }
+      };
+
+      // Initial state visible
+      summaryContainer.style.height = 'auto';
+      summaryContainer.style.opacity = '1';
+      setIconAndAria();
+
+      const collapse = () => {
+        if (animating) {
+          return;
+        }
+        animating = true;
+        collapsed = true;
+        const current = summaryContainer.scrollHeight;
+        summaryContainer.style.height = `${current}px`;
+        requestAnimationFrame(() => {
+          summaryContainer.style.height = '0px';
+          summaryContainer.style.opacity = '0';
+        });
+        setIconAndAria();
+      };
+
+      const expand = () => {
+        if (animating) {
+          return;
+        }
+        animating = true;
+        collapsed = false;
+        summaryContainer.style.height = '0px';
+        summaryContainer.style.opacity = '0';
+        const target = summaryContainer.scrollHeight;
+        requestAnimationFrame(() => {
+          summaryContainer.style.height = `${target}px`;
+          summaryContainer.style.opacity = '1';
+        });
+        setIconAndAria();
+      };
+
+      summaryContainer.addEventListener('transitionend', e => {
+        if (e.propertyName === 'height') {
+          if (!collapsed) {
+            summaryContainer.style.height = 'auto';
+          }
+          animating = false;
+        }
+      });
+
+      summaryToggleBtn.addEventListener('click', () => {
+        if (collapsed) {
+          expand();
+        } else {
+          collapse();
+        }
+      });
     }
   };
 
