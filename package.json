@@ -14,7 +14,7 @@
     "web-application"
   ],
   "author": "Javi-CD",
-  "license": "MIT",
+  "license": "GPLv3",
   "private": true,
   "scripts": {
     "prepare": "husky install",
