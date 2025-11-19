@@ -431,7 +431,7 @@ See the LICENSE file distributed with this program for details.
 
       try {
         teamSelect.innerHTML = '';
-        const rows = await RS.http.apiFetch('/teams', { method: 'GET' });
+        const rows = await RS.http.apiFetch('/teams/', { method: 'GET' });
 
         if (!Array.isArray(rows) || rows.length === 0) {
           const opt = document.createElement('option');
@@ -472,7 +472,7 @@ See the LICENSE file distributed with this program for details.
 
       try {
         categorySelect.innerHTML = '';
-        const rows = await RS.http.apiFetch('/categories', { method: 'GET' });
+        const rows = await RS.http.apiFetch('/categories/', { method: 'GET' });
 
         if (!Array.isArray(rows) || rows.length === 0) {
           const opt = document.createElement('option');
