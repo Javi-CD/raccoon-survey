@@ -8,6 +8,7 @@ See the LICENSE file distributed with this program for details.
 -->
 
 {% set nav_active = nav_active | default('') %} {% set navbar_public = navbar_public | default(false) %}
+<link rel="stylesheet" href="{{ url_for('ui.static', filename='css/common/navbar.css') }}" />
 <header class="bg-white shadow-sm border-b border-gray-200 relative z-50">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center h-16">
