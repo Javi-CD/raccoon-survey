@@ -300,7 +300,7 @@ const EditModal = (() => {
     }
     try {
       categorySel.innerHTML = '';
-      const rows = await RS.http.apiFetch('/categories', { method: 'GET' });
+      const rows = await RS.http.apiFetch('/categories/', { method: 'GET' });
       if (!Array.isArray(rows) || rows.length === 0) {
         const opt = document.createElement('option');
         opt.value = '';
