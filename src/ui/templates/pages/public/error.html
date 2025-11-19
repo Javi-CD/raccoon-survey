@@ -13,27 +13,21 @@
     <link rel="icon" type="image/png" href="{{ url_for('ui.static', filename='img/raccoon_survey.ico') }}" />
 
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
 
     <!-- Font Awesome (not used here, kept consistent with base) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
   </head>
 
   <body class="bg-white text-gray-900 overflow-x-hidden">
-    {% set navbar_public = true %}
-    {% include 'components/navbar.html' %}
+    {% set navbar_public = true %} {% include 'components/navbar.html' %}
 
     <main class="max-w-md mx-auto px-3 md:px-4 lg:px-6 pt-6 pb-6">
-      {% set error_gif = (
-        'img/errors/not-found-error.gif' if code == 404 else
-        (
-          'img/errors/unhautorized-error.gif' if code == 401 else
-          (
-            'img/errors/incorrect-request.gif' if code == 400 else
-            'img/errors/server-error.gif'
-          )
-        )
-      ) %}
+      {% set error_gif = ( 'img/errors/not-found-error.gif' if code == 404 else ( 'img/errors/unhautorized-error.gif' if
+      code == 401 else ( 'img/errors/incorrect-request.gif' if code == 400 else 'img/errors/server-error.gif' ) ) ) %}
 
       <section class="bg-white rounded-xl shadow-sm p-3 md:p-4 text-center max-w-sm md:max-w-md lg:max-w-lg mx-auto">
         <div class="flex flex-col items-center gap-3">
@@ -50,8 +44,7 @@
           <div class="flex items-center justify-center gap-4 mt-4">
             {% if home_url %}
             <a href="{{ home_url }}" class="text-primary hover:underline">Ir al inicio</a>
-            {% endif %}
-            {% if login_url %}
+            {% endif %} {% if login_url %}
             <a href="{{ login_url }}" class="text-primary hover:underline">Iniciar sesión</a>
             {% endif %}
           </div>
@@ -62,13 +55,13 @@
       <section class="mt-6 text-center">
         <p class="text-sm text-gray-500">
           Si el problema persiste, contáctanos a
-          <a href="#" class="text-primary hover:underline">soporte</a>.
+          <a href="#" class="text-primary hover:underline">soporte</a>
+          .
         </p>
       </section>
     </main>
 
-    {% set footer_variant = 'light' %}
-    {% include 'components/footer.html' %}
+    {% set footer_variant = 'light' %} {% include 'components/footer.html' %}
 
     <script>
       document.addEventListener('DOMContentLoaded', () => {
