@@ -1,0 +1,201 @@
+/*
+Copyright (C) 2025 Raccoon Survey org
+This file is part of Raccoon Survey.
+Raccoon Survey is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License v3 as published by
+the Free Software Foundation.
+See the LICENSE file distributed with this program for details.
+*/
+
+/* Skeleton loading styles for protected pages */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-overlay {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: var(--skeleton-top, 0);
+  bottom: 0;
+  z-index: 1000;
+  background: #fff;
+  display: none;
+  pointer-events: none;
+}
+
+.skeleton-overlay.skeleton-visible {
+  display: block;
+}
+
+.skeleton-container {
+  max-width: 80rem; /* ~1280px */
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.skeleton-line,
+.skeleton-block {
+  border-radius: 0.5rem;
+  background-image: linear-gradient(90deg, #f3f4f6 0%, #e5e7eb 50%, #f3f4f6 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s linear infinite;
+}
+
+.skeleton-line {
+  height: 0.9rem;
+  margin-bottom: 0.75rem;
+}
+
+.skeleton-line.thin {
+  height: 0.6rem;
+}
+
+.skeleton-line.tall {
+  height: 1.2rem;
+}
+
+.skeleton-block {
+  height: 8rem;
+  margin: 0.75rem 0;
+}
+
+.skeleton-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.skeleton-btn {
+  width: 8rem;
+  height: 2.5rem;
+}
+
+.skeleton-status {
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  color: #6b7280; /* gray-500 */
+}
+
+/* Grid helpers to mimick page structure */
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin: 1rem 0 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .skeleton-grid.sm-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .skeleton-grid.lg-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.skeleton-card {
+  height: 6rem;
+}
+
+.skeleton-chart {
+  height: 14rem;
+}
+
+.skeleton-table-header {
+  height: 2.2rem;
+  margin-bottom: 0.75rem;
+}
+
+.skeleton-table-row {
+  height: 1.6rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Navbar skeleton overlay */
+.skeleton-navbar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--navbar-height, 64px);
+  z-index: 1100;
+  background: #fff;
+  display: none;
+  pointer-events: none;
+}
+
+.skeleton-navbar-overlay.skeleton-visible {
+  display: block;
+}
+
+.skeleton-navbar-container {
+  max-width: 80rem;
+  margin: 0 auto;
+  height: 100%;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.skeleton-nav-left,
+.skeleton-nav-center,
+.skeleton-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.skeleton-nav-logo,
+.skeleton-nav-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  background-image: linear-gradient(90deg, #f3f4f6 0%, #e5e7eb 50%, #f3f4f6 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s linear infinite;
+}
+
+.skeleton-nav-title {
+  width: 8rem;
+  height: 1.1rem;
+  border-radius: 0.5rem;
+  background-image: linear-gradient(90deg, #f3f4f6 0%, #e5e7eb 50%, #f3f4f6 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s linear infinite;
+}
+
+.skeleton-nav-links {
+  display: none; /* default hidden on very small screens */
+}
+
+@media (min-width: 768px) {
+  .skeleton-nav-links {
+    display: flex;
+    gap: 1.25rem;
+  }
+}
+
+.skeleton-nav-item {
+  width: 5.5rem;
+  height: 0.9rem;
+  border-radius: 0.5rem;
+  background-image: linear-gradient(90deg, #f3f4f6 0%, #e5e7eb 50%, #f3f4f6 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s linear infinite;
+}
+
+/* Login page helper */
+.skeleton-login-card {
+  height: 18rem;
+}

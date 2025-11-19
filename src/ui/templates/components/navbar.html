@@ -9,6 +9,7 @@ See the LICENSE file distributed with this program for details.
 
 {% set nav_active = nav_active | default('') %} {% set navbar_public = navbar_public | default(false) %}
 <link rel="stylesheet" href="{{ url_for('ui.static', filename='css/common/navbar.css') }}" />
+<link rel="stylesheet" href="{{ url_for('ui.static', filename='css/common/skeleton.css') }}" />
 <header class="bg-white shadow-sm border-b border-gray-200 relative z-50">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center h-16">
@@ -70,3 +71,4 @@ See the LICENSE file distributed with this program for details.
 </header>
 
 <script type="module" src="{{ url_for('ui.static', filename='js/dashboard/nav-admin-link.js') }}"></script>
+<script type="module" src="{{ url_for('ui.static', filename='js/common/skeleton.js') }}"></script>

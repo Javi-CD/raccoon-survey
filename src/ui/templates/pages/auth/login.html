@@ -47,6 +47,7 @@ See the LICENSE file distributed with this program for details.
         font-family: 'Inter', sans-serif;
       }
     </style>
+    <link rel="stylesheet" href="{{ url_for('ui.static', filename='css/common/skeleton.css') }}" />
   </head>
 
   <body class="h-full bg-gradient-to-br from-gray-50 to-gray-100">
@@ -157,6 +158,7 @@ See the LICENSE file distributed with this program for details.
 {% set footer_variant = 'dark' %}
 {% include 'components/footer.html' %}
   </body>
+  <script type="module" src="{{ url_for('ui.static', filename='js/common/skeleton.js') }}"></script>
   <script type="module">
     const API_BASE_URL = '{{ CLIENT_API_BASE_URL }}';
     const form = document.getElementById('loginForm');

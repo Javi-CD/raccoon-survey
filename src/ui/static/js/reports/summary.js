@@ -496,6 +496,15 @@ See the LICENSE file distributed with this program for details.
     await loadSummary();
     await loadTokens();
 
+    // Initial data ready: notify to hide the skeleton
+    try {
+      if (window.RS && typeof window.RS.dataReady === 'function') {
+        window.RS.dataReady();
+      }
+    } catch (_) {
+      /* noop */
+    }
+
     surveySelect.addEventListener('change', async () => {
       await loadSummary();
       await loadTokens();

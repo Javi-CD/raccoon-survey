@@ -49,6 +49,14 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(r => (r && r.ok ? r.json() : null))
     .then(data => {
       if (!data) {
+        // Point out that we finish even if there is no valid data
+        try {
+          if (window.RS && typeof window.RS.dataReady === 'function') {
+            window.RS.dataReady();
+          }
+        } catch (_) {
+          /* noop */
+        }
         return;
       }
 
@@ -90,5 +98,14 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     .catch(() => {
       void 0;
+    })
+    .finally(() => {
+      try {
+        if (window.RS && typeof window.RS.dataReady === 'function') {
+          window.RS.dataReady();
+        }
+      } catch (_) {
+        /* noop */
+      }
     });
 });
