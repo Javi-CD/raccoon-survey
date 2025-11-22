@@ -20,6 +20,7 @@ dependencies = [
     "sphinxcontrib-openapi>=0.8.4",
     "sphinx-autobuild>=2025.8.25",
     "sphinx-rtd-theme>=3.0.2",
+    "pytest>=8.4.2",
 ]
 
 [project.optional-dependencies]
