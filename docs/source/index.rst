@@ -12,6 +12,8 @@ Contenidos
 
    modules
    api/openapi
+   ci
+   testing
 
 UI
 --
