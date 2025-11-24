@@ -5,14 +5,6 @@
 # the Free Software Foundation.
 # See the LICENSE file distributed with this program for details.
 
-[pytest]
-addopts = -q
-markers =
-    unit: Pure logic unit tests in src/core/services
-    integration: Integration testing with external components
-    e2e: End-to-end system testing
-python_files = test_*.py
-testpaths =
-    test/unitests
-    test/integration
-    
+from .helpers import _uniq, expires_at_future, expires_at_past
+
+__all__ = ["_uniq", "expires_at_future", "expires_at_past"]

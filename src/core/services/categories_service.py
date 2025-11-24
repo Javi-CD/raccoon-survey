@@ -57,7 +57,7 @@ def get_category(category_id: int) -> Category | None:
     Returns:
         Category | None: Category or None if it does not exist.
     """
-    return Category.query.get(category_id)
+    return db.session.get(Category, category_id)
 
 
 def update_category(category_id: int, data: dict) -> Category | None:
@@ -70,7 +70,7 @@ def update_category(category_id: int, data: dict) -> Category | None:
     Returns:
         Category | None: Category updated or None if it does not exist.
     """
-    category = Category.query.get(category_id)
+    category = db.session.get(Category, category_id)
     if not category:
         return None
 
@@ -93,7 +93,7 @@ def set_category_state(category_id: int, state: bool) -> Category | None:
     Returns:
         Category | None: Updated category or None if not found.
     """
-    category = Category.query.get(category_id)
+    category = db.session.get(Category, category_id)
 
     if not category:
         return None

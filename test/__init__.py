@@ -4,15 +4,3 @@
 # it under the terms of the GNU General Public License v3 as published by
 # the Free Software Foundation.
 # See the LICENSE file distributed with this program for details.
-
-[pytest]
-addopts = -q
-markers =
-    unit: Pure logic unit tests in src/core/services
-    integration: Integration testing with external components
-    e2e: End-to-end system testing
-python_files = test_*.py
-testpaths =
-    test/unitests
-    test/integration
-    
