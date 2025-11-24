@@ -45,7 +45,7 @@ def get_team(team_id: int) -> Team | None:
     Returns:
         Team | None: Team or None if not found.
     """
-    return Team.query.get(team_id)
+    return db.session.get(Team, team_id)
 
 
 def update_team(team_id: int, data: dict) -> Team | None:
@@ -58,7 +58,7 @@ def update_team(team_id: int, data: dict) -> Team | None:
     Returns:
         Team | None: Updated team or None if not found.
     """
-    team = Team.query.get(team_id)
+    team = db.session.get(Team, team_id)
     if not team:
         return None
 
@@ -81,7 +81,7 @@ def set_team_state(team_id: int, state: bool) -> Team | None:
     Returns:
         Team | None: Updated team or None if not found.
     """
-    team = Team.query.get(team_id)
+    team = db.session.get(Team, team_id)
     if not team:
         return None
 
