@@ -52,4 +52,133 @@ def expires_at_past(*, days: int = 0, minutes: int = 1, seconds: int = 0) -> str
     return (datetime.now(UTC) - delta).isoformat()
 
 
-__all__ = ["_uniq", "expires_at_future", "expires_at_past"]
+def _create_team(client, auth_header_admin: dict) -> dict:
+    """Create a team.
+
+    Args:
+        client (FlaskClient): Flask test client.
+        auth_header_admin (dict): Authorization header with admin credentials.
+
+    Returns:
+        dict: Created team.
+    """
+    name = _uniq("team")
+    res = client.post(
+        "/api/v1/teams/",
+        json={"name": name, "description": "Test team"},
+        headers=auth_header_admin,
+    )
+    assert res.status_code == 201
+
+    return res.get_json()
+
+
+def _create_survey(client, auth_header_admin: dict, team_id: int) -> dict:
+    """Create a survey.
+
+    Args:
+        client (FlaskClient): Flask test client.
+        auth_header_admin (dict): Authorization header with admin credentials.
+        team_id (int): ID of the team to create the survey for.
+
+    Returns:
+        dict: Created survey.
+    """
+    title = _uniq("survey")
+    res = client.post(
+        "/api/v1/surveys/",
+        json={
+            "title": title,
+            "description": "Anonymous survey",
+            "team_id": team_id,
+            "is_anonymous": True,
+            "state": True,
+        },
+        headers=auth_header_admin,
+    )
+    assert res.status_code == 201
+
+    return res.get_json()
+
+
+def _create_question(
+    client,
+    auth_header_admin: dict,
+    survey_id: int,
+    *,
+    text: str,
+    qtype: str,
+    is_required: bool = True,
+    options: dict | None = None,
+    order_position: int = 1,
+) -> dict:
+    """Create a question.
+
+    Args:
+        client (FlaskClient): Flask test client.
+        auth_header_admin (dict): Authorization header with admin credentials.
+        survey_id (int): ID of the survey to create the question for.
+        text (str): Text of the question.
+        qtype (str): Type of the question.
+        is_required (bool, optional): Whether the question is required. Defaults to True.
+        options (dict | None, optional): Options for the question. Defaults to None.
+        order_position (int, optional): Order position of the question. Defaults to 1.
+
+    Returns:
+        dict: Created question.
+    """
+    payload = {
+        "survey_id": survey_id,
+        "text": text,
+        "type": qtype,
+        "is_required": is_required,
+        "order_position": order_position,
+    }
+    if options is not None:
+        payload["options"] = options
+
+    res = client.post(
+        "/api/v1/questions/",
+        json=payload,
+        headers=auth_header_admin,
+    )
+    assert res.status_code == 201
+
+    return res.get_json()
+
+
+def _generate_token(
+    client, auth_header_admin: dict, survey_id: int, *, expires_at: str
+) -> dict:
+    """Generate a token.
+
+    Args:
+        client (FlaskClient): Flask test client.
+        auth_header_admin (dict): Authorization header with admin credentials.
+        survey_id (int): ID of the survey to generate a token for.
+        expires_at (str): Expiration timestamp for the token.
+
+    Returns:
+        dict: Generated token.
+    """
+    res = client.post(
+        f"/api/v1/tokens/{survey_id}/generate",
+        json={"count": 1, "expires_at": expires_at},
+        headers=auth_header_admin,
+    )
+    assert res.status_code == 201
+    rows = res.get_json()
+    assert isinstance(rows, list) and len(rows) == 1
+
+    return rows[0]
+
+
+__all__ = [
+    "_create_question",
+    "_create_survey",
+    "_create_team",
+    "_generate_token",
+    "_uniq",
+    "expires_at_future",
+    "expires_at_past",
+]

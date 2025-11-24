@@ -5,54 +5,12 @@
 # the Free Software Foundation.
 # See the LICENSE file distributed with this program for details.
 
-from test.utils.helpers import _uniq, expires_at_future, expires_at_past
-
-
-def _create_team(client, auth_header_admin: dict) -> dict:
-    """Create a team using the API.
-
-    Args:
-        client (FlaskClient): The test client for the Flask application.
-        auth_header_admin (dict): The authentication header for admin access.
-
-    Returns:
-        dict: The JSON response containing the created team details.
-    """
-    name = _uniq("team")
-    res = client.post(
-        "/api/v1/teams/",
-        json={"name": name, "description": "Integration team"},
-        headers=auth_header_admin,
-    )
-    assert res.status_code == 201
-
-    return res.get_json()
-
-
-def _create_survey(client, auth_header_admin: dict, team_id: int) -> dict:
-    """Create a survey using the API.
-
-    Args:
-        client (FlaskClient): The test client for the Flask application.
-        auth_header_admin (dict): The authentication header for admin access.
-        team_id (int): The ID of the team to associate with the survey.
-
-    Returns:
-        dict: The JSON response containing the created survey details.
-    """
-    title = _uniq("survey")
-    res = client.post(
-        "/api/v1/surveys/",
-        json={
-            "title": title,
-            "description": "Employee satisfaction",
-            "team_id": team_id,
-        },
-        headers=auth_header_admin,
-    )
-    assert res.status_code == 201
-
-    return res.get_json()
+from test.utils.helpers import (
+    _create_survey,
+    _create_team,
+    expires_at_future,
+    expires_at_past,
+)
 
 
 def test_generate_tokens_success_basic(client, auth_header_admin: dict):

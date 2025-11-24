@@ -7,30 +7,7 @@
 
 import pytest
 
-from test.utils.helpers import _uniq, expires_at_future
-
-
-def _create_team(client, auth_header_admin: dict) -> int:
-    """Create a team and return its ID.
-
-    Args:
-        client (FlaskClient): The test client for the Flask application.
-        auth_header_admin (dict): The authentication header for admin access.
-
-    Returns:
-        int: The ID of the created team.
-    """
-    name = _uniq("Team")
-    resp = client.post(
-        "/api/v1/teams/",
-        json={"name": name},
-        headers=auth_header_admin,
-    )
-    assert resp.status_code == 201
-
-    team_id = int(resp.get_json()["id"])
-
-    return team_id
+from test.utils.helpers import _create_team, _uniq, expires_at_future
 
 
 @pytest.mark.integration
@@ -54,7 +31,8 @@ def test_create_survey_success(client, auth_header_admin: dict):
         client (FlaskClient): The test client for the Flask application.
         auth_header_admin (dict): The authentication header for admin access.
     """
-    team_id = _create_team(client, auth_header_admin)
+    team = _create_team(client, auth_header_admin)
+    team_id = int(team["id"])
     title = _uniq("Survey")
     resp = client.post(
         "/api/v1/surveys/",
@@ -76,7 +54,8 @@ def test_get_survey_success(client, auth_header_admin: dict):
         client (FlaskClient): The test client for the Flask application.
         auth_header_admin (dict): The authentication header for admin access.
     """
-    team_id = _create_team(client, auth_header_admin)
+    team = _create_team(client, auth_header_admin)
+    team_id = int(team["id"])
     title = _uniq("Survey")
     created = client.post(
         "/api/v1/surveys/",
@@ -101,7 +80,8 @@ def test_update_survey_success(client, auth_header_admin: dict):
         client (FlaskClient): The test client for the Flask application.
         auth_header_admin (dict): The authentication header for admin access.
     """
-    team_id = _create_team(client, auth_header_admin)
+    team = _create_team(client, auth_header_admin)
+    team_id = int(team["id"])
     title = _uniq("Survey")
     created = client.post(
         "/api/v1/surveys/",
