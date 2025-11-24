@@ -1,11 +1,6 @@
 import datetime as dt
 
-from test.e2e.test_anonymous_full_flow import (
-    _create_question,
-    _create_survey,
-    _create_team,
-    _uniq,
-)
+from test.utils.helpers import _create_question, _create_survey, _create_team, _uniq
 
 
 def test_e2e_team_summary_with_date_filter(client, auth_header_admin: dict):

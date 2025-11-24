@@ -5,113 +5,15 @@
 # the Free Software Foundation.
 # See the LICENSE file distributed with this program for details.
 
-from test.utils.helpers import _uniq, expires_at_future, expires_at_past
-
-
-def _create_team(client, auth_header_admin: dict) -> dict:
-    """Create a team using the API.
-
-    Args:
-        client (FlaskClient): The test client for the Flask application.
-        auth_header_admin (dict): The authentication header for admin access.
-
-    Returns:
-        dict: The JSON response containing the created team details.
-    """
-    name = _uniq("team")
-    res = client.post(
-        "/api/v1/teams/",
-        json={"name": name, "description": "Integration team"},
-        headers=auth_header_admin,
-    )
-    assert res.status_code == 201
-
-    return res.get_json()
-
-
-def _create_survey(client, auth_header_admin: dict, team_id: int) -> dict:
-    """Create a survey using the API.
-
-    Args:
-        client (FlaskClient): The test client for the Flask application.
-        auth_header_admin (dict): The authentication header for admin access.
-        team_id (int): The ID of the team to associate the survey with.
-
-    Returns:
-        dict: The JSON response containing the created survey details.
-    """
-    title = _uniq("survey")
-    res = client.post(
-        "/api/v1/surveys/",
-        json={
-            "title": title,
-            "description": "Anonymous employee survey",
-            "team_id": team_id,
-            "is_anonymous": True,
-            "state": True,
-        },
-        headers=auth_header_admin,
-    )
-    assert res.status_code == 201
-
-    return res.get_json()
-
-
-def _create_question(
-    client,
-    auth_header_admin: dict,
-    survey_id: int,
-    *,
-    text: str,
-    qtype: str,
-    is_required: bool = True,
-    options: dict | None = None,
-    order_position: int = 1,
-) -> dict:
-    payload = {
-        "survey_id": survey_id,
-        "text": text,
-        "type": qtype,
-        "is_required": is_required,
-        "order_position": order_position,
-    }
-    if options is not None:
-        payload["options"] = options
-
-    res = client.post(
-        "/api/v1/questions/",
-        json=payload,
-        headers=auth_header_admin,
-    )
-    assert res.status_code == 201
-
-    return res.get_json()
-
-
-def _generate_token(
-    client, auth_header_admin: dict, survey_id: int, *, expires_at: str
-) -> dict:
-    """Generate a token using the API.
-
-    Args:
-        client (FlaskClient): The test client for the Flask application.
-        auth_header_admin (dict): The authentication header for admin access.
-        survey_id (int): The ID of the survey to generate the token for.
-        expires_at (str): The expiration time for the token in ISO format.
-
-    Returns:
-        dict: The JSON response containing the generated token details.
-    """
-    res = client.post(
-        f"/api/v1/tokens/{survey_id}/generate",
-        json={"count": 1, "expires_at": expires_at},
-        headers=auth_header_admin,
-    )
-    assert res.status_code == 201
-    rows = res.get_json()
-    assert isinstance(rows, list) and len(rows) == 1
-
-    return rows[0]
+from test.utils.helpers import (
+    _create_question,
+    _create_survey,
+    _create_team,
+    _generate_token,
+    _uniq,
+    expires_at_future,
+    expires_at_past,
+)
 
 
 def test_anonymous_resolve_success(client, auth_header_admin: dict):

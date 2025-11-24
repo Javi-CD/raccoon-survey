@@ -1,28 +1,34 @@
-from test.e2e.test_anonymous_full_flow import _create_survey, _create_team
+from test.utils.helpers import (
+    _create_survey,
+    _create_team,
+    _generate_token,
+    expires_at_future,
+)
 
 
 def _generate_tokens(client, auth_header_admin: dict, survey_id: int, count: int = 2):
-    """Helper function to generate tokens for a survey.
+    """Generate `count` tokens using the helper `_generate_token`.
 
     Args:
         client (FlaskClient): The test client for the Flask application.
-        auth_header_admin (dict): A dictionary containing the admin authorization header.
+        auth_header_admin (dict): The admin authorization header.
         survey_id (int): The ID of the survey to generate tokens for.
         count (int, optional): The number of tokens to generate. Defaults to 2.
 
     Returns:
-        list: A list of generated token dictionaries.
+        list: A list of generated tokens.
     """
-    resp = client.post(
-        f"/api/v1/tokens/{survey_id}/generate",
-        json={
-            "count": count,
-            "expires_at": "2099-12-31T23:59:59",
-        },
-        headers=auth_header_admin,
-    )
-    assert resp.status_code == 201
-    return resp.get_json()
+    tokens = []
+    for _ in range(count):
+        tok = _generate_token(
+            client,
+            auth_header_admin,
+            survey_id,
+            expires_at=expires_at_future(days=1),
+        )
+        tokens.append(tok)
+
+    return tokens
 
 
 def test_e2e_tokens_export_csv(client, auth_header_admin: dict):

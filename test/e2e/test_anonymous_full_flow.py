@@ -7,127 +7,16 @@
 
 import pytest
 
-from test.utils.helpers import _uniq, expires_at_future
+from test.utils.helpers import (
+    _create_question,
+    _create_survey,
+    _create_team,
+    _generate_token,
+    _uniq,
+    expires_at_future,
+)
 
 pytestmark = pytest.mark.e2e
-
-
-def _create_team(client, auth_header_admin: dict) -> dict:
-    """Create a team.
-
-    Args:
-        client (TestClient): The test client fixture.
-        auth_header_admin (dict): The admin authentication header.
-
-    Returns:
-        dict: The created team.
-    """
-    name = _uniq("Team")
-    res = client.post(
-        "/api/v1/teams/",
-        json={"name": name, "description": "E2E team"},
-        headers=auth_header_admin,
-    )
-    assert res.status_code == 201
-
-    return res.get_json()
-
-
-def _create_survey(client, auth_header_admin: dict, team_id: int) -> dict:
-    """Create a survey.
-
-    Args:
-        client (TestClient): The test client fixture.
-        auth_header_admin (dict): The admin authentication header.
-        team_id (int): The team ID.
-
-    Returns:
-        dict: The created survey.
-    """
-    title = _uniq("Survey")
-    res = client.post(
-        "/api/v1/surveys/",
-        json={
-            "title": title,
-            "description": "E2E anonymous flow",
-            "team_id": team_id,
-            "is_anonymous": True,
-            "state": True,
-        },
-        headers=auth_header_admin,
-    )
-    assert res.status_code == 201
-
-    return res.get_json()
-
-
-def _create_question(
-    client,
-    auth_header_admin: dict,
-    survey_id: int,
-    *,
-    text: str,
-    qtype: str,
-    is_required: bool = True,
-    options: dict | None = None,
-    order_position: int = 1,
-) -> dict:
-    """Create a question.
-
-    Args:
-        client (TestClient): The test client fixture.
-        auth_header_admin (dict): The admin authentication header.
-        survey_id (int): The survey ID.
-        text (str): The question text.
-        qtype (str): The question type.
-        is_required (bool, optional): Whether the question is required. Defaults to True.
-        options (dict | None, optional): The question options. Defaults to None.
-        order_position (int, optional): The question order position. Defaults to 1.
-
-    Returns:
-        dict: The created question.
-    """
-    payload = {
-        "survey_id": survey_id,
-        "text": text,
-        "type": qtype,
-        "is_required": is_required,
-        "order_position": order_position,
-    }
-    if options is not None:
-        payload["options"] = options
-
-    res = client.post(
-        "/api/v1/questions/",
-        json=payload,
-        headers=auth_header_admin,
-    )
-    assert res.status_code == 201
-
-    return res.get_json()
-
-
-def _generate_token(client, auth_header_admin: dict, survey_id: int) -> dict:
-    """Generate a token.
-
-    Args:
-        client (TestClient): The test client fixture.
-        auth_header_admin (dict): The admin authentication header.
-        survey_id (int): The survey ID.
-
-    Returns:
-        dict: The generated token.
-    """
-    expires_at = expires_at_future(days=1)
-    res = client.post(
-        f"/api/v1/tokens/{survey_id}/generate",
-        json={"count": 1, "expires_at": expires_at},
-        headers=auth_header_admin,
-    )
-    assert res.status_code == 201
-    rows = res.get_json()
-    assert isinstance(rows, list) and len(rows) == 1
-    return rows[0]
 
 
 def test_e2e_anonymous_submit_and_summary(client, auth_header_admin: dict):
@@ -171,7 +60,13 @@ def test_e2e_anonymous_submit_and_summary(client, auth_header_admin: dict):
         order_position=2,
     )
 
-    token_row = _generate_token(client, auth_header_admin, survey["id"])
+    token_row = _generate_token(
+        client,
+        auth_header_admin,
+        survey["id"],
+        count=1,
+        expires_at=expires_at_future(days=1),
+    )
 
     # Resolve the token
     res_resolve = client.get(

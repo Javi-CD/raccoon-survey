@@ -7,50 +7,7 @@
 
 import pytest
 
-from test.utils.helpers import _uniq
-
-
-def _create_team(client, auth_header_admin: dict) -> int:
-    """Create a team and return its ID.
-
-    Args:
-        client (FlaskClient): The test client for the Flask application.
-        auth_header_admin (dict): The authentication header for admin access.
-
-    Returns:
-        int: The ID of the created team.
-    """
-    name = _uniq("Team")
-    resp = client.post(
-        "/api/v1/teams/",
-        json={"name": name},
-        headers=auth_header_admin,
-    )
-    assert resp.status_code == 201
-
-    return int(resp.get_json()["id"])
-
-
-def _create_survey(client, auth_header_admin: dict) -> int:
-    """Create a survey and return its ID.
-
-    Args:
-        client (FlaskClient): The test client for the Flask application.
-        auth_header_admin (dict): The authentication header for admin access.
-
-    Returns:
-        int: The ID of the created survey.
-    """
-    team_id = _create_team(client, auth_header_admin)
-    title = _uniq("Survey")
-    resp = client.post(
-        "/api/v1/surveys/",
-        json={"title": title, "team_id": team_id},
-        headers=auth_header_admin,
-    )
-    assert resp.status_code == 201
-
-    return int(resp.get_json()["id"])
+from test.utils.helpers import _create_survey, _create_team, _uniq
 
 
 @pytest.mark.integration
@@ -74,7 +31,9 @@ def test_create_question_success(client, auth_header_admin: dict):
         client (FlaskClient): The test client for the Flask application.
         auth_header_admin (dict): The authentication header for admin access.
     """
-    survey_id = _create_survey(client, auth_header_admin)
+    team = _create_team(client, auth_header_admin)
+    survey = _create_survey(client, auth_header_admin, team["id"])
+    survey_id = int(survey["id"])
     payload = {
         "survey_id": survey_id,
         "text": _uniq("Question"),
@@ -104,7 +63,9 @@ def test_get_question_success(client, auth_header_admin: dict):
         client (FlaskClient): The test client for the Flask application.
         auth_header_admin (dict): The authentication header for admin access.
     """
-    survey_id = _create_survey(client, auth_header_admin)
+    team = _create_team(client, auth_header_admin)
+    survey = _create_survey(client, auth_header_admin, team["id"])
+    survey_id = int(survey["id"])
     payload = {
         "survey_id": survey_id,
         "text": _uniq("Question"),
@@ -133,7 +94,9 @@ def test_update_question_success(client, auth_header_admin: dict):
         client (FlaskClient): The test client for the Flask application.
         auth_header_admin (dict): The authentication header for admin access.
     """
-    survey_id = _create_survey(client, auth_header_admin)
+    team = _create_team(client, auth_header_admin)
+    survey = _create_survey(client, auth_header_admin, team["id"])
+    survey_id = int(survey["id"])
     created = client.post(
         "/api/v1/questions/",
         json={"survey_id": survey_id, "text": _uniq("Q"), "type": "text"},
@@ -165,7 +128,9 @@ def test_change_question_state_success(client, auth_header_admin: dict):
         client (FlaskClient): The test client for the Flask application.
         auth_header_admin (dict): The authentication header for admin access.
     """
-    survey_id = _create_survey(client, auth_header_admin)
+    team = _create_team(client, auth_header_admin)
+    survey = _create_survey(client, auth_header_admin, team["id"])
+    survey_id = int(survey["id"])
     created = client.post(
         "/api/v1/questions/",
         json={"survey_id": survey_id, "text": _uniq("Q"), "type": "text"},
