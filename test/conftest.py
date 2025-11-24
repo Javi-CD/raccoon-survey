@@ -24,11 +24,11 @@ def app() -> Flask:
 
     os.environ.setdefault(
         "SECRET_KEY",
-        "'wlZd3AqQX7ST36pM7IUcyAGBMCdd3TED7CLLDgIypOqGrTfA_jK6bxxOft82TLv88DZneh4uKrJBIp3wEizwPA",
+        "vO2tcwOvaSSnH45zncBgTYqr9wEpZGH2z-OazEexDXFWj3BtQogfXnzJI1lrL03XoaWbVQZWqh7FUsc0OAL1FA",
     )
     os.environ.setdefault(
         "JWT_SECRET_KEY",
-        "GnP4y4BU_TckwqTQmL1c1DrLyYjBtI7LejLgKtZIKOnZJ200l1Fcv5vyyzxeRQeUssbPi3z_UZYJNRTU8TXGUg",
+        "Y6VwXVypEnlva1KLG1wOmv5W2qN4-0d9kFkOxUsx2bJE9md4kqvbWM4EmOepfcy003BSsgmQiPKJU_4GFFqnpQ",
     )
 
     overrides = {
