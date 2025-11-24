@@ -53,6 +53,19 @@ def client(app: Flask):
     return app.test_client()
 
 
+@pytest.fixture(autouse=True)
+def reset_db(app: Flask):
+    """Reset the database before each test to ensure isolation.
+
+    Args:
+        app (Flask): The Flask application instance.
+    """
+    with app.app_context():
+        db.session.remove()
+        db.drop_all()
+        db.create_all()
+
+
 @pytest.fixture()
 def auth_header_admin(app: Flask) -> dict:
     """Fixture to create a dictionary with an admin authorization header.
