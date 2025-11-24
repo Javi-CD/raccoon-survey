@@ -1,17 +1,11 @@
-from datetime import UTC, datetime, timedelta
-import uuid
+# Copyright (C) 2025 Raccoon Survey org
+# This file is part of Raccoon Survey.
+# Raccoon Survey is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License v3 as published by
+# the Free Software Foundation.
+# See the LICENSE file distributed with this program for details.
 
-
-def _uniq(prefix: str = "anon") -> str:
-    """Generate a unique identifier string.
-
-    Args:
-        prefix (str, optional): The prefix for the unique identifier. Defaults to "anon".
-
-    Returns:
-        str: A unique identifier string.
-    """
-    return f"{prefix}-{uuid.uuid4().hex[:8]}"
+from test.utils.helpers import _uniq, expires_at_future, expires_at_past
 
 
 def _create_team(client, auth_header_admin: dict) -> dict:
@@ -151,13 +145,11 @@ def test_anonymous_resolve_success(client, auth_header_admin: dict):
     )
 
     # Token valid for 1 day
-    from datetime import UTC, datetime, timedelta
-
     token_row = _generate_token(
         client,
         auth_header_admin,
         survey["id"],
-        expires_at=(datetime.now(UTC) + timedelta(days=1)).isoformat(),
+        expires_at=expires_at_future(days=1),
     )
 
     # Resolve anonymous
@@ -216,7 +208,7 @@ def test_anonymous_resolve_token_expired(client, auth_header_admin: dict):
         order_position=1,
     )
 
-    expired_at = (datetime.now(UTC) - timedelta(minutes=1)).isoformat()
+    expired_at = expires_at_past(minutes=1)
     token_row = _generate_token(
         client,
         auth_header_admin,
@@ -263,7 +255,7 @@ def test_anonymous_submit_success_and_idempotency(client, auth_header_admin: dic
         client,
         auth_header_admin,
         survey["id"],
-        expires_at=(datetime.now(UTC) + timedelta(days=1)).isoformat(),
+        expires_at=expires_at_future(days=1),
     )
 
     payload = {
@@ -319,7 +311,7 @@ def test_anonymous_submit_token_expired(client, auth_header_admin: dict):
         order_position=1,
     )
 
-    expired_at = (datetime.now(UTC) - timedelta(minutes=1)).isoformat()
+    expired_at = expires_at_past(minutes=1)
     token_row = _generate_token(
         client,
         auth_header_admin,
@@ -371,7 +363,7 @@ def test_anonymous_submit_missing_required_questions(client, auth_header_admin: 
         client,
         auth_header_admin,
         survey["id"],
-        expires_at=(datetime.now(UTC) + timedelta(days=1)).isoformat(),
+        expires_at=expires_at_future(days=1),
     )
 
     payload = {
@@ -408,7 +400,7 @@ def test_anonymous_submit_missing_question_id(client, auth_header_admin: dict):
         client,
         auth_header_admin,
         survey["id"],
-        expires_at=(datetime.now(UTC) + timedelta(days=1)).isoformat(),
+        expires_at=expires_at_future(days=1),
     )
 
     payload = {
@@ -443,7 +435,7 @@ def test_anonymous_submit_missing_answer(client, auth_header_admin: dict):
         client,
         auth_header_admin,
         survey["id"],
-        expires_at=(datetime.now(UTC) + timedelta(days=1)).isoformat(),
+        expires_at=expires_at_future(days=1),
     )
 
     payload = {
@@ -478,7 +470,7 @@ def test_anonymous_submit_question_not_in_survey(client, auth_header_admin: dict
         client,
         auth_header_admin,
         survey["id"],
-        expires_at=(datetime.now(UTC) + timedelta(days=1)).isoformat(),
+        expires_at=expires_at_future(days=1),
     )
 
     payload = {
@@ -513,7 +505,7 @@ def test_anonymous_submit_empty_required_answer(client, auth_header_admin: dict)
         client,
         auth_header_admin,
         survey["id"],
-        expires_at=(datetime.now(UTC) + timedelta(days=1)).isoformat(),
+        expires_at=expires_at_future(days=1),
     )
 
     payload = {
@@ -550,7 +542,7 @@ def test_anonymous_submit_invalid_membership(client, auth_header_admin: dict):
         client,
         auth_header_admin,
         survey["id"],
-        expires_at=(datetime.now(UTC) + timedelta(days=1)).isoformat(),
+        expires_at=expires_at_future(days=1),
     )
 
     payload = {

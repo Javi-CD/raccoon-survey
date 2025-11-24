@@ -1,17 +1,11 @@
-from datetime import UTC, datetime, timedelta
-import uuid
+# Copyright (C) 2025 Raccoon Survey org
+# This file is part of Raccoon Survey.
+# Raccoon Survey is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License v3 as published by
+# the Free Software Foundation.
+# See the LICENSE file distributed with this program for details.
 
-
-def _uniq(prefix: str = "team") -> str:
-    """Generate a unique identifier with a prefix.
-
-    Args:
-        prefix (str, optional): The prefix for the unique identifier. Defaults to "team".
-
-    Returns:
-        str: A unique identifier string.
-    """
-    return f"{prefix}-{uuid.uuid4().hex[:8]}"
+from test.utils.helpers import _uniq, expires_at_future, expires_at_past
 
 
 def _create_team(client, auth_header_admin: dict) -> dict:
@@ -71,7 +65,7 @@ def test_generate_tokens_success_basic(client, auth_header_admin: dict):
     team = _create_team(client, auth_header_admin)
     survey = _create_survey(client, auth_header_admin, team["id"])
 
-    expires_at = (datetime.now(UTC) + timedelta(days=1)).isoformat()
+    expires_at = expires_at_future(days=1)
     res = client.post(
         f"/api/v1/tokens/{survey['id']}/generate",
         json={"count": 3, "expires_at": expires_at},
@@ -108,7 +102,7 @@ def test_generate_tokens_with_identifiers_success(client, auth_header_admin: dic
     team = _create_team(client, auth_header_admin)
     survey = _create_survey(client, auth_header_admin, team["id"])
 
-    expires_at = (datetime.now(UTC) + timedelta(days=2)).isoformat()
+    expires_at = expires_at_future(days=2)
     identifiers = ["emp-001", "emp-002", "emp-003"]
     res = client.post(
         f"/api/v1/tokens/{survey['id']}/generate",
@@ -172,7 +166,7 @@ def test_generate_tokens_survey_not_found(client, auth_header_admin: dict):
         client (FlaskClient): The test client for the Flask application.
         auth_header_admin (dict): The authentication header for admin access.
     """
-    expires_at = (datetime.now(UTC) + timedelta(days=1)).isoformat()
+    expires_at = expires_at_future(days=1)
     res = client.post(
         "/api/v1/tokens/999999/generate",
         json={"count": 2, "expires_at": expires_at},
@@ -193,8 +187,8 @@ def test_list_tokens_with_filters(client, auth_header_admin: dict):
     survey = _create_survey(client, auth_header_admin, team["id"])
 
     # Create one expired and two valid tokens
-    past_expires = (datetime.now(UTC) - timedelta(days=1)).isoformat()
-    future_expires = (datetime.now(UTC) + timedelta(days=1)).isoformat()
+    past_expires = expires_at_past(days=1)
+    future_expires = expires_at_future(days=1)
 
     r1 = client.post(
         f"/api/v1/tokens/{survey['id']}/generate",
@@ -234,7 +228,7 @@ def test_export_tokens_csv(client, auth_header_admin: dict):
     team = _create_team(client, auth_header_admin)
     survey = _create_survey(client, auth_header_admin, team["id"])
 
-    expires_at = (datetime.now(UTC) + timedelta(days=1)).isoformat()
+    expires_at = expires_at_future(days=1)
     res_gen = client.post(
         f"/api/v1/tokens/{survey['id']}/generate",
         json={"count": 2, "expires_at": expires_at},

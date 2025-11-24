@@ -1,17 +1,13 @@
+# Copyright (C) 2025 Raccoon Survey org
+# This file is part of Raccoon Survey.
+# Raccoon Survey is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License v3 as published by
+# the Free Software Foundation.
+# See the LICENSE file distributed with this program for details.
+
 import pytest
-import uuid
 
-
-def _uniq(base: str) -> str:
-    """Generate a unique string by appending a UUID.
-
-    Args:
-        base (str): The base string to which the UUID will be appended.
-
-    Returns:
-        str: The unique string.
-    """
-    return f"{base}-{uuid.uuid4().hex[:6]}"
+from test.utils.helpers import _uniq
 
 
 @pytest.mark.integration

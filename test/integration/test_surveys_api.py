@@ -1,19 +1,13 @@
-from datetime import datetime, timedelta
-import uuid
+# Copyright (C) 2025 Raccoon Survey org
+# This file is part of Raccoon Survey.
+# Raccoon Survey is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License v3 as published by
+# the Free Software Foundation.
+# See the LICENSE file distributed with this program for details.
 
 import pytest
 
-
-def _uniq(base: str) -> str:
-    """Generate a unique string by appending a UUID.
-
-    Args:
-        base (str): The base string to which the UUID will be appended.
-
-    Returns:
-        str: The unique string.
-    """
-    return f"{base}-{uuid.uuid4().hex[:6]}"
+from test.utils.helpers import _uniq, expires_at_future
 
 
 def _create_team(client, auth_header_admin: dict) -> int:
@@ -117,7 +111,7 @@ def test_update_survey_success(client, auth_header_admin: dict):
     survey_id = int(created["id"])
 
     new_title = _uniq("Updated")
-    expires_at = (datetime.utcnow() + timedelta(days=7)).isoformat()
+    expires_at = expires_at_future(days=7)
     resp = client.put(
         f"/api/v1/surveys/{survey_id}",
         json={
