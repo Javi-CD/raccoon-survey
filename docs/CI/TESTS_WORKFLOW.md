@@ -1,99 +1,96 @@
-# Pipeline de Tests (GitHub Actions)
+# Tests Pipeline (GitHub Actions)
 
-Este documento describe el workflow de GitHub Actions que ejecuta la suite de tests en cada `push` y `pull_request` hacia las ramas `develop` y `features`, incluyendo medición de cobertura con `pytest-cov`.
+This document describes the GitHub Actions workflow that runs the test suite on every `push` and `pull_request` to the `develop` and `features` branches, including coverage measurement with `pytest-cov`.
 
-## Archivo de configuración
+## Configuration File
 
-- Ruta: `.github/workflows/tests.yml`
+- Path: `.github/workflows/tests.yml`
 - Runner: `ubuntu-latest`
-- Versión de Python: `3.11`
-- Cache de dependencias: `pip` usando `requirements.txt`
-- Cobertura configurada vía `.coveragerc` (origen `src`, branch coverage, exclusiones básicas)
+- Python version: `3.11`
+- Dependency cache: `pip` using `requirements.txt`
+- Coverage configured via `.coveragerc` (source `src`, branch coverage, basic exclusions)
 
-## Disparadores
+## Triggers
 
-- `push` a:
+- `push` to:
   - `develop`
   - `features`
-  - `features/**` (subramas dentro de `features`)
-- `pull_request` con base en:
+  - `features/**` (sub-branches under `features`)
+- `pull_request` targeting:
   - `develop`
   - `features`
   - `features/**`
 
-## Pasos principales
+## Main Steps
 
-1. Checkout del repositorio (`actions/checkout@v4`).
-2. Configuración de Python (`actions/setup-python@v5`) con `python-version: 3.11` y cache de `pip`.
-3. Instalación de dependencias (incluye plugin de cobertura):
+1. Checkout the repository (`actions/checkout@v4`).
+2. Set up Python (`actions/setup-python@v5`) with `python-version: 3.11` and `pip` cache.
+3. Install dependencies (includes coverage plugin):
    ```bash
-   uv sync
-
-   # O usando pip
    python -m pip install --upgrade pip
    pip install -r requirements.txt
    pip install pytest-cov
    ```
-4. Ejecución de la suite de tests con cobertura:
+4. Run the test suite with coverage:
    ```bash
    pytest --cov=src --cov-report=term-missing:skip-covered \
           --cov-report=xml:coverage.xml \
           --cov-report=html
    ```
-5. Publicación de artefactos de cobertura:
-   - `coverage.xml` (para integraciones externas)
-   - Carpeta `htmlcov` (reporte navegable)
+5. Publish coverage artifacts:
+   - `coverage.xml` (for external integrations)
+   - `htmlcov` folder (navigable report)
 
-## Personalización
+## Customization
 
-- Para añadir más versiones de Python (matriz), modifica el job `tests` con `strategy.matrix.python-version`.
-- Para incluir linters (por ejemplo `flake8` o `ruff`) o validación de commits, agrega pasos adicionales antes de `pytest`.
-- Para ajustar las ramas de disparo, edita las secciones `on.push.branches` y `on.pull_request.branches`.
+- To add more Python versions (matrix), modify the `tests` job with `strategy.matrix.python-version`.
+- To include linters (e.g., `flake8` or `ruff`) or commit validation, add steps before `pytest`.
+- To adjust trigger branches, edit `on.push.branches` and `on.pull_request.branches` sections.
 
-## Artefactos generados
+## Generated Artifacts
 
-- `coverage.xml`: reporte en formato XML compatible con servicios de cobertura.
-- `htmlcov/`: reporte HTML navegable que resume líneas cubiertas y faltantes.
+- `coverage.xml`: XML report compatible with coverage services.
+- `htmlcov/`: HTML report summarizing covered and missed lines.
 
-## Ejecución local con cobertura
+## Local Execution with Coverage
 
 ```bash
 pytest --cov=src --cov-report=term-missing:skip-covered --cov-report=xml --cov-report=html
 ```
-Notas:
-- Requiere `pytest-cov` instalado (`pip install pytest-cov`).
-- Configuración de cobertura en `.coveragerc`.
+Notes:
+- Requires `pytest-cov` installed (`uv add pytest-cov`).
+- Coverage configuration in `.coveragerc`.
 
-## Referencias
+## References
 
-- Workflow creado automáticamente y mantenido en `.github/workflows/tests.yml`.
-- Documentación adicional de CI en `docs/CI/` (linting, validación de commits).
+- Workflow created automatically and maintained in `.github/workflows/tests.yml`.
+- Additional CI documentation in `docs/CI/` (linting, commit validation).
 
-## Variables de entorno para CI (Secrets y Variables)
+## Environment Variables for CI (Secrets and Variables)
 
-El workflow de tests requiere ciertas variables de entorno para que la configuración de la app (`BaseConfig`) no falle al importarse. En CI se gestionan de la siguiente forma:
+The tests workflow requires certain environment variables so that the app configuration (`BaseConfig`) does not fail upon import. In CI they are managed as follows:
 
-### Qué crear en GitHub
+### What to Create in GitHub
 
-- Secrets (valores sensibles):
+- Secrets (sensitive values):
   - `SECRET_KEY`
   - `JWT_SECRET_KEY`
   - `DATABASE_URL`
   - `DEFAULT_USER_ADMIN_PASSWORD`
 
-- Variables (no sensibles):
+- Variables (non-sensitive):
   - `DEFAULT_USER_ADMIN_EMAIL`
   - `DEFAULT_USER_ADMIN_NAME`
 
-### Dónde crearlas
+### Where to Create Them
 
-- En el repositorio: `Settings → Secrets and variables → Actions`.
+- In the repository: `Settings → Secrets and variables → Actions`.
   - Secrets: `New repository secret`
   - Variables: `New repository variable`
 
-### Cómo se referencian en el workflow
+### How They Are Referenced in the Workflow
 
-Bloque `env` del job `tests` en `.github/workflows/tests.yml`:
+`env` block of the `tests` job in `.github/workflows/tests.yml`:
 
 ```yaml
 jobs:
@@ -109,20 +106,20 @@ jobs:
       DEFAULT_USER_ADMIN_NAME: ${{ vars.DEFAULT_USER_ADMIN_NAME }}
 ```
 
-### Recomendaciones de valores
+### Recommended Values
 
-- `DATABASE_URL` en CI:
-  - `sqlite:///./test.db` (persistente durante el job y simple de usar), o
-  - `sqlite:///:memory:` (solo memoria; puede reiniciarse entre procesos).
-- Usa valores distintos a producción para `SECRET_KEY` y `JWT_SECRET_KEY`.
+- `DATABASE_URL` in CI:
+  - `sqlite:///./test.db` (persistent during the job and simple to use), or
+  - `sqlite:///:memory:` (in-memory only; may reset between processes).
+- Use values different from production for `SECRET_KEY` and `JWT_SECRET_KEY`.
 
-### Consideraciones de seguridad
+### Security Considerations
 
-- Workflows disparados desde forks no tienen acceso a `secrets.*` por defecto. Para PRs externos, ejecuta tests en `push` o evalúa `pull_request_target` con precaución.
-- Evita exponer valores sensibles en logs; las referencias `${{ secrets.* }}` ya ocultan el contenido.
+- Workflows triggered from forks do not have access to `secrets.*` by default. For external PRs, run tests on `push` or evaluate `pull_request_target` with caution.
+- Avoid exposing sensitive values in logs; `${{ secrets.* }}` references already mask content.
 
-### Desarrollo local
+### Local Development
 
-- Para desarrollo local, puedes copiar `.env.example` a `.env` y completar los valores requeridos.
-- Los tests locales también pueden funcionar si defines estas variables en tu entorno de shell o en el archivo `.env`.
+- For local development, you can copy `.env.example` to `.env` and fill in the required values.
+- Local tests can also work if you define these variables in your shell environment or in the `.env` file.
 
