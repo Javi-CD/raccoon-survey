@@ -21,6 +21,7 @@ dependencies = [
     "sphinx-autobuild>=2025.8.25",
     "sphinx-rtd-theme>=3.0.2",
     "pytest>=8.4.2",
+    "pytest-cov>=7.0.0",
 ]
 
 [project.optional-dependencies]
