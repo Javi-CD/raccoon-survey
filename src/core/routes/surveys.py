@@ -64,7 +64,9 @@ def create_survey() -> tuple[dict, int]:
     """
     payload = request.get_json(silent=True) or {}
     title = payload.get("title")
-    team_id = payload.get("team_id")
+    team_id_raw = payload.get("team_id")
+    team_id = team_id_raw.get("id") if isinstance(team_id_raw, dict) else team_id_raw
+
     if not title or not team_id:
         return jsonify({"message": "title and team_id are required"}), 400
 

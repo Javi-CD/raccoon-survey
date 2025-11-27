@@ -4,6 +4,7 @@ branch = True
 parallel = True
 omit =
     src/**/__init__.py
+    src/core/database/seed.py
 
 [report]
 exclude_lines =
