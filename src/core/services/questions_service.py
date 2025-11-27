@@ -59,7 +59,7 @@ def get_question(question_id: int) -> Question | None:
     Returns:
         Question | None: Question or None if not found.
     """
-    return Question.query.get(question_id)
+    return db.session.get(Question, question_id)
 
 
 def update_question(question_id: int, data: dict) -> Question | None:
@@ -72,7 +72,7 @@ def update_question(question_id: int, data: dict) -> Question | None:
     Returns:
         Question | None: Updated question or None if not found.
     """
-    question = Question.query.get(question_id)
+    question = db.session.get(Question, question_id)
     if not question:
         return None
 
@@ -103,7 +103,7 @@ def set_question_state(question_id: int, state: bool) -> Question | None:
     Returns:
         Question | None: Updated question or None if not found.
     """
-    question = Question.query.get(question_id)
+    question = db.session.get(Question, question_id)
     if not question:
         return None
 

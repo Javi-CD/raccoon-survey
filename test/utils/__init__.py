@@ -5,22 +5,6 @@
 # the Free Software Foundation.
 # See the LICENSE file distributed with this program for details.
 
-__pycache__/
-.ruff_cache/
-.venv/
+from .helpers import _uniq, expires_at_future, expires_at_past
 
-build/
-htmlcov/
-dist/
-docs/_build/
-node_modules/
-wheels/
-
-*.db
-*.egg-info
-*.py[oc]
-
-.coverage
-.env
-
-coverage.xml
+__all__ = ["_uniq", "expires_at_future", "expires_at_past"]

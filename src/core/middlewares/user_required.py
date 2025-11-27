@@ -95,7 +95,9 @@ def user_required(
                 except (TypeError, ValueError):
                     return jsonify({"message": f"invalid {key} format"}), 400
 
-                user = User.query.get(user_id)
+                from src.core.database import db
+
+                user = db.session.get(User, user_id)
 
             elif field == "email":
                 email = str(lookup_value).strip().lower()

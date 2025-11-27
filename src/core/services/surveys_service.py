@@ -61,7 +61,7 @@ def get_survey(survey_id: int) -> Survey | None:
     Returns:
         Survey | None: Survey or None if not found.
     """
-    return Survey.query.get(survey_id)
+    return db.session.get(Survey, survey_id)
 
 
 def update_survey(survey_id: int, data: dict) -> Survey | None:
@@ -74,7 +74,7 @@ def update_survey(survey_id: int, data: dict) -> Survey | None:
     Returns:
         Survey | None: Updated survey or None if not found.
     """
-    survey = Survey.query.get(survey_id)
+    survey = db.session.get(Survey, survey_id)
     if not survey:
         return None
 
@@ -105,7 +105,7 @@ def set_survey_state(survey_id: int, state: bool) -> Survey | None:
     Returns:
         Survey | None: Updated survey or None if not found.
     """
-    survey = Survey.query.get(survey_id)
+    survey = db.session.get(Survey, survey_id)
     if not survey:
         return None
 

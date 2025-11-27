@@ -37,7 +37,7 @@ def get_role(role_id: int) -> Role | None:
     Returns:
         Role | None: Role if found, otherwise None.
     """
-    return Role.query.get(role_id)
+    return db.session.get(Role, role_id)
 
 
 def create_role(data: dict) -> Role:
@@ -69,7 +69,7 @@ def update_role(role_id: int, data: dict) -> Role | None:
     Returns:
         Role | None: Updated role, or None if not found.
     """
-    role = Role.query.get(role_id)
+    role = db.session.get(Role, role_id)
     if not role:
         return None
 
@@ -97,7 +97,7 @@ def set_role_state(role_id: int, state: bool) -> Role | None:
     Returns:
         Role | None: Updated role, or None if not found.
     """
-    role = Role.query.get(role_id)
+    role = db.session.get(Role, role_id)
     if not role:
         return None
 

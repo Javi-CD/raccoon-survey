@@ -42,7 +42,7 @@ def _ensure_survey_exists(survey_id: int) -> Survey | None:
     Returns:
         Survey | None: Survey instance if found, else None
     """
-    return Survey.query.get(survey_id)
+    return db.session.get(Survey, survey_id)
 
 
 def generate_tokens_for_survey(

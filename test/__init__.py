@@ -4,23 +4,3 @@
 # it under the terms of the GNU General Public License v3 as published by
 # the Free Software Foundation.
 # See the LICENSE file distributed with this program for details.
-
-__pycache__/
-.ruff_cache/
-.venv/
-
-build/
-htmlcov/
-dist/
-docs/_build/
-node_modules/
-wheels/
-
-*.db
-*.egg-info
-*.py[oc]
-
-.coverage
-.env
-
-coverage.xml

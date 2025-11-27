@@ -1,0 +1,17 @@
+[run]
+source = src
+branch = True
+parallel = True
+omit =
+    src/**/__init__.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    if __name__ == '__main__':
+show_missing = True
+skip_covered = True
+precision = 1
+
+[html]
+directory = htmlcov
