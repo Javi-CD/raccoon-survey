@@ -5,9 +5,12 @@ Este documento resume los endpoints REST disponibles y cómo utilizarlos. Para d
 ## Tabla de Contenidos
 - [Referencia Swagger](#referencia-swagger)
 - [Autenticación](#autenticación)
+- [Roles](#roles)
+- [Usuarios](#usuarios)
 - [Equipos](#equipos)
 - [Encuestas](#encuestas)
 - [Preguntas](#preguntas)
+- [Categorías](#categorías)
 - [Tokens de Encuestas](#tokens-de-encuestas)
 - [Anónimo](#anónimo)
 - [Reportes](#reportes)
@@ -15,10 +18,12 @@ Este documento resume los endpoints REST disponibles y cómo utilizarlos. Para d
 - [Mantenimiento](#mantenimiento)
 - [Salud](#salud)
 
+---
+
 ## Referencia Swagger
 - Endpoint: `/api/v1/openapi.json`
 - Descripción: Documento OpenAPI 3.0 con la definición completa de la API.
-- Nota: servido por el blueprint `docs`. Úsalo en Swagger UI, ReDoc o cualquier visor OpenAPI.
+- Nota: servido por el blueprint `/docs`. Úsalo en Swagger UI, ReDoc o cualquier visor OpenAPI.
 - Enlace a colección de Postman: [Click Here!](https://www.postman.com/javier-prez/workspace/raccoon-surveys-api/collection/43954198-06d34335-49ff-4778-af25-1676be326cb6?action=share&creator=43954198&active-environment=43954198-cabc9e0c-dc39-401d-87b8-72ac404ce002)
 
 ---
@@ -44,6 +49,54 @@ Base: `/api/v1/auth`
   - `/logout` revoca el refresh token usando `jti` del JWT.
 
   - `/me` retorna `{ id, role, team_id, name }` basado en claims.
+</details>
+
+---
+
+## Roles
+
+Base: `/api/v1/roles`
+
+| Método | Ruta | Auth | Roles | Resumen |
+|---|---|---|---|---|
+| `GET` | `/` | `Bearer` | `admin`, `rrhh` | Listar roles activos |
+| `POST` | `/` | `Bearer` | `admin`, `rrhh` | Crear rol |
+| `GET` | `/<role_id>` | `Bearer` | `admin`, `rrhh` | Obtener rol |
+| `PUT` | `/<role_id>` | `Bearer` | `admin`, `rrhh` | Actualizar rol |
+| `DELETE` | `/<role_id>` | `Bearer` | `admin`, `rrhh` | Desactivar (soft‑delete) rol |
+
+<details>
+  <summary>Detalles</summary>
+  
+  - `POST /` Body: `{ name: string, description?: string }`
+
+  - `PUT /<role_id>` Body: `{ name?, description?, state? }`
+
+  - `DELETE /<role_id>` realiza soft‑delete: marca `state=false` y devuelve el rol actualizado.
+</details>
+
+---
+
+## Usuarios
+
+Base: `/api/v1/users`
+
+| Método | Ruta | Auth | Roles | Resumen |
+|---|---|---|---|---|
+| `GET` | `/` | `Bearer` | `admin`, `rrhh` | Listar usuarios activos |
+| `POST` | `/` | `Bearer` | `admin`, `rrhh` | Crear usuario |
+| `GET` | `/<user_id>` | `Bearer` | `admin`, `rrhh` | Obtener usuario |
+| `PUT` | `/<user_id>` | `Bearer` | `admin`, `rrhh` | Actualizar usuario |
+| `PATCH` | `/<user_id>/state` | `Bearer` | `admin`, `rrhh` | Cambiar estado |
+
+<details>
+  <summary>Detalles</summary>
+  
+  - `POST /` Body: `{ name: string, email: string, password: string, role_id?: number, team_id?: number }`
+
+  - `PUT /<user_id>` Body: campos opcionales `{ name?, email?, password?, role_id?, team_id?, state? }`
+
+  - `PATCH /<user_id>/state` Body: `{ state: boolean }` (soft‑delete/restaurar)
 </details>
 
 ---
@@ -117,6 +170,30 @@ Base: `/api/v1/questions`
   - `PUT /<question_id>` Body: campos opcionales (valida `survey_id` existente si se cambia)
 
   - `PATCH /<question_id>/state` Body: `{ state: boolean }`
+</details>
+
+---
+
+## Categorías
+
+Base: `/api/v1/categories`
+
+| Método | Ruta | Auth | Roles | Resumen |
+|---|---|---|---|---|
+| `GET` | `/` | `Bearer` | `admin`, `rrhh` | Listar categorías |
+| `POST` | `/` | `Bearer` | `admin`, `rrhh` | Crear categoría |
+| `GET` | `/<category_id>` | `Bearer` | `admin`, `rrhh` | Obtener categoría |
+| `PUT` | `/<category_id>` | `Bearer` | `admin`, `rrhh` | Actualizar categoría |
+| `PATCH` | `/<category_id>/state` | `Bearer` | `admin`, `rrhh` | Cambiar estado |
+
+<details>
+  <summary>Detalles</summary>
+  
+  - `POST /` Body: `{ name: string, description?: string }`
+
+  - `PUT /<category_id>` Body: `{ name?, description?, state? }` (valida duplicados por `name`)
+
+  - `PATCH /<category_id>/state` Body: `{ state: boolean }`
 </details>
 
 ---
