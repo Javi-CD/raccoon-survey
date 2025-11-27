@@ -201,9 +201,9 @@ def get_survey_summary(
     Returns:
         dict: Formatted summary.
     """
-    if Survey.query.get(survey_id) is None:
+    if db.session.get(Survey, survey_id) is None:
         raise LookupError("survey_not_found")
-    if team_id is not None and Team.query.get(team_id) is None:
+    if team_id is not None and db.session.get(Team, team_id) is None:
         raise LookupError("team_not_found")
 
     date_from, date_to = _parse_date_range(date_from, date_to)
@@ -240,9 +240,9 @@ def get_team_summary(
     Returns:
         dict: Formatted summary.
     """
-    if Team.query.get(team_id) is None:
+    if db.session.get(Team, team_id) is None:
         raise LookupError("team_not_found")
-    if survey_id is not None and Survey.query.get(survey_id) is None:
+    if survey_id is not None and db.session.get(Survey, survey_id) is None:
         raise LookupError("survey_not_found")
 
     date_from, date_to = _parse_date_range(date_from, date_to)

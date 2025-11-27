@@ -5,22 +5,16 @@
 # the Free Software Foundation.
 # See the LICENSE file distributed with this program for details.
 
-__pycache__/
-.ruff_cache/
-.venv/
+from test.integration.conftest import (
+    app,
+    auth_header_admin,
+    client,
+    reset_db,
+)
 
-build/
-htmlcov/
-dist/
-docs/_build/
-node_modules/
-wheels/
-
-*.db
-*.egg-info
-*.py[oc]
-
-.coverage
-.env
-
-coverage.xml
+__all__ = [
+    "app",
+    "auth_header_admin",
+    "client",
+    "reset_db",
+]

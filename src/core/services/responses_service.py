@@ -101,7 +101,7 @@ def _get_and_validate_survey(token: SurveyToken) -> Survey:
     Returns:
         Survey: The Survey instance corresponding to the token's survey_id.
     """
-    survey = Survey.query.get(token.survey_id)
+    survey = db.session.get(Survey, token.survey_id)
     if survey is None:
         raise LookupError("survey_not_found")
     if not survey.state:

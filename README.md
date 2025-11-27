@@ -7,6 +7,7 @@
 [![License GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE)
 ![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python)
 ![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?logo=node.js)
+[![Coverage](https://codecov.io/github/Javi-CD/raccoon-survey/branch/develop/graph/badge.svg)](https://codecov.io/github/Javi-CD/raccoon-survey?branch=develop)
 
 _Plataforma empresarial para gestionar, distribuir y analizar clima en entorno laborales a travez de encuestas anonimas._
 

@@ -150,7 +150,7 @@ See the LICENSE file distributed with this program for details.
 
   const loadSurveys = async () => {
     try {
-      const rows = await RS.http.apiFetch('/surveys', { method: 'GET' });
+      const rows = await RS.http.apiFetch('/surveys/', { method: 'GET' });
       surveySelect.innerHTML = '';
 
       const active = (Array.isArray(rows) ? rows : []).filter(

@@ -39,7 +39,7 @@ def get_user(user_id: int) -> User | None:
     Returns:
         User | None: The User object if found, None if not found.
     """
-    return User.query.get(user_id)
+    return db.session.get(User, user_id)
 
 
 def create_user(data: dict) -> User:
@@ -74,7 +74,7 @@ def update_user(user_id: int, data: dict) -> User | None:
     Returns:
         User | None: The updated User object if the operation was successful, None if the user was not found.
     """
-    user = User.query.get(user_id)
+    user = db.session.get(User, user_id)
     if not user:
         return None
 
@@ -104,7 +104,7 @@ def set_user_state(user_id: int, state: bool) -> User | None:
     Returns:
         User | None: The updated User object if the operation was successful, None if the user was not found.
     """
-    user = User.query.get(user_id)
+    user = db.session.get(User, user_id)
     if not user:
         return None
 
