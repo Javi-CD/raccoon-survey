@@ -45,7 +45,7 @@ class BaseConfig:
     )
 
     # CORS
-    CORS_ORIGINS: ClassVar[tuple[str, ...]] = tuple(
+    CORS_ORIGINS: ClassVar[tuple[str, ...]] = tuple[str, ...](
         os.getenv("CORS_ORIGINS", "*").split(",")
     )
 
@@ -67,7 +67,7 @@ class BaseConfig:
     CLEANUP_CRON_HOUR: ClassVar[int] = int(os.getenv("CLEANUP_CRON_HOUR", "3"))
     CLEANUP_CRON_MINUTE: ClassVar[int] = int(os.getenv("CLEANUP_CRON_MINUTE", "0"))
 
-    # Default Admin User (used by seed script)
+    # Default Admin User
     DEFAULT_USER_ADMIN_EMAIL: ClassVar[str] = os.getenv(
         "DEFAULT_USER_ADMIN_EMAIL", None
     )
@@ -76,16 +76,18 @@ class BaseConfig:
     )
     DEFAULT_USER_ADMIN_NAME: ClassVar[str] = os.getenv("DEFAULT_USER_ADMIN_NAME", None)
 
-    if not JWT_SECRET_KEY:
-        raise ValueError("JWT_SECRET_KEY must be set")
-    if not DATABASE_URL:
-        raise ValueError("DATABASE_URL must be set")
-    if not DEFAULT_USER_ADMIN_EMAIL:
-        raise ValueError("DEFAULT_USER_ADMIN_EMAIL must be set")
-    if not DEFAULT_USER_ADMIN_PASSWORD:
-        raise ValueError("DEFAULT_USER_ADMIN_PASSWORD must be set")
-    if not DEFAULT_USER_ADMIN_NAME:
-        raise ValueError("DEFAULT_USER_ADMIN_NAME must be set")
+    # Environment validations: applied only outside of testing
+    if ENV.lower() not in ("testing", "test"):
+        if not JWT_SECRET_KEY:
+            raise ValueError("JWT_SECRET_KEY must be set")
+        if not DATABASE_URL:
+            raise ValueError("DATABASE_URL must be set")
+        if not DEFAULT_USER_ADMIN_EMAIL:
+            raise ValueError("DEFAULT_USER_ADMIN_EMAIL must be set")
+        if not DEFAULT_USER_ADMIN_PASSWORD:
+            raise ValueError("DEFAULT_USER_ADMIN_PASSWORD must be set")
+        if not DEFAULT_USER_ADMIN_NAME:
+            raise ValueError("DEFAULT_USER_ADMIN_NAME must be set")
 
 
 class DevConfig(BaseConfig):
