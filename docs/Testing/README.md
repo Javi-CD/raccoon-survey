@@ -23,6 +23,21 @@ pip install -r requirements.txt
 pytest -q
 ```
 
+## Ejecutar con cobertura
+
+Requisitos:
+- Instala el plugin: `pip install pytest-cov`
+- Configuración de cobertura: `.coveragerc` en la raíz del proyecto (``source=src`` y branch coverage).
+
+Comandos:
+```bash
+pytest --cov=src --cov-report=term-missing:skip-covered --cov-report=html --cov-report=xml
+```
+
+Resultados:
+- `coverage.xml`: reporte en formato XML para integraciones externas.
+- `htmlcov/`: reporte HTML navegable con detalle de líneas cubiertas y faltantes.
+
 ## Ejecutar subconjuntos
 
 - Solo integración:

@@ -3,7 +3,7 @@ CI/CD - Tests
 
 Resumen
 -------
-Este pipeline ejecuta automáticamente la suite de tests en cada ``push`` y ``pull_request`` a las ramas objetivo. Está definido en ``.github/workflows/tests.yml`` y usa ``ubuntu-latest`` con Python ``3.11`` y cache de ``pip``.
+Este pipeline ejecuta automáticamente la suite de tests y mide cobertura en cada ``push`` y ``pull_request`` a las ramas objetivo. Está definido en ``.github/workflows/tests.yml`` y usa ``ubuntu-latest`` con Python ``3.11`` y cache de ``pip``.
 
 Ramas monitoreadas
 ------------------
@@ -48,17 +48,32 @@ Workflow de ejemplo
            run: |
              python -m pip install --upgrade pip
              pip install -r requirements.txt
+             pip install pytest-cov
 
-         - name: Run test suite
+         - name: Run tests with coverage
            run: |
-             pytest -q
+             pytest --cov=src --cov-report=term-missing:skip-covered \
+                    --cov-report=xml:coverage.xml \
+                    --cov-report=html
+
+         - name: Upload coverage XML artifact
+           uses: actions/upload-artifact@v4
+           with:
+             name: coverage-xml
+             path: coverage.xml
+
+         - name: Upload HTML coverage artifact
+           uses: actions/upload-artifact@v4
+           with:
+             name: coverage-html
+             path: htmlcov
 
 Pasos principales
 -----------------
 1. Checkout del repositorio.
 2. Configuración de Python con cache de ``pip``.
-3. Instalación de dependencias desde ``requirements.txt``.
-4. Ejecución de la suite con ``pytest -q``.
+3. Instalación de dependencias desde ``requirements.txt`` e instalación de ``pytest-cov``.
+4. Ejecución de la suite con cobertura y publicación de artifacts (XML, HTML).
 
 Personalización
 ---------------
