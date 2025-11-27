@@ -1,66 +1,65 @@
-# Migraciones de Base de Datos (Alembic)
+# Database Migrations (Alembic)
 
-Este documento explica cómo están implementadas las migraciones en el proyecto y cómo usarlas en desarrollo, CI y producción.
+This document explains how migrations are implemented in the project and how to use them in development, CI, and production.
 
-## Tabla de Contenidos
-- [Visión General](#visión-general)
-- [Cómo está implementado en el programa](#cómo-está-implementado-en-el-programa)
-- [Prerrequisitos](#prerrequisitos)
-- [Comandos Básicos de Alembic](#comandos-básicos-de-alembic)
-- [Flujo de Trabajo Típico (Dev)](#flujo-de-trabajo-típico-dev)
-- [Integración con Flask y Configuración](#integración-con-flask-y-configuración)
-- [Directorio de Migraciones](#directorio-de-migraciones)
-- [Semillas de Datos (Opcional)](#semillas-de-datos-opcional)
-- [CI/CD y Despliegue](#cicd-y-despliegue)
-- [Notas y Consideraciones](#notas-y-consideraciones)
-- [Problemas Comunes](#problemas-comunes)
-- [Ejemplos Rápidos (PowerShell)](#ejemplos-rápidos-powershell)
-
----
-
-## Visión General
-
-
-- Herramienta: `Alembic` sobre `SQLAlchemy`.
-- ORM: modelos en `src/core/models` (p. ej. `User`, `Survey`, `Question`, etc.).
-- Configuración: `alembic.ini` y entorno Flask via `create_app()`.
-- Ubicación de scripts: `src/core/database/migrations/`.
-- Metadata objetivo para autogeneración: `db.metadata` de `src/core/database/__init__.py`.
+## Table of Contents
+- [Overview](#overview)
+- [How It Is Implemented in the Application](#how-it-is-implemented-in-the-application)
+- [Prerequisites](#prerequisites)
+- [Alembic Basic Commands](#alembic-basic-commands)
+- [Typical Workflow (Dev)](#typical-workflow-dev)
+- [Integration with Flask and Configuration](#integration-with-flask-and-configuration)
+- [Migrations Directory](#migrations-directory)
+- [Data Seeding (Optional)](#data-seeding-optional)
+- [CI/CD and Deployment](#cicd-and-deployment)
+- [Notes and Considerations](#notes-and-considerations)
+- [Common Problems](#common-problems)
+- [Quick Examples (PowerShell)](#quick-examples-powershell)
 
 ---
 
-## Cómo está implementado en el programa
+## Overview
 
-- `src/core/database/__init__.py` expone `db: SQLAlchemy` usado por todos los modelos.
+- Tool: `Alembic` on top of `SQLAlchemy`.
+- ORM: models in `src/core/models` (e.g., `User`, `Survey`, `Question`, etc.).
+- Configuration: `alembic.ini` and Flask environment via `create_app()`.
+- Script location: `src/core/database/migrations/`.
+- Target metadata for autogenerate: `db.metadata` from `src/core/database/__init__.py`.
 
-- `src/core/__init__.py` define `create_app()`, que:
-  - Carga configuración desde `src/core/config.py` (incluye `DATABASE_URL`).
-  - Inicializa `SQLAlchemy` (`db.init_app(app)`).
+---
 
-- `alembic.ini` apunta a `script_location = src/core/database/migrations` y usa `sqlalchemy.url`.
+## How It Is Implemented in the Application
+
+- `src/core/database/__init__.py` exposes `db: SQLAlchemy` used by all models.
+
+- `src/core/__init__.py` defines `create_app()`, which:
+  - Loads configuration from `src/core/config.py` (includes `DATABASE_URL`).
+  - Initializes `SQLAlchemy` (`db.init_app(app)`).
+
+- `alembic.ini` points to `script_location = src/core/database/migrations` and uses `sqlalchemy.url`.
 
 - `src/core/database/migrations/env.py`:
-  - Importa `create_app()` para leer `SQLALCHEMY_DATABASE_URI` de Flask.
-  - Establece `config.set_main_option("sqlalchemy.url", db_url)`.
-  - Define `target_metadata = db.metadata` para `--autogenerate`.
+  - Imports `create_app()` to read Flask `SQLALCHEMY_DATABASE_URI`.
+  - Sets `config.set_main_option("sqlalchemy.url", db_url)`.
+  - Defines `target_metadata = db.metadata` for `--autogenerate`.
 
-- Revisions existentes (ejemplos):
-  - `31cd4e25f1e6_create_core_tables.py`: crea tablas base (`roles`, `teams`, `users`, `surveys`, `questions`, `survey_tokens`, `responses`).
-  - `5dfb7cd4abc5_add_audit_categories_question_categories.py`: agrega `audit_logs`, `categories`, `question_categories` e índices.
+- Existing revisions (examples):
+  - `31cd4e25f1e6_create_core_tables.py`: creates base tables (`roles`, `teams`, `users`, `surveys`, `questions`, `survey_tokens`, `responses`).
+  - `5dfb7cd4abc5_add_audit_categories_question_categories.py`: adds `audit_logs`, `categories`, `question_categories` and indexes.
 
 ---
 
-## Prerrequisitos
+## Prerequisites
 
-Tabla de variables clave:
+Key variables table:
 
-| Variable | Descripción | Ejemplo |
+| Variable | Description | Example |
 |---|---|---|
-| `DATABASE_URL` | URL de conexión usada por Alembic | `postgresql+psycopg2://user:pass@localhost:5432/raccoon_survey` |
-| `FLASK_ENV` | Entorno de ejecución | `development` |
-| `DATABASE_ECHO` | Log de SQL en consola | `1` |
+| `DATABASE_URL` | Connection URL used by Alembic | `postgresql+psycopg2://user:pass@localhost:5432/raccoon_survey` |
+| `FLASK_ENV` | Runtime environment | `development` |
+| `DATABASE_ECHO` | Log SQL to console | `1` |
 
-### Como definir la variable `DATABASE_URL`
+### How to define `DATABASE_URL`
   
  - PowerShell (Windows):
     
@@ -75,30 +74,30 @@ export DATABASE_URL="postgresql+psycopg2://user:pass@localhost:5432/raccoon_surv
 
 ---
 
-## Comandos Básicos de Alembic
+## Alembic Basic Commands
 
-- Estado actual
-- Historial
-- Crear migración (autogenerate)
+- Current state
+- History
+- Create migration (autogenerate)
 - Upgrade
 - Downgrade
 - Stamp
 
 <br/>
 
-| Comando | Uso | Ejemplo |
+| Command | Purpose | Example |
 |---|---|---|
-| `alembic current` | Mostrar revisión aplicada actualmente | `alembic current` |
-| `alembic history --verbose` | Mostrar historial de revisiones | `alembic history --verbose` |
-| `alembic revision --autogenerate -m "<mensaje>"` | Crear migración desde cambios en modelos | `alembic revision --autogenerate -m "add new field"` |
-| `alembic upgrade head` | Aplicar migraciones hasta la última | `alembic upgrade head` |
-| `alembic upgrade <revision_id>` | Aplicar hasta una revisión específica | `alembic upgrade 31cd4e25f1e6` |
-| `alembic downgrade -1` | Revertir una migración | `alembic downgrade -1` |
-| `alembic downgrade base` | Volver al estado inicial | `alembic downgrade base` |
-| `alembic stamp head` | Marcar estado sin ejecutar migraciones | `alembic stamp head` |
+| `alembic current` | Show currently applied revision | `alembic current` |
+| `alembic history --verbose` | Show revision history | `alembic history --verbose` |
+| `alembic revision --autogenerate -m "<message>"` | Create migration from model changes | `alembic revision --autogenerate -m "add new field"` |
+| `alembic upgrade head` | Apply migrations up to latest | `alembic upgrade head` |
+| `alembic upgrade <revision_id>` | Apply up to a specific revision | `alembic upgrade 31cd4e25f1e6` |
+| `alembic downgrade -1` | Revert one migration | `alembic downgrade -1` |
+| `alembic downgrade base` | Return to initial state | `alembic downgrade base` |
+| `alembic stamp head` | Set state without running migrations | `alembic stamp head` |
 
 <details>
- <summary><b>Ejemplos rápidos por shell</b></summary>
+ <summary><b>Quick examples by shell</b></summary>
   
   - PowerShell:
     
@@ -116,66 +115,66 @@ export DATABASE_URL="postgresql+psycopg2://user:pass@localhost:5432/raccoon_surv
 
 <br/>
 
-1. Modifica/añade modelos en `src/core/models` (columnas, índices, relaciones).
+1. Modify/add models in `src/core/models` (columns, indexes, relationships).
 
-2. Genera una migración:
+2. Generate a migration:
    - `alembic revision --autogenerate -m "add new field to Question"`
 
-3. Revisa el archivo en `src/core/database/migrations/versions/` y ajusta manualmente si hace falta.
+3. Review the file in `src/core/database/migrations/versions/` and adjust manually if needed.
 
-4. Aplica migraciones:
+4. Apply migrations:
    - `alembic upgrade head`
 
-5. Verifica la app y/o corre tests.
+5. Verify the app and/or run tests.
 
 ---
 
-## Integración con Flask y Configuración
+## Integration with Flask and Configuration
 
 
-Tabla de archivos clave:
+Key files table:
 
-| Archivo | Rol |
+| File | Role |
 |---|---|
-| `src/core/config.py` | Expone `DATABASE_URL` y opciones SQLAlchemy |
-| `src/core/__init__.py` | Define `create_app()` e inicializa `db` |
-| `src/core/database/migrations/env.py` | Configura `sqlalchemy.url` y `target_metadata` |
-| `alembic.ini` | Ubicación de scripts y parámetros Alembic |
+| `src/core/config.py` | Exposes `DATABASE_URL` and SQLAlchemy options |
+| `src/core/__init__.py` | Defines `create_app()` and initializes `db` |
+| `src/core/database/migrations/env.py` | Sets `sqlalchemy.url` and `target_metadata` |
+| `alembic.ini` | Script location and Alembic parameters |
 
-## Directorio de Migraciones
-Estructura y propósito:
+## Migrations Directory
+Structure and purpose:
 
-| Ruta | Descripción |
+| Path | Description |
 |---|---|
-| `src/core/database/migrations/env.py` | Puente Alembic ↔ Flask/SQLAlchemy (`db.metadata`) |
-| `src/core/database/migrations/script.py.mako` | Plantilla de nuevas revisiones |
-| `src/core/database/migrations/versions/` | Carpeta con migraciones versionadas |
-| `src/core/database/migrations/README` | Notas internas |
+| `src/core/database/migrations/env.py` | Bridge Alembic ↔ Flask/SQLAlchemy (`db.metadata`) |
+| `src/core/database/migrations/script.py.mako` | Template for new revisions |
+| `src/core/database/migrations/versions/` | Folder with versioned migrations |
+| `src/core/database/migrations/README` | Internal notes |
 
 ---
 
-## Semillas de Datos (Opcional)
+## Data Seeding (Optional)
 
-Funciones principales:
+Main functions:
 
-| Función | Propósito |
+| Function | Purpose |
 |---|---|
-| `get_or_create_role` | Crear/obtener rol inicial |
-| `get_or_create_team` | Crear/obtener equipo |
-| `get_or_create_user` | Usuario admin temporal y relaciones |
-| `get_or_create_category` | Categorías para preguntas |
-| `get_or_create_survey` | Encuestas de ejemplo |
-| `get_or_create_question` | Preguntas vinculadas a encuestas |
+| `get_or_create_role` | Create/get initial role |
+| `get_or_create_team` | Create/get team |
+| `get_or_create_user` | Temporary admin user and relationships |
+| `get_or_create_category` | Categories for questions |
+| `get_or_create_survey` | Example surveys |
+| `get_or_create_question` | Questions linked to surveys |
 
 ---
 
-## Problemas Comunes
+## Common Problems
 
 <details>
-  <summary>No se encuentra `sqlalchemy.url`</summary>
+  <summary>`sqlalchemy.url` not found</summary>
   
-  - Causa: `DATABASE_URL` no está definida.
-  - Solución: Exporta `DATABASE_URL` y vuelve a ejecutar:
+  - Cause: `DATABASE_URL` is not defined.
+  - Solution: Export `DATABASE_URL` and rerun:
     
     ```powershell
     $env:DATABASE_URL = "postgresql+psycopg2://user:pass@localhost:5432/raccoon_survey"
@@ -186,10 +185,10 @@ Funciones principales:
 <br/>
 
 <details>
-  <summary>Autogenerate no detecta cambios</summary>
+  <summary>Autogenerate does not detect changes</summary>
   
-  - Causa: el modelo no está importado por `src/core/models/__init__.py`.
-  - Solución: asegúrate de importarlo y ejecutar:
+  - Cause: the model is not imported by `src/core/models/__init__.py`.
+  - Solution: make sure it is imported and run:
     
     ```bash
     alembic revision --autogenerate -m "sync models"
@@ -199,10 +198,10 @@ Funciones principales:
 <br/>
 
 <details>
-  <summary>Error de importación en `env.py`</summary>
+  <summary>Import error in `env.py`</summary>
   
-  - Causa: Alembic ejecutado fuera de la raíz del repo.
-  - Solución: ejecuta desde la raíz o ajusta rutas en `alembic.ini` (`%(here)s`).
+  - Cause: Alembic executed outside the repo root.
+  - Solution: run from the repo root or adjust paths in `alembic.ini` (`%(here)s`).
 </details>
 
 <br/>

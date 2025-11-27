@@ -1,45 +1,69 @@
-# Guía de Contribución — Raccoon Survey
+# Contributing Guide — Raccoon Survey
 
-Gracias por tu interés en contribuir. Esta guía resume cómo preparar el entorno, el flujo de trabajo recomendado y los estándares de calidad para mantener el proyecto sano y seguro.
-
----
-
-## Principios
-- Respeto y colaboración ([`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md)).
-- Seguridad ([`SECURITY.md`](./SECURITY.md)).
-- Cambios pequeños y bien probados.
-- Documentación y trazabilidad de los cambios.
+Thank you for your interest in contributing. This guide summarizes how to prepare the environment, the recommended workflow, and the quality standards to keep the project healthy and secure.
 
 ---
 
-## Requisitos
+## Table of Contents
+- [Principles](#principles)
+- [Requirements](#requirements)
+- [Local setup](#local-setup)
+  - [Backend](#backend)
+  - [Frontend](#frontend)
+  - [Run development server](#run-development-server)
+- [Branch flow](#branch-flow)
+- [Commit conventions](#commit-conventions)
+- [Lint and formatting](#lint-and-formatting)
+  - [Backend](#backend-lint-and-formatting)
+  - [Frontend](#frontend-lint-and-formatting)
+- [Tests](#tests)
+- [Testing Guide](#testing-guide)
+- [Documentation](#documentation)
+- [Database migrations](#database-migrations)
+- [Pull Request checklist](#pull-request-checklist)
+- [Changelog and releases](#changelog-and-releases)
+- [Code standards](#code-standards)
+- [Issue and security reporting](#issue-and-security-reporting)
+- [License](#license)
+
+---
+
+## Principles
+- Respect and collaboration ([`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md)).
+- Security ([`SECURITY.md`](./SECURITY.md)).
+- Small, well-tested changes.
+- Documentation and change traceability.
+
+---
+
+## Requirements
 - `Python 3.11+`, `uv`.
-- `Node.js 18+` y `npm`.
+- `Node.js 18+` and `npm`.
 - Git.
 
 ---
 
-## Configuración local
+## Local setup
 
 ```bash
 
-# Clonar repositorio
+# Clone repository
 git clone https://github.com/Javi-CD/raccoon-survey.git
 
-# Copiar .env.example a .env
+# Copy .env.example to .env
 cp .env.example .env
 
-# ...Ajustar variables en .env (JWT, CORS, DB, etc)
+# Adjust variables in .env (JWT, CORS, DB, etc.)
 ```
 
 ### Backend
 
 ```bash
 
-# Instalar Dependencias
+# Install dependencies
 uv sync
 
-# Usando pip
+# Using pip
 
 python -m venv .venv && .\\.venv\\Scripts\\Activate.ps1 && pip install -r requirements.txt
 
@@ -49,129 +73,135 @@ python -m venv .venv && .\\.venv\\Scripts\\Activate.ps1 && pip install -r requir
 
 ```bash
 
-# Instalar Dependencias
+# Install dependencies
 npm install
 
 ```
 
-### Ejecutar servidor de desarrollo
+### Run development server
 
 ```bash
 
 uv run main.py
 
-# Alternativa
+# Alternative
 python main.py
 
 ```
 
-Verifica si se ejecuto correctamente el servidor de desarrollo.
+Verify the development server is running correctly.
 
 ```bash
 
-curl --location  http://localhost:5000/api/v1/openapi.json
-curl --location  http://localhost:5000/api/v1/health
+curl --location http://localhost:3000/api/v1/openapi.json
+curl --location http://localhost:3000/api/v1/health
 
 ```
 
-> Si no se ha definifo la variable ``PORT`` en el archivo ``.env`` por defecto sera ``5000``
+> If the ``PORT`` variable is not defined in ``.env``, the default is ``3000``.
 
---
+---
 
-## Flujo de ramas
-- Rama `develop`: estable.
-- Crea ramas por cambio:
+## Branch flow
+- `develop` branch: stable.
+- Create a branch per change:
   ```plaintext
 
-  tipo/nombre-de-rama
+  type/branch-name
 
-  ejemplo:
+  examples:
 
   feature/auth-middlewares
   fix/truncate-database
   ```
-- Hacer `merge --no-ff` en la rama `features` y pobrar funcionalidades antes de abrir pull request en la rama `develop`
+- Use `merge --no-ff` in feature branches and test functionality before opening a pull request to `develop`.
 
 
 ---
 
-## Convenciones de commits
-- Usa Conventional Commits:
+## Commit conventions
+- Use Conventional Commits:
   - `feat:`, `fix:`, `docs:`, `style:`, `refactor:`, `test:`, `chore:`.
-- Ejemplos:
-  - `feat(api): agregar refresh token a /auth/refresh`
-  - `fix(ui): corregir redirección en /dashboard sin sesión`
-- Los hooks de `husky` y `commitlint` validan mensajes (ver [`commitlint.config.js`](./commitlint.config.js) y [`husky`](./.husky/)).
+- Examples:
+  - `feat(api): add refresh token to /auth/refresh`
+  - `fix(ui): fix redirect on /dashboard without session`
+- `husky` and `commitlint` hooks validate messages (see [`commitlint.config.js`](./commitlint.config.js) and [`husky`](./.husky/)).
 
 ---
 
-## Lint y formato
-- Python: ver [`docs/CI/PYTHON_LINTING.md`](./docs/CI/PYTHON_LINTING.md).
-- JavaScript/CSS: configura y usa:
-  - ESLint: `npx eslint .` (ver [`eslintrc.js`](./.eslintrc.js))
-  - Prettier: `npx prettier --check .` (ver [`prettierrc.js`](./.prettierrc.js))
-  - Stylelint: `npx stylelint "src/ui/**/*.css"` (ver [`stylelintrc.js`](./.stylelintrc.js))
+## Lint and formatting
+- Python: see [`docs/CI/PYTHON_LINTING.md`](./docs/CI/PYTHON_LINTING.md).
+- JavaScript/CSS: configure and use:
+  - ESLint: `npx eslint .` (see [`eslintrc.js`](./.eslintrc.js))
+  - Prettier: `npx prettier --check .` (see [`prettierrc.js`](./.prettierrc.js))
+  - Stylelint: `npx stylelint "src/ui/**/*.css"` (see [`stylelintrc.js`](./.stylelintrc.js))
 
 ---
 
-## Pruebas
-- Ubicación: `test/` (`unitests/`, `integration/`, `e2e/`).
-- Ejecuta: `pytest`.
-- Añade pruebas para nueva funcionalidad y casos de error.
+## Tests
+- Location: `test/` (`unitests/`, `integration/`, `e2e/`).
+- Run: `pytest`.
+- Add tests for new functionality and error cases.
 
 ---
 
-## Documentación
-- Seguridad: [`docs/Security/README.md`](./docs/Security/README.md).
-- API: [`docs/API/README.md`](./docs/API/README.md) y `src/core/openapi.json`.
-- Base de datos: [`docs/Database/schema_db.md`](./docs/Database/schema_db.md) y [`docs/Database/MIGRATIONS.md`](./docs/Database/MIGRATIONS.md).
-- Sphinx: [`docs/source/index.rst`](./docs/source/index.rst), build local: `docs\make.bat html`.
+## Testing Guide
+- Full documentation: [`docs/Testing/README.md`](./docs/Testing/README.md).
+- Includes how to run the full suite, coverage, subsets (unit/integration/e2e), environment variables, and tips.
+
+---
+
+## Documentation
+- Security: [`docs/Security/README.md`](./docs/Security/README.md).
+- API: [`docs/API/README.md`](./docs/API/README.md) and `src/core/openapi.json`.
+- Database: [`docs/Database/schema_db.md`](./docs/Database/schema_db.md) and [`docs/Database/MIGRATIONS.md`](./docs/Database/MIGRATIONS.md).
+- Sphinx: [`docs/source/index.rst`](./docs/source/index.rst), local build: `docs\make.bat html`.
 - Swagger: `curl --location http://localhost:<PORT>/docs`
-- Enlace a colección de Postman: [Click Here!](https://www.postman.com/javier-prez/workspace/raccoon-surveys-api/collection/43954198-06d34335-49ff-4778-af25-1676be326cb6?action=share&creator=43954198&active-environment=43954198-cabc9e0c-dc39-401d-87b8-72ac404ce002)
+- Postman collection link: [Click Here!](https://www.postman.com/javier-prez/workspace/raccoon-surveys-api/collection/43954198-06d34335-49ff-4778-af25-1676be326cb6?action=share&creator=43954198&active-environment=43954198-cabc9e0c-dc39-401d-87b8-72ac404ce002)
 
 ---
 
-## Migraciones de base de datos
-- Configuración: `alembic.ini`.
-- Sigue la guía: [`docs/Database/MIGRATIONS.md`](./docs/Database/MIGRATIONS.md).
-- Incluye notas en PR sobre cambios de esquemas.
+## Database migrations
+- Configuration: `alembic.ini`.
+- Follow the guide: [`docs/Database/MIGRATIONS.md`](./docs/Database/MIGRATIONS.md).
+- Include PR notes about schema changes.
 
 ---
 
-## Checklist de Pull Request
-- Lint y formato pasan (ESLint/Prettier/Stylelint/Python).
-- Pruebas agregadas y/o actualizadas; `pytest` en verde.
-- Documentación actualizada (README/Docs/API/DB/Seguridad si aplica).
-- Cambios scope limitado y motivación clara.
-- Sin secretos ni credenciales en el commit.
-- CI verde: `docs.yml`, `release.yml`, `changelog.yml`.
+## Pull Request checklist
+- Lint and formatting pass (ESLint/Prettier/Stylelint/Python).
+- Tests added and/or updated; `pytest` is green.
+- Documentation updated (README/Docs/API/DB/Security if applicable).
+- Limited scope changes with clear motivation.
+- No secrets or credentials in the commit.
+- CI green: `docs.yml`, `release.yml`, `changelog.yml`.
 
 ---
 
-## Changelog y releases
-- [`CHANGELOG.md`](./CHANGELOG.md) se mantiene vía CI; no editar manualmente.
-- Versionado y paquetes: ver [`scripts/update_package_version.py`](./scripts/update_package_version.py), [`scripts/update_pyproject_version.py`](./scripts/update_pyproject_version.py), [`scripts/update_package_lock.js`](./scripts/update_package_lock.js).
-- Pipeline de release: [`release.yml`](./.github/workflows/release.yml).
+## Changelog and releases
+- [`CHANGELOG.md`](./CHANGELOG.md) is maintained via CI; do not edit manually.
+- Versioning and packages: see [`scripts/update_package_version.py`](./scripts/update_package_version.py), [`scripts/update_pyproject_version.py`](./scripts/update_pyproject_version.py), [`scripts/update_package_lock.js`](./scripts/update_package_lock.js).
+- Release pipeline: [`release.yml`](./.github/workflows/release.yml).
 
 ---
 
-## Estándares de código
-- Python: tipado estático donde sea posible, funciones pequeñas, evita nombres crípticos.
-- Flask: rutas en `src/core/routes/`, servicios en `src/core/services/`, utilidades en `src/core/utils/`.
-- UI: rutas/guards en `src/ui/routes/`, evita lógica compleja en plantillas.
-- Seguridad: usa decoradores `role_required` y `user_required`, y respeta JWT/blocklist.
+## Code standards
+- Python: static typing where possible, small functions, avoid cryptic names.
+- Flask: routes in `src/core/routes/`, services in `src/core/services/`, utilities in `src/core/utils/`.
+- UI: routes/guards in `src/ui/routes/`, avoid complex logic in templates.
+- Security: use `role_required` and `user_required` decorators, and respect JWT/blocklist.
 
 ---
 
-## Reporte de issues y seguridad
-- Bugs: abre un issue con pasos reproducibles y logs relevantes.
-- Vulnerabilidades: sigue [`SECURITY.md`](./SECURITY.md) (responsible disclosure). No exploits en producción.
+## Issue and security reporting
+- Bugs: open an issue with reproducible steps and relevant logs.
+- Vulnerabilities: follow [`SECURITY.md`](./SECURITY.md) (responsible disclosure). No exploits in production.
 
 ---
 
-## Licencia
-- El proyecto está bajo `GPLv3` (ver [`LICENSE`](./LICENSE)).
-- Al contribuir, aceptas que tu código se publica bajo la misma licencia.
+## License
+- The project is under `GPLv3` (see [`LICENSE`](./LICENSE)).
+- By contributing, you accept that your code is published under the same license.
 
 ---
 
@@ -180,4 +210,4 @@ curl --location  http://localhost:5000/api/v1/health
 
 © Copyright 2025, Raccoon Survey Team.
 
-<div>
+</div>

@@ -1,4 +1,4 @@
-# Prototipo del esquema de la base de datos
+# Database Schema
 
 ```sql
 -- Teams table
@@ -169,395 +169,399 @@ CREATE INDEX idx_question_categories_assigned_by ON question_categories(assigned
 
 ---
 
-## Explicación de las tablas
+## Table Explanations
 
 ### 1. teams
 
-**Función**: agrupa usuarios administrativos y encuestas por departamento/área.
+**Purpose**: groups administrative users and surveys by department/area.
 
-**Campos**:
+**Fields**:
 
 - `id (PK)`
 - `name`
 - `description`
-- `state` (TRUE = activo, FALSE = inactivo)
+- `state` (TRUE = active, FALSE = inactive)
 - `created_at`
 
-**Relaciones**:
+**Relationships**:
 
-- 1 equipo tiene muchos usuarios administrativos.
-- 1 equipo tiene muchas encuestas.
-- 1 equipo tiene muchos tokens de encuesta.
+- One team has many administrative users.
+- One team has many surveys.
+- One team has many survey tokens.
 
 ---
 
 ### 2. roles
 
-**Función**: define los diferentes roles que pueden tener los usuarios administrativos en el sistema.
+**Purpose**: defines the different roles administrative users can have in the system.
 
-**Campos**:
+**Fields**:
 
 - `id (PK)`
-- `name` (único) - Ej: "admin", "rrhh"
+- `name` (unique) — e.g., "admin", "rrhh"
 - `description`
-- `state` (TRUE = activo, FALSE = inactivo)
+- `state` (TRUE = active, FALSE = inactive)
 - `created_at`
 
-**Índices**:
+**Indexes**:
 
-- `idx_roles_name` para búsquedas por nombre de rol.
-- `idx_roles_state` para filtrar roles activos/inactivos.
+- `idx_roles_name` for role name lookups.
+- `idx_roles_state` to filter active/inactive roles.
 
-**Relaciones**:
+**Relationships**:
 
-- 1 rol puede ser asignado a muchos usuarios administrativos.
+- One role can be assigned to many administrative users.
 
 ---
 
 ### 3. users
 
-**Función**: almacena información solo de usuarios administrativos (RRHH, Administradores) que requieren login.
+**Purpose**: stores information for administrative users (HR, Administrators) who require login.
 
-**Campos**:
+**Fields**:
 
 - `id (PK)`
 - `team_id (FK → teams.id)`
 - `role_id (FK → roles.id)`
 - `name`
-- `email (único)` - Solo para usuarios con login
-- `password_hash` - Solo para usuarios con login
-- `state` (TRUE = activo, FALSE = inactivo)
+- `email (unique)` — only for users with login
+- `password_hash` — only for users with login
+- `state` (TRUE = active, FALSE = inactive)
 - `created_at`
 
-**Índices**:
+**Indexes**:
 
-- `idx_users_team_id` para filtrar por equipo.
-- `idx_users_role_id` para filtrar por rol.
-- `idx_users_state` para filtrar usuarios activos/inactivos.
-- `idx_users_email` para login rápido.
+- `idx_users_team_id` to filter by team.
+- `idx_users_role_id` to filter by role.
+- `idx_users_state` to filter active/inactive users.
+- `idx_users_email` for fast admin login.
 
-**Relaciones**:
+**Relationships**:
 
-- Pertenece a un equipo.
-- Tiene un rol asignado.
-- Puede crear muchas encuestas.
+- Belongs to a team.
+- Has an assigned role.
+- Can create many surveys.
 
 ---
 
 ### 4. surveys
 
-**Función**: representa encuestas creadas por usuarios administrativos para un equipo específico.
+**Purpose**: represents surveys created by administrative users for a specific team.
 
-**Campos**:
+**Fields**:
 
 - `id (PK)`
-- `team_id (FK → teams.id)` - Equipo objetivo de la encuesta
-- `created_by_user_id (FK → users.id)` - Usuario admin que creó la encuesta
+- `team_id (FK → teams.id)` — team targeted by the survey
+- `created_by_user_id (FK → users.id)` — admin user who created the survey
 - `title`
 - `description`
-- `is_anonymous` (`TRUE` = garantiza anonimato total)
-- `state` (TRUE = activo, FALSE = inactivo)
-- `expires_at` - Fecha límite para responder
+- `is_anonymous` (`TRUE` = guarantees full anonymity)
+- `state` (TRUE = active, FALSE = inactive)
+- `expires_at` — deadline to respond
 - `created_at`
 
-**Índices**:
+**Indexes**:
 
-- `idx_surveys_team_id` para listar encuestas de un equipo.
-- `idx_surveys_created_by` para auditoría de quién creó qué.
-- `idx_surveys_created_at` para ordenar o filtrar por fecha.
-- `idx_surveys_expires_at` para limpiar encuestas vencidas.
-- `idx_surveys_state` para filtrar encuestas activas/inactivas.
+- `idx_surveys_team_id` to list surveys for a team.
+- `idx_surveys_created_by` for auditing who created what.
+- `idx_surveys_created_at` to sort or filter by date.
+- `idx_surveys_expires_at` to clean up expired surveys.
+- `idx_surveys_state` to filter active/inactive surveys.
 
-**Relaciones:**
+**Relationships:**
 
-- Pertenece a un equipo.
-- Fue creada por un usuario administrativo.
-- Tiene muchas preguntas.
-- Tiene muchos tokens de acceso.
+- Belongs to a team.
+- Created by an administrative user.
+- Has many questions.
+- Has many access tokens.
 
 ---
 
 ### 5. survey_tokens
 
-**Función**: gestiona tokens únicos para acceso anónimo de empleados a encuestas específicas.
+**Purpose**: manages unique tokens for anonymous employee access to specific surveys.
 
-**Campos**:
+**Fields**:
 
 - `id (PK)`
-- `survey_id (FK → surveys.id)` - Encuesta asociada
-- `team_id (FK → teams.id)` - Equipo del empleado (para métricas)
-- `token` (único) - Token UUID para acceso anónimo
-- `employee_identifier` - ID interno opcional (ej: "EMP001") sin datos personales
-- `is_used` - Si el token ya fue utilizado
-- `used_at` - Timestamp de cuándo se usó
-- `expires_at` - Fecha de expiración del token
+- `survey_id (FK → surveys.id)` — associated survey
+- `team_id (FK → teams.id)` — employee's team (for metrics)
+- `token` (unique) — UUID token for anonymous access
+- `employee_identifier` — optional internal ID (e.g., "EMP001") without personal data
+- `is_used` — whether the token has been used
+- `used_at` — timestamp when it was used
+- `expires_at` — token expiration date
 - `created_at`
 
-**Índices**:
+**Indexes**:
 
-- `idx_survey_tokens_token` para validación rápida de tokens.
-- `idx_survey_tokens_survey_id` para listar tokens de una encuesta.
-- `idx_survey_tokens_team_id` para métricas por equipo.
-- `idx_survey_tokens_expires_at` para limpiar tokens vencidos.
-- `idx_survey_tokens_is_used` para estadísticas de participación.
+- `idx_survey_tokens_token` for fast token validation.
+- `idx_survey_tokens_survey_id` to list tokens for a survey.
+- `idx_survey_tokens_team_id` for team-based metrics.
+- `idx_survey_tokens_expires_at` to clean up expired tokens.
+- `idx_survey_tokens_is_used` for participation statistics.
 
-**Relaciones**:
+**Relationships**:
 
-- Pertenece a una encuesta específica.
-- Asociado a un equipo (para métricas agregadas).
-- Tiene muchas respuestas (una vez usado).
+- Belongs to a specific survey.
+- Associated with a team (for aggregated metrics).
+- Has many responses (once used).
 
-**Nota**: Este es el mecanismo clave para el anonimato. No contiene datos personales identificables.
+**Note**: This is the key mechanism for anonymity. It contains no personally identifiable data.
 
 ---
 
 ### 6. questions
 
-**Función**: define las preguntas dentro de cada encuesta.
+**Purpose**: defines the questions within each survey.
 
-**Campos**:
+**Fields**:
 
 - `id (PK)`
 - `survey_id (FK → surveys.id)`
-- `text` (contenido de la pregunta)
+- `text` (question content)
 - `type` (`text`, `multiple_choice`, `rating`)
-- `options` (`JSONB`, solo útil en opción múltiple)
-- `is_required` - Si la pregunta es obligatoria
-- `order_position` - Orden de aparición en la encuesta
-- `state` (TRUE = activo, FALSE = inactivo)
+- `options` (`JSONB`, only useful for multiple choice)
+- `is_required` — whether the question is mandatory
+- `order_position` — order of appearance in the survey
+- `state` (TRUE = active, FALSE = inactive)
 - `created_at`
 
-**Índices**:
+**Indexes**:
 
-- `idx_questions_survey_id` para obtener preguntas de una encuesta.
-- `idx_questions_type` para filtros por tipo.
-- `idx_questions_order` para ordenar preguntas correctamente.
-- `idx_questions_state` para filtrar preguntas activas/inactivas.
+- `idx_questions_survey_id` to get questions for a survey.
+- `idx_questions_type` for type filters.
+- `idx_questions_order` to order questions correctly.
+- `idx_questions_state` to filter active/inactive questions.
 
-**Relaciones**:
+**Relationships**:
 
-- Pertenece a una encuesta.
-- Tiene muchas respuestas.
+- Belongs to a survey.
+- Has many responses.
 
 ---
 
 ### 7. responses
 
-**Función**: almacena respuestas completamente anónimas vinculadas a tokens únicos.
+**Purpose**: stores fully anonymous responses linked to unique tokens.
 
-**Campos**:
+**Fields**:
 
 - `id (PK)`
 - `question_id (FK → questions.id)`
-- `survey_token_id (FK → survey_tokens.id)` - Vincula respuesta al token
-- `answer` (texto, valor numérico o selección)
-- `state` (TRUE = activo, FALSE = inactivo)
+- `survey_token_id (FK → survey_tokens.id)` — links response to the token
+- `answer` (text, numeric value, or selection)
+- `state` (TRUE = active, FALSE = inactive)
 - `created_at`
 
-**Índices**:
+**Indexes**:
 
-- `idx_responses_question_id` para obtener respuestas por pregunta.
-- `idx_responses_survey_token_id` para agrupar respuestas de un mismo token.
-- `idx_responses_created_at` para análisis temporal.
-- `idx_responses_state` para filtrar respuestas activas/inactivas.
+- `idx_responses_question_id` to get responses per question.
+- `idx_responses_survey_token_id` to group responses from the same token.
+- `idx_responses_created_at` for temporal analysis.
+- `idx_responses_state` to filter active/inactive responses.
 
-**Relaciones**:
+**Relationships**:
 
-- Pertenece a una pregunta.
-- Vinculada a un token de encuesta.
+- Belongs to a question.
+- Linked to a survey token.
 
-**Nota**: El anonimato se garantiza porque:
+**Note**: Anonymity is ensured because:
 
-1. No hay FK directa a usuarios.
-2. Solo se vincula al token, que no contiene datos personales.
-3. Múltiples tokens pueden pertenecer al mismo equipo sin identificar individuos.
+1. There is no direct FK to users.
+2. It only links to the token, which contains no personal data.
+3. Multiple tokens can belong to the same team without identifying individuals.
 
 ---
 
 ### 8. audit_logs
 
-**Función**: registra eventos y cambios del sistema con trazabilidad, sin comprometer el anonimato de empleados.
+**Purpose**: records system events and changes with traceability without compromising employee anonymity.
 
-**Campos**:
+**Fields**:
 
 - `id (PK)`
-- `entity_type` - Tipo de entidad afectada (ej: `survey`, `question`, `response`, `role`, `team`, `user`)
-- `entity_id` - ID del registro afectado en su tabla correspondiente
-- `action` - Tipo de acción (`create`, `update`, `delete`, `soft_delete`, `restore`, `login`, `logout`, `assign_role`, `generate_tokens`)
-- `changed_by_user_id (FK → users.id)` - Usuario admin que realizó la acción
-- `ip_address` - IP de origen (IPv4/IPv6)
-- `previous_data (JSONB)` - Snapshot antes del cambio (cuando aplique)
-- `new_data (JSONB)` - Snapshot después del cambio (cuando aplique)
-- `metadata (JSONB)` - Información adicional contextual
-- `triggered_by` - Origen del evento (`manual` o `system`)
-- `created_at` - Timestamp del evento
+- `entity_type` — type of affected entity (e.g., `survey`, `question`, `response`, `role`, `team`, `user`)
+- `entity_id` — ID of the affected record in its table
+- `action` — action type (`create`, `update`, `delete`, `soft_delete`, `restore`, `login`, `logout`, `assign_role`, `generate_tokens`)
+- `changed_by_user_id (FK → users.id)` — admin user who performed the action
+- `ip_address` — source IP (IPv4/IPv6)
+- `previous_data (JSONB)` — snapshot before change (when applicable)
+- `new_data (JSONB)` — snapshot after change (when applicable)
+- `metadata (JSONB)` — additional contextual information
+- `triggered_by` — event origin (`manual` or `system`)
+- `created_at` — event timestamp
 
-**Índices**:
+**Indexes**:
 
-- `idx_audit_entity` para búsquedas por entidad afectada.
-- `idx_audit_action` para filtros por tipo de acción.
-- `idx_audit_changed_by` para auditorías por usuario administrador.
-- `idx_audit_created_at` para orden temporal y ventanas de auditoría.
-- `idx_audit_triggered_by` para distinguir eventos manuales vs de sistema.
+- `idx_audit_entity` for searches by affected entity.
+- `idx_audit_action` for filtering by action type.
+- `idx_audit_changed_by` for audits by administrative user.
+- `idx_audit_created_at` for temporal ordering and audit windows.
+- `idx_audit_triggered_by` to distinguish manual vs system events.
 
-**Relaciones**:
+**Relationships**:
 
-- Relación lógica hacia entidades auditadas mediante (`entity_type`, `entity_id`) sin FK directa.
-- FK a `users` mediante `changed_by_user_id` para trazabilidad de acciones administrativas.
+- Logical relation to audited entities via (`entity_type`, `entity_id`) without direct FK.
+- FK to `users` via `changed_by_user_id` for administrative action traceability.
 
 ### 9. categories
 
-**Función**: organiza las preguntas por temas (ej: Cultura, Comunicación, Liderazgo) para facilitar filtros y reportes.
+**Purpose**: organizes questions by topics (e.g., Culture, Communication, Leadership) to facilitate filters and reports.
 
-**Campos**:
+**Fields**:
 
 - `id (PK)`
-- `name` (único) - Nombre de la categoría
-- `description` - Descripción opcional
-- `state` (TRUE = activa, FALSE = inactiva)
+- `name` (unique) — category name
+- `description` — optional description
+- `state` (TRUE = active, FALSE = inactive)
 - `created_at`
 
-**Índices**:
+**Indexes**:
 
-- `idx_categories_name` para búsquedas por nombre.
-- `idx_categories_state` para filtrar categorías activas/inactivas.
+- `idx_categories_name` for lookups by name.
+- `idx_categories_state` to filter active/inactive categories.
 
-**Relaciones**:
+**Relationships**:
 
-- Tiene muchas relaciones con preguntas mediante `question_categories`.
+- Has many relations with questions via `question_categories`.
 
 ---
 
 ### 10. question_categories
 
-**Función**: relación muchos-a-muchos entre preguntas y categorías.
+**Purpose**: many-to-many relationship between questions and categories.
 
-**Campos**:
+**Fields**:
 
 - `id (PK)`
 - `question_id (FK → questions.id)`
 - `category_id (FK → categories.id)`
-- `assigned_by_user_id (FK → users.id)` - Usuario admin que asignó la categoría
-- `created_at` - Fecha de asignación
+- `assigned_by_user_id (FK → users.id)` — admin user who assigned the category
+- `created_at` — assignment date
 
-**Índices**:
+**Indexes**:
 
-- `idx_question_categories_question_id` para consultar categorías de una pregunta.
-- `idx_question_categories_category_id` para consultar preguntas de una categoría.
-- `idx_question_categories_assigned_by` para auditoría de asignaciones.
+- `idx_question_categories_question_id` to query a question's categories.
+- `idx_question_categories_category_id` to query a category's questions.
+- `idx_question_categories_assigned_by` for assignment audits.
 
-**Relaciones**:
+**Relationships**:
 
-- Pertenece a una pregunta y a una categoría.
-- Relación lógica con `users` para trazabilidad del asignador.
+- Belongs to a question and a category.
+- Logical relation with `users` for assigner traceability.
 
 ---
 
-## Relaciones Globales
+## Global Relationships
 
 ```plaintext
 
-teams ──< users (solo admins/RRHH)
-roles ──< users (solo admins/RRHH)
+teams ──< users (admins/HR only)
+roles ──< users (admins/HR only)
 teams ──< surveys ──< questions ──< responses
 users ──< surveys (created_by)
 teams ──< survey_tokens
 surveys ──< survey_tokens ──< responses
 users ──< audit_logs (changed_by_user_id)
-audit_logs ──(entity_type, entity_id)→ entidades auditables (relación lógica, sin FK)
+audit_logs ──(entity_type, entity_id)→ auditable entities (logical relation, no FK)
 questions ──< question_categories >── categories
 
 ```
 
 ---
 
-## Justificación de los índices
+## Index Justification
 
-### Tabla categories
+### Table categories
 
-- `idx_categories_name`: búsquedas por nombre de categoría.
-- `idx_categories_state`: filtrar categorías activas/inactivas.
+- `idx_categories_name`: lookups by category name.
+- `idx_categories_state`: filter active/inactive categories.
 
-### Tabla question_categories
+### Table question_categories
 
-- `idx_question_categories_question_id`: obtener categorías de una pregunta.
-- `idx_question_categories_category_id`: obtener preguntas por categoría.
-- `idx_question_categories_assigned_by`: auditoría de quién asignó la relación.
+- `idx_question_categories_question_id`: get a question's categories.
+- `idx_question_categories_category_id`: get questions by category.
+- `idx_question_categories_assigned_by`: audit who made the assignment.
 
-### Tabla roles
+### Table roles
 
-- `idx_roles_name` y `idx_roles_state`: búsquedas por nombre de rol y filtrado de roles activos.
+- `idx_roles_name` and `idx_roles_state`: lookups by role name and filter active roles.
 
-### Tabla users
+### Table users
 
-- `idx_users_team_id`, `idx_users_role_id` y `idx_users_state`: consultas por equipo, filtro de roles y usuarios activos.
-- `idx_users_email`: login rápido de administradores.
+- `idx_users_team_id`, `idx_users_role_id`, and `idx_users_state`: queries by team, role filter, and active users.
+- `idx_users_email`: fast administrator login.
 
-### Tabla surveys
+### Table surveys
 
-- `idx_surveys_team_id`: listar encuestas de un equipo específico.
-- `idx_surveys_created_by`: auditoría de quién creó cada encuesta.
-- `idx_surveys_created_at`: reportes cronológicos y ordenamiento.
-- `idx_surveys_expires_at`: limpieza automática de encuestas vencidas.
-- `idx_surveys_state`: filtrado de encuestas activas/inactivas.
+- `idx_surveys_team_id`: list surveys for a specific team.
+- `idx_surveys_created_by`: audit who created each survey.
+- `idx_surveys_created_at`: chronological reports and ordering.
+- `idx_surveys_expires_at`: automatic cleanup of expired surveys.
+- `idx_surveys_state`: filter active/inactive surveys.
 
-### Tabla survey_tokens
+### Table survey_tokens
 
-- `idx_survey_tokens_token`: validación ultra-rápida de tokens de acceso.
-- `idx_survey_tokens_survey_id`: gestión de tokens por encuesta.
-- `idx_survey_tokens_team_id`: métricas agregadas por equipo sin identificar individuos.
-- `idx_survey_tokens_expires_at`: limpieza de tokens vencidos.
-- `idx_survey_tokens_is_used`: estadísticas de participación y prevención de reutilización.
+- `idx_survey_tokens_token`: ultra-fast validation of access tokens.
+- `idx_survey_tokens_survey_id`: manage tokens per survey.
+- `idx_survey_tokens_team_id`: aggregated metrics per team without identifying individuals.
+- `idx_survey_tokens_expires_at`: cleanup of expired tokens.
+- `idx_survey_tokens_is_used`: participation statistics and reuse prevention.
 
-### Tabla questions
+### Table questions
 
-- `idx_questions_survey_id`: obtener todas las preguntas de una encuesta.
-- `idx_questions_type`: filtros y validaciones por tipo de pregunta.
-- `idx_questions_order`: presentación ordenada de preguntas.
-- `idx_questions_state`: filtrado de preguntas activas/inactivas.
+- `idx_questions_survey_id`: get all questions for a survey.
+- `idx_questions_type`: filters and validations by question type.
+- `idx_questions_order`: ordered presentation of questions.
+- `idx_questions_state`: filter active/inactive questions.
 
-### Tabla responses
+### Table responses
 
-- `idx_responses_question_id`: análisis de respuestas por pregunta específica.
-- `idx_responses_survey_token_id`: agrupar respuestas de un mismo token (sesión anónima).
-- `idx_responses_created_at`: análisis temporal y gráficas de tendencias.
-- `idx_responses_state`: filtrado de respuestas válidas/inválidas.
+- `idx_responses_question_id`: analysis of responses by specific question.
+- `idx_responses_survey_token_id`: group responses from the same token (anonymous session).
+- `idx_responses_created_at`: temporal analysis and trend charts.
+- `idx_responses_state`: filter valid/invalid responses.
 
-### Tabla audit_logs
+### Table audit_logs
 
-- `idx_audit_entity`: búsqueda rápida por entidad afectada.
-- `idx_audit_action`: filtrado por tipo de acción (CRUD, login, etc.).
-- `idx_audit_changed_by`: auditoría por usuario admin que realizó cambios.
-- `idx_audit_created_at`: orden temporal y análisis de ventanas.
-- `idx_audit_triggered_by`: distinguir eventos manuales vs generados por el sistema.
+- `idx_audit_entity`: quick search by affected entity.
+- `idx_audit_action`: filter by action type (CRUD, login, etc.).
+- `idx_audit_changed_by`: audit by admin user who made changes.
+- `idx_audit_created_at`: temporal ordering and window analysis.
+- `idx_audit_triggered_by`: distinguish manual vs system-generated events.
 
 ---
 
-## Modelo relacional
+## Relational Model
 
-### Arquitectura de Anonimato
+### Anonymity Architecture
 
-El diseño garantiza el anonimato completo de los empleados mediante:
+The design guarantees complete employee anonymity through:
 
-1. **Separación de identidades**: Los empleados nunca se registran en el sistema
-2. **Tokens de un solo uso**: Cada empleado recibe un token único por encuesta
-3. **Trazabilidad limitada**: Solo se puede rastrear participación por equipo, no por individuo
-4. **Expiración automática**: Los tokens tienen fecha de vencimiento para mayor seguridad
+1. **Separation of identities**: Employees never register in the system
+2. **Single-use tokens**: Each employee receives a unique token per survey
+3. **Limited traceability**: Only team participation can be tracked, not individuals
+4. **Automatic expiration**: Tokens have an expiration date for added security
 
-### Flujo de datos anónimo
+### Anonymous data flow
 
 ```
-Admin → Crea encuesta → Genera tokens → Empleado usa token → Responde anónimamente
+Admin → Creates survey → Generates tokens → Employee uses token → Responds anonymously
 ```
 
-### Beneficios del modelo
+### Model benefits
 
-- **Privacidad total**: Imposible identificar respuestas individuales
-- **Confianza**: Los empleados pueden responder honestamente
-- **Cumplimiento**: Alineado con regulaciones de privacidad
-- **Simplicidad**: No requiere gestión de usuarios empleados
-- **Seguridad**: Tokens de un solo uso previenen accesos no autorizados
+- **Total privacy**: Impossible to identify individual responses
+- **Trust**: Employees can answer honestly
+- **Compliance**: Aligned with privacy regulations
+- **Simplicity**: No need to manage employee users
+- **Security**: Single-use tokens prevent unauthorized access
 
-Para una representación visual del modelo relacional, consulte el diagrama DER en `DER.png`
+For a visual representation of the relational model, see the ERD diagram in `DER.png`.
 
-![DER](DER.png)
+---
+
+## Entity-Relationship Diagram (ERD)
+
+![ERD](DER.png)
