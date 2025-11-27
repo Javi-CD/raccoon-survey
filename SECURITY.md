@@ -1,64 +1,80 @@
-# Política de Seguridad de Raccoon Survey
+# Raccoon Survey Security Policy
 
-Esta política describe cómo reportar vulnerabilidades, el alcance de pruebas de seguridad, tiempos de respuesta y prácticas recomendadas específicas del proyecto.
+This policy describes how to report vulnerabilities, the scope of security testing, response times, and project-specific recommended practices.
 
-## Reporte de Vulnerabilidades
-- Canal: [Github Security Advisoy](https://github.com/Javi-CD/raccoon-survey/security/advisories)
-- Incluye: versión/commit, entorno (dev/prod), endpoints afectados, pasos de reproducción, impacto esperado, PoC no destructivo y logs relevantes.
-- No incluyas datos personales ni resultados reales de encuestas. Usa datos sintéticos.
-- Asunto sugerido: `[SECURITY] <título corto>`.
+---
 
-## Tiempos de Respuesta
-- Acuse de recibo: 72 horas hábiles.
-- Triage: hasta 7 días para clasificación y severidad (CVSS aproximado).
-- Mitigación/fix: 
-  - Crítico/Alto: 30 días.
-  - Medio: 60 días.
-  - Bajo: próxima release planificada.
+## Vulnerability Reporting
+- Channel: [GitHub Security Advisory](https://github.com/Javi-CD/raccoon-survey/security/advisories)
+- Include: version/commit, environment (dev/prod), affected endpoints, reproduction steps, expected impact, non-destructive PoC, and relevant logs.
+- Do not include personal data or real survey results. Use synthetic data.
+- Suggested subject: `[SECURITY] <short title>`.
 
-## Alcance
-- Backend API: rutas bajo `/api/v1/*` (auth, teams, surveys, questions, tokens, anonymous, reports, metrics, maintenance, health).
-- Frontend UI: páginas `/dashboard`, `/surveys`, `/reports` y flujo de login (`/login`).
-- CI/CD: workflows en `.github/workflows/` y scripts auxiliares.
-- Configuración y secretos: `.env`, variables de entorno y credenciales de despliegue.
+---
 
-## Fuera de Alcance
-- Ataques de DDoS, spam o denegación de servicio deliberada.
-- Ingeniería social contra colaboradores o terceros.
-- Vulnerabilidades en dependencias externas sin configuración propia del proyecto.
-- Hallazgos sin impacto de seguridad (p. ej., micro-optimización de rendimiento).
+## Response Times
+- Acknowledgement: 72 business hours.
+- Triage: up to 7 days for classification and severity (approximate CVSS).
+- Mitigation/fix:
+  - Critical/High: 30 days.
+  - Medium: 60 days.
+  - Low: next planned release.
 
-## Safe Harbor y Divulgación Responsable
-- Investigación de buena fe dentro del alcance no será perseguida; evita exfiltración de datos reales.
-- No accedas a datos de terceros ni datos personales; usa entornos de prueba.
-- No divulgues públicamente antes de coordinar fix y release. Trabajaremos en conjunto para una divulgación responsable.
+---
 
-## Prácticas Recomendadas (Específicas del Proyecto)
-- Autenticación/Autorización:
-  - JWT Bearer en `Authorization: Bearer <access_token>`; refresh vía `POST /api/v1/auth/refresh`.
-  - RBAC con `role` en claims; endpoints sensibles exigen `admin` o `rrhh`.
-  - Revocación: blocklist por `jti`.
-- Cookies y CORS:
-  - UI usa `rs_access_token`, `rs_refresh_token`, `rs_has_session`. Configura `HttpOnly`, `Secure`, `SameSite`.
-  - CORS restringido con `CORS_ORIGINS`, `supports_credentials=true`.
-- Cabeceras y configuración:
-  - Añade `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Content-Security-Policy` ajustado al frontend.
-- Secretos y dependencias:
-  - Nunca commitees valores reales en `.env`. Rotación periódica y least privilege.
-  - Mantén dependencias al día y monitorea CVEs; aplica parches de seguridad.
+## Scope
+- Backend API: routes under `/api/v1/*` (auth, teams, surveys, questions, tokens, anonymous, reports, metrics, maintenance, health).
+- Frontend UI: pages `/dashboard`, `/surveys`, `/reports` and login flow (`/login`).
+- CI/CD: workflows in `.github/workflows/` and helper scripts.
+- Configuration and secrets: `.env`, environment variables, and deployment credentials.
 
-## Versiones Soportadas
-- Rama `develop` y últimas releases estables reciben parches de seguridad. Versiones antiguas pueden requerir actualización.
+---
 
-## Referencias
-- Guía de Seguridad del proyecto: `docs/Security/README.md`.
+## Out of Scope
+- DDoS, spam, or deliberate denial-of-service attacks.
+- Social engineering against contributors or third parties.
+- Vulnerabilities in external dependencies without project-specific configuration.
+- Findings without security impact (e.g., micro performance optimizations).
+
+---
+
+## Safe Harbor and Responsible Disclosure
+- Good-faith research within scope will not be pursued; avoid exfiltration of real data.
+- Do not access third-party data or personal data; use test environments.
+- Do not disclose publicly before coordinating fix and release. We will work together toward responsible disclosure.
+
+---
+
+## Recommended Practices (Project-Specific)
+- Authentication/Authorization:
+  - JWT Bearer in `Authorization: Bearer <access_token>`; refresh via `POST /api/v1/auth/refresh`.
+  - RBAC with `role` in claims; sensitive endpoints require `admin` or `rrhh`.
+  - Revocation: blocklist by `jti`.
+- Cookies and CORS:
+  - UI uses `rs_access_token`, `rs_refresh_token`, `rs_has_session`. Configure `HttpOnly`, `Secure`, `SameSite`.
+  - CORS restricted with `CORS_ORIGINS`, `supports_credentials=true`.
+- Headers and configuration:
+  - Add `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Content-Security-Policy` aligned with the frontend.
+- Secrets and dependencies:
+  - Never commit real values in `.env`. Periodic rotation and least privilege.
+  - Keep dependencies up to date and monitor CVEs; apply security patches.
+
+---
+
+## Supported Versions
+- The `develop` branch and latest stable releases receive security patches. Older versions may require updating.
+
+---
+
+## References
+- Project Security Guide: `docs/Security/README.md`.
 - OpenAPI: `GET /api/v1/openapi.json`.
 
 ---
 
 <div align="center">
-<img src="./src/ui/static/img/raccoon_survey.png" alt="Raccoon Survey Logo" width="100" height="100">   
+<img src="./src/ui/static/img/raccoon_survey.png" alt="Raccoon Survey Logo" width="100" height="100">
 
 © Copyright 2025, Raccoon Survey Team.
 
-<div>
+</div>

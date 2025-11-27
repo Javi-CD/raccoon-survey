@@ -5,59 +5,54 @@
 # Raccoon Survey
 
 [![License GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE)
-![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python)
-![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?logo=node.js)
 [![Coverage](https://codecov.io/github/Javi-CD/raccoon-survey/branch/develop/graph/badge.svg)](https://codecov.io/github/Javi-CD/raccoon-survey?branch=develop)
+[![Docs Build](https://github.com/Javi-CD/raccoon-survey/actions/workflows/docs.yml/badge.svg?branch=develop)](https://github.com/Javi-CD/raccoon-survey/actions/workflows/docs.yml)
+[![Tests](https://github.com/Javi-CD/raccoon-survey/actions/workflows/tests.yml/badge.svg?branch=develop)](https://github.com/Javi-CD/raccoon-survey/actions/workflows/tests.yml)
 
-_Plataforma empresarial para gestionar, distribuir y analizar clima en entorno laborales a travez de encuestas anonimas._
+_Enterprise platform to manage, distribute, and analyze workplace climate through anonymous surveys._
 
 </div>
 
 ---
 
 
-## Indice
+## Table of Contents
 
 <details>
 
-<summary>Ver indice</summary>
+<summary>View table of contents</summary>
 
 <br/>
 
-- [Caracteristicas](#caracteristicas)
-- [Requisitos](#requisitos)
-- [Instalacion](#instalacion)
-- [Ejecucion](#ejecucion)
-- [Pruebas](#pruebas)
-- [Documentacion](#documentacion)
-- [Seguridad](#seguridad)
-- [Estructura](#estructura)
-- [Contribuir](#contribuir)
-- [Licencia](#licencia)
+- [Requirements](#requirements)
+- [Installation](#installation)
+    - [Backend (API)](#backend-api)
+    - [Frontend (UI)](#frontend-ui)
+- [Run](#run)
+- [Tests](#tests)
+- [Documentation](#documentation)
+- [Security](#security)
+- [Structure](#structure)
+- [Contributing](#contributing)
+- [License](#license)
 
 </details>
 
 ---
 
-## Caracteristicas
-- Autenticacion JWT con roles.
-- Revocacion de tokens y proteccion de rutas privadas.
-- Gestion de encuestas y respuestas anonimas.
-- Documentacion de API y seguridad integrada.
+## Setup 
+
+### Requirements
+- `Python 3.11+`, `uv (recommended)` or `pip`.
+- `Node.js 18+` and `npm`.
+
+- Environment file: copy `/.env.example` to `/.env`.
 
 ---
 
-## Requisitos
-- `Python 3.11+`, `uv (recomendado)` o `pip` .
-- `Node.js 18+` y `npm`.
+### Installation
 
-- Archivo de entorno: copia `/.env.example` a `/.env`.
-
----
-
-## Instalacion
-
-Configurar variables en `.env`1
+Configure variables in `.env`
 
 ```bash
 
@@ -65,73 +60,72 @@ copy .env.example .env
 
 ```
 
-## Backend(API)
+- #### Backend (API)
 
 ```bash
 
-# Intalar Dependencias - Crear y activa el entorno virtual de manera automatica
+# Install dependencies - Create and activate virtual env automatically
 uv sync
 
-# Usando pip
+# Alternative
 python -m venv .venv && .\\.venv\\Scripts\\Activate.ps1
 pip install -r requirements.txt
 
 ```
 
-## Frontend(UI)
+- #### Frontend (UI)
 
 ```bash
-# Instalar Dependencias
+# Install dependencies
 npm install
 ```
 
 ---
 
-## Ejecucion
+### Run
 
 ```bash
 
-# Ejecutar servidor local
+# Run local server
 uv run main.py
 
-# Otra opcion
+# Alternative
 python main.py
 
 ```
 
-> El servidor quedara disponible en el puerto que hayas definido en el archivo `.env` (por defecto `5000`).
+> The server will be available on the port defined in `.env` (default `3000`).
 
-- **API Url Base:** `http://localhost:<PORT>/api/v1/`
-- **UI Url Base:** `http://localhost:<PORT>/`
+- **Base API URL:** `http://localhost:<PORT>/api/v1/`
+- **Base UI URL:** `http://localhost:<PORT>/`
 
 ---
 
-## Documentación
+## Documentation
 
-- Guia de seguridad: [`docs/Security/README.md`](./docs/Security/README.md).
+- Security guide: [`docs/Security/README.md`](./docs/Security/README.md).
 
-- Documentacion API: [`docs/API/README.md`](./docs/API/README.md).
+- API documentation: [`docs/API/README.md`](./docs/API/README.md).
 
-- Base de datos: [`docs/Database/schema_db.md`](./docs/Database/schema_db.md) y [`docs/Database/MIGRATIONS.md`](./docs/Database/MIGRATIONS.md).
+- Database: [`docs/Database/schema_db.md`](./docs/Database/schema_db.md) and [`docs/Database/MIGRATIONS.md`](./docs/Database/MIGRATIONS.md).
 
-- Sphinx: [`docs/source/index.rst`](./docs/source/index.rst) (build CI en `.github/workflows/docs.yml`).
-    - Puedes generar la documentación ejecutando el builder [`make.bat`](./docs/make.bat)
+- Sphinx: [`docs/source/index.rst`](./docs/source/index.rst) (CI build in `.github/workflows/docs.yml`).
+    - You can generate documentation locally using [`make.bat`](./docs/make.bat)
 - Swagger: [`GET /docs`](http://localhost:<PORT>/docs).
 
-- Enlace a colección de Postman: [Click Here!](https://www.postman.com/javier-prez/workspace/raccoon-surveys-api/collection/43954198-06d34335-49ff-4778-af25-1676be326cb6?action=share&creator=43954198&active-environment=43954198-cabc9e0c-dc39-401d-87b8-72ac404ce002)
+- Postman collection link: [Click Here!](https://www.postman.com/javier-prez/workspace/raccoon-surveys-api/collection/43954198-06d34335-49ff-4778-af25-1676be326cb6?action=share&creator=43954198&active-environment=43954198-cabc9e0c-dc39-401d-87b8-72ac404ce002)
 
 ---
 
-## Estructura
-
-Este proyecto tiene la siguiente estructura:
+## Structure
 
 <details>
 
-<summary>Ver estructura</summary>
+<summary>View structure</summary>
 
 ```plaintext
 raccoon-survey/
+|-- .coveragerc
 |-- .env.example
 |-- .gitignore
 |-- .github/
@@ -195,7 +189,9 @@ raccoon-survey/
 |-- main.py
 |-- package.json
 |-- pyproject.toml
+|-- pytest.ini
 |-- requirements.txt
+|-- uv.lock
 |-- CODE_OF_CONDUCT.md
 |-- LICENSE
 |-- SECURITY.md
@@ -206,26 +202,26 @@ raccoon-survey/
 
 ---
 
-## Seguridad
-- Politica del proyecto: [`SECURITY.md`](./SECURITY.md).
-- JWT, RBAC, blocklist y CORS: [`docs/Security/README.md`](./docs/Security/README.md).
-- Buenas practicas y divulgacion responsable en [`SECURITY.md`](./SECURITY.md).
+## Security
+- Project policy: [`SECURITY.md`](./SECURITY.md).
+- JWT, RBAC, blocklist and CORS: [`docs/Security/README.md`](./docs/Security/README.md).
+- Best practices and responsible disclosure in [`SECURITY.md`](./SECURITY.md).
 
 ---
 
-## Códigos de Conducta
-- Lee el archivo [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md) para entender nuestras expectativas en la comunidad.
+## Code of Conduct
+- Read the [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md) to understand our community expectations.
 
 ---
 
-## Quieres contribuir? 
-Echale un vistazo al archivo [`CONTRIBUTING.md`](./CONTRIBUTING.md) y [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md) para mas información.
-- Cambios y versiones: [`CHANGELOG.md`](./CHANGELOG.md).
+## Contributing
+Have a look at [`CONTRIBUTING.md`](./CONTRIBUTING.md) and [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md) for more information.
+- Changes and versions: [`CHANGELOG.md`](./CHANGELOG.md).
 
 ---
 
-## Licencia
-Distribuido bajo `GPLv3`. Ver [LICENSE](./LICENSE) para mas información.
+## License
+Distributed under `GPLv3`. See [LICENSE](./LICENSE) for more information.
 
 ---
 
@@ -234,4 +230,4 @@ Distribuido bajo `GPLv3`. Ver [LICENSE](./LICENSE) para mas información.
 
 © Copyright 2025, Raccoon Survey Team.
 
-<div>
+</div>

@@ -1,73 +1,95 @@
-# Guía de Testing
+# Testing Guide
 
-Esta guía resume cómo ejecutar la suite de tests y cómo está organizada la carpeta `test/` del proyecto.
+This guide summarizes how to run the test suite and how the project's `test/` folder is organized.
 
-## Requisitos
+---
+
+## Requirements
 
 - Python 3.11
-- Dependencias definidas en `requirements.txt`
+- Dependencies defined in `requirements.txt`
 
-Instalación:
+Installation:
 
 ```bash
 uv sync
 
-# O Usando Pip
+# Using Pip
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-## Ejecutar la suite completa
+---
+
+## Run the full suite
 
 ```bash
 pytest -q
 ```
 
-## Ejecutar con cobertura
+---
 
-Requisitos:
-- Instala el plugin: `pip install pytest-cov`
-- Configuración de cobertura: `.coveragerc` en la raíz del proyecto (``source=src`` y branch coverage).
+## Run with coverage
 
-Comandos:
+Requirements:
+- Install the plugin:
+  ```bash
+  uv add pytest-cov
+  
+  # Using pip
+  pip install pytest-cov
+  ```
+
+- Coverage configuration: `.coveragerc` at the project root (``source=src`` and branch coverage).
+
+Commands:
 ```bash
 pytest --cov=src --cov-report=term-missing:skip-covered --cov-report=html --cov-report=xml
 ```
 
-Resultados:
-- `coverage.xml`: reporte en formato XML para integraciones externas.
-- `htmlcov/`: reporte HTML navegable con detalle de líneas cubiertas y faltantes.
+Results:
+- `coverage.xml`: XML report for external integrations.
+- `htmlcov/`: navigable HTML report showing covered and missing lines.
 
-## Ejecutar subconjuntos
+---
 
-- Solo integración:
+## Run subsets
+
+- Integration only:
   ```bash
   pytest -q test/integration
   ```
-- Solo E2E:
+- E2E only:
   ```bash
   pytest -q test/e2e
   ```
-- Solo unitarios:
+- Unit tests only:
   ```bash
   pytest -q test/unitests
   ```
 
-## Organización de tests
+---
 
-- `test/integration/`: pruebas de endpoints de la API (CRUD, validaciones, estados).
-- `test/e2e/`: flujos completos (tokens, anonimato, resúmenes por equipo).
-- `test/unitests/`: pruebas de servicios internos y utilidades.
-- `test/utils/helpers.py`: helpers compartidos para crear equipos, encuestas, preguntas, generar tokens y utilidades de expiración.
+## Test organization
 
-## Variables de entorno
+- `test/integration/`: API endpoint tests (CRUD, validations, states).
+- `test/e2e/`: full flows (tokens, anonymity, team summaries).
+- `test/unitests/`: internal service and utility tests.
+- `test/utils/helpers.py`: shared helpers to create teams, surveys, questions, generate tokens, and expiration utilities.
 
-- Archivo base: `.env.example`
-- Ajusta valores necesarios para el entorno de ejecución.
+---
 
-## Consejos
+## Environment variables
 
-- Los tests usan fixtures para inicializar la aplicación y aislar la base de datos por prueba.
-- Usa los helpers compartidos para evitar duplicar lógica (por ejemplo `_create_team`, `_create_survey`, `_create_question`, `_generate_token`).
-- Para generar tokens, provee `expires_at` en formato ISO (usa `expires_at_future()` o `expires_at_past()`).
+- Base file: `.env.example`
+- Adjust values required for your execution environment.
 
+---
+
+## Tips
+
+- Tests use fixtures to initialize the application and isolate the database per test.
+- Use shared helpers to avoid duplicating logic (for example `_create_team`, `_create_survey`, `_create_question`, `_generate_token`).
+- To generate tokens, provide `expires_at` in ISO format (use `expires_at_future()` or `expires_at_past()`).
+
+---
