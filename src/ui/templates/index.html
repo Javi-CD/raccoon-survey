@@ -16,22 +16,11 @@ See the LICENSE file distributed with this program for details.
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              primary: '#1e3a5f',
-              secondary: '#2d4a73',
-              accent: '#00a8e8',
-            },
-          },
-        },
-      };
-    </script>
+    <script src="{{ url_for('ui.static', filename='js/dashboard/tailwind-config.js') }}"></script>
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="{{ url_for('ui.static', filename='img/raccoon_survey.ico') }}" />
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('ui.static', filename='img/icon/raccoon_survey.svg') }}" />
+    <link rel="icon" type="image/x-icon" href="{{ url_for('ui.static', filename='img/icon/raccoon_survey.ico') }}" />
 
     <!-- Google Fonts -->
     <link
@@ -52,7 +41,7 @@ See the LICENSE file distributed with this program for details.
       <div class="max-w-7xl mx-auto pl-6 pr-3 md:px-6 flex justify-between items-center">
         <div class="flex items-center gap-3">
           <img
-            src="{{ url_for('ui.static', filename='img/raccoon_survey.png') }}"
+            src="{{ url_for('ui.static', filename='img/raccoon_survey_dark.svg') }}"
             alt="Logo Raccoon"
             class="w-14 h-14 rounded-full object-cover"
           />
@@ -319,11 +308,21 @@ See the LICENSE file distributed with this program for details.
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           <div>
             <div class="flex items-center gap-3 mb-4">
-              <img
-                src="{{ url_for('ui.static', filename='img/raccoon_survey.png') }}"
-                alt="Logo Raccoon"
-                class="w-8 h-8 rounded-full object-cover"
-              />
+              <picture>
+                <source
+                  media="(prefers-color-scheme: dark)"
+                  srcset="{{ url_for('ui.static', filename='img/raccoon_survey_white.png') }}"
+                />
+                <source
+                  media="(prefers-color-scheme: light)"
+                  srcset="{{ url_for('ui.static', filename='img/raccoon_survey.png') }}"
+                />
+                <img
+                  src="{{ url_for('ui.static', filename='img/raccoon_survey.png') }}"
+                  alt="Logo Raccoon"
+                  class="w-8 h-8 rounded-full object-cover"
+                />
+              </picture>
               <h3 class="text-xl font-bold">Raccoon Survey</h3>
             </div>
             <p class="text-gray-400 leading-relaxed">Soluciones profesionales de encuestas para empresas modernas.</p>
