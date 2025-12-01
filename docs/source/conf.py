@@ -35,6 +35,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.todo",
     "sphinx.ext.ifconfig",
+    "myst_parser",  # Markdown support (MyST)
 ]
 
 # Flag to control if OpenAPI is available
@@ -61,10 +62,20 @@ html_theme_options = {
     "logo_only": True,
 }
 html_static_path = ["_static"]
-html_logo = "_static/raccoon_survey.png"
+html_logo = "_static/raccoon_survey_dark.svg"
+html_favicon = "_static/raccoon_survey_white.svg"
 html_css_files = [
     "custom.css",
 ]
+
+# Parse both .rst and .md sources
+source_suffix = {
+    ".rst": "restructuredtext",
+    ".md": "markdown",
+}
+
+# MyST configuration
+myst_heading_anchors = 3
 
 # Autodoc / Autosummary
 autosummary_generate = True
