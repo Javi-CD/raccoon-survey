@@ -62,7 +62,8 @@ html_theme_options = {
     "logo_only": True,
 }
 html_static_path = ["_static"]
-html_logo = "_static/raccoon_survey.png"
+html_logo = "_static/raccoon_survey_dark.svg"
+html_favicon = "_static/raccoon_survey_white.svg"
 html_css_files = [
     "custom.css",
 ]
