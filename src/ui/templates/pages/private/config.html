@@ -16,22 +16,11 @@ See the LICENSE file distributed with this program for details.
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              primary: '#1e3a5f',
-              secondary: '#2d4a73',
-              accent: '#00a8e8',
-            },
-          },
-        },
-      };
-    </script>
+    <script src="{{ url_for('ui.static', filename='js/dashboard/tailwind-config.js') }}"></script>
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="{{ url_for('ui.static', filename='img/raccoon_survey.ico') }}" />
+<link rel="icon" type="image/svg+xml" href="{{ url_for('ui.static', filename='img/icon/raccoon_survey.svg') }}" />
+<link rel="icon" type="image/x-icon" href="{{ url_for('ui.static', filename='img/icon/raccoon_survey.ico') }}" />
 
     <!-- Google Fonts -->
     <link

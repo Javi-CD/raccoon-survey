@@ -65,7 +65,11 @@ Thank you for helping build a safe and collaborative community.
 ---
 
 <div align="center">
-<img src="./src/ui/static/img/raccoon_survey.png" alt="Raccoon Survey Logo" width="100" height="100">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./src/ui/static/img/raccoon_survey_white.png" />
+  <source media="(prefers-color-scheme: light)" srcset="./src/ui/static/img/raccoon_survey.png" />
+  <img src="./src/ui/static/img/raccoon_survey.png" alt="Raccoon Survey Logo" width="100" height="100" />
+</picture>
 
 © Copyright 2025, Raccoon Survey Team.
 
