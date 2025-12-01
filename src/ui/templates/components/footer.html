@@ -16,11 +16,21 @@ else 'text-gray-600' %} {% set link_hover_class = 'hover:text-white' if is_dark 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex flex-col md:flex-row justify-between items-center">
       <div class="flex items-center gap-3 mb-4 md:mb-0">
-        <img
-          src="{{ url_for('ui.static', filename='img/raccoon_survey.png') }}"
-          alt="Logo Raccoon"
-          class="w-6 h-6 rounded-full object-cover"
-        />
+        <picture>
+          <source
+            media="(prefers-color-scheme: dark)"
+            srcset="{{ url_for('ui.static', filename='img/raccoon_survey_white.png') }}"
+          />
+          <source
+            media="(prefers-color-scheme: light)"
+            srcset="{{ url_for('ui.static', filename='img/raccoon_survey.png') }}"
+          />
+          <img
+            src="{{ url_for('ui.static', filename='img/raccoon_survey.png') }}"
+            alt="Logo Raccoon"
+            class="w-6 h-6 rounded-full object-cover"
+          />
+        </picture>
         <span class="text-lg font-bold {{ logo_text_class }}">Raccoon Survey</span>
       </div>
 
