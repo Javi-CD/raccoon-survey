@@ -73,7 +73,11 @@ This policy describes how to report vulnerabilities, the scope of security testi
 ---
 
 <div align="center">
-<img src="./src/ui/static/img/raccoon_survey.png" alt="Raccoon Survey Logo" width="100" height="100">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Javi-CD/raccoon-survey/develop/src/ui/static/img/raccoon_survey_white.png" />
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Javi-CD/raccoon-survey/develop/src/ui/static/img/raccoon_survey.png" />
+  <img src="https://raw.githubusercontent.com/Javi-CD/raccoon-survey/develop/src/ui/static/img/raccoon_survey.png" alt="Raccoon Survey Logo" width="100" height="100" />
+</picture>
 
 © Copyright 2025, Raccoon Survey Team.
 
