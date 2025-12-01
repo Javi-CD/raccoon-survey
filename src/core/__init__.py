@@ -83,6 +83,7 @@ def create_app(config: dict[str, Any] | None = None) -> Flask:
             "timestamp": datetime.datetime.now().isoformat(),
         }, 200
 
+    # Register API endpoints
     register_routes(app)
 
     @app.context_processor

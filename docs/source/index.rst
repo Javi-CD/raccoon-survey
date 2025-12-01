@@ -1,21 +1,28 @@
-Raccoon Survey Documentation
+Raccoon Survey Guide
 ==========================================
 
-Esta documentación ofrece una visión integral del backend de Raccoon Survey. Se genera automáticamente a partir de los Docstrings con estilo Google y de la especificación OpenAPI oficial del proyecto. Aquí encontrarás la referencia de módulos, modelos, servicios, middlewares, rutas y extensiones, junto con la descripción detallada de la API HTTP (endpoints, parámetros, cuerpos de petición y respuesta, códigos de estado y esquemas). 
-El objetivo es facilitar el desarrollo, el mantenimiento y la integración de clientes externos mediante un contrato técnico claro y actualizado.
+Welcome to the Raccoon Survey user guide. This landing page is intended for users and teams who want to use the application professionally to create surveys, distribute access tokens, manage teams, and analyze results.
 
-Contenidos
-----------
+If you are looking for backend technical references (modules, API, CI/CD, and database), visit the “Internal Documentation” section below.
 
 .. toctree::
    :maxdepth: 2
+   :caption: User Guide
 
-   modules
+   guide/index
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Internal Documentation
+
    api/openapi
+   modules
+   security_policy
+   security_guide
    ci
    testing
 
 UI
 --
 
-`Documentación de la UI <ui/index.html>`_
+`UI Documentation <ui/index.html>`_

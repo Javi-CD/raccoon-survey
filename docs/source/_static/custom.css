@@ -1,13 +1,13 @@
 /* Reduce logo size in sidebar and top nav */
 .wy-side-nav-search img,
 .wy-side-nav-search .logo img {
-  max-height: 72px;
+  max-height: 88px;
   width: auto;
 }
 
 .wy-nav-top img,
 .wy-nav-top .logo img {
-  max-height: 54px;
+  max-height: 64px;
   width: auto;
 }
 
