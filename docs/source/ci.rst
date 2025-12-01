@@ -1,17 +1,17 @@
 CI/CD - Tests
 =============
 
-Resumen
--------
-Este pipeline ejecuta automáticamente la suite de tests y mide cobertura en cada ``push`` y ``pull_request`` a las ramas objetivo. Está definido en ``.github/workflows/tests.yml`` y usa ``ubuntu-latest`` con Python ``3.11`` y cache de ``pip``.
+Overview
+--------
+This pipeline automatically runs the test suite and measures coverage on every ``push`` and ``pull_request`` to the target branches. It is defined in ``.github/workflows/tests.yml`` and uses ``ubuntu-latest`` with Python ``3.11`` and ``pip`` cache.
 
-Ramas monitoreadas
+Monitored branches
 ------------------
 - ``develop``
-- ``features`` y subramas ``features/**``
+- ``features`` and sub-branches ``features/**``
 
-Workflow de ejemplo
--------------------
+Sample workflow
+---------------
 .. code-block:: yaml
 
    name: CI - Tests
@@ -68,16 +68,16 @@ Workflow de ejemplo
              name: coverage-html
              path: htmlcov
 
-Pasos principales
------------------
-1. Checkout del repositorio.
-2. Configuración de Python con cache de ``pip``.
-3. Instalación de dependencias desde ``requirements.txt`` e instalación de ``pytest-cov``.
-4. Ejecución de la suite con cobertura y publicación de artifacts (XML, HTML).
+Main steps
+----------
+1. Checkout the repository.
+2. Set up Python with ``pip`` cache.
+3. Install dependencies from ``requirements.txt`` and install ``pytest-cov``.
+4. Run the suite with coverage and upload artifacts (XML, HTML).
 
-Personalización
----------------
-- Añadir matriz de versiones de Python:
+Customization
+-------------
+- Add a Python version matrix:
 
   .. code-block:: yaml
 
@@ -85,14 +85,14 @@ Personalización
        matrix:
          python-version: ['3.10', '3.11']
 
-- Incluir linters (``flake8``, ``ruff``, ``black --check``) antes de ``pytest``.
-- Ajustar ramas de disparo en ``on.push.branches`` y ``on.pull_request.branches``.
+- Include linters (``flake8``, ``ruff``, ``black --check``) before ``pytest``.
+- Adjust trigger branches in ``on.push.branches`` and ``on.pull_request.branches``.
 
 .. note::
-   El patrón ``features/**`` incluye subramas como ``features/auth`` o ``features/tokens-export``.
+   The ``features/**`` pattern includes sub-branches such as ``features/auth`` or ``features/tokens-export``.
 
 .. tip::
-   Usa matrices para probar en múltiples versiones de Python y, si aplica, en diferentes sistemas operativos.
+   Use matrices to test across multiple Python versions and, if applicable, different operating systems.
 
 .. seealso::
-   Detalle ampliado en :doc:`../CI/TESTS_WORKFLOW` (Markdown) y la documentación oficial de `GitHub Actions <https://docs.github.com/en/actions>`_.
+   Extended details in :doc:`../CI/TESTS_WORKFLOW` (Markdown) and the official `GitHub Actions documentation <https://docs.github.com/en/actions>`_.
