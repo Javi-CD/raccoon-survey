@@ -3,10 +3,10 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Raccoon Survey UI documentation
-===============================
+Welcome to the Raccoon Survey UI Documentation!
+=================================================
 
-
+This documentation provides a comprehensive overview of the **Raccoon Survey UI** module, from its architecture and technology stack to its design principles and core components. Whether you are a developer, a designer, or a contributor, this guide will help you understand how the frontend is built and how to work with it effectively.
 
 .. toctree::
    :maxdepth: 2
@@ -14,6 +14,6 @@ Raccoon Survey UI documentation
 
    introduction
    frontend_structure
-   components
    styles
+   components
    api_connection
