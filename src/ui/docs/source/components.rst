@@ -1,104 +1,140 @@
-Componentes Principales
-=======================
+.. _ui_components:
 
-El módulo de interfaz de usuario (**UI**) de *Raccoon Survey* está compuesto por una serie de componentes reutilizables,
-diseñados bajo un enfoque modular.  
-Cada componente cumple una función específica dentro de la aplicación y mantiene una separación clara entre estructura (HTML),
-estilos (CSS) y comportamiento (JavaScript).
+Main Components
+===============
 
-A continuación, se describen los principales:
+The **UI** module of *Raccoon Survey* is composed of a series of reusable components,
+designed under a modular approach.
+Each component fulfills a specific function within the application and maintains a clear separation between structure (HTML),
+styles (CSS), and behavior (JavaScript).
+
+The main ones are described below:
 
 ---
 
 Navbar
 ------
 
-**Descripción:**  
-Barra de navegación superior que proporciona acceso rápido a las secciones principales del sistema.
+**Description:**
+Top navigation bar that provides quick access to the main sections of the system.
 
-**Características:**
-- Incluye el logotipo del sistema y enlaces de navegación (Inicio, Dashboard, Configuración, etc.).
-- Contiene un menú desplegable para el perfil del usuario autenticado.
-- Se mantiene fija (sticky) en la parte superior de la interfaz.
-- Adaptable a pantallas pequeñas mediante menú tipo *hamburguesa*.
+**Features:**
+- Includes the system logo and navigation links (Home, Dashboard, Settings, etc.).
+- Contains a dropdown menu for the authenticated user's profile.
+- It remains fixed (sticky) at the top of the interface.
+- Adaptable to small screens through a *hamburger* menu.
 
-**Archivos relacionados:**
-- `components/navbar.html`
-- `static/js/navbar.js`
-- `static/css/navbar.css`
+**Code Example (Jinja2/HTML):**
+The Navbar is included in the base templates using a Jinja2 `include` statement, promoting reusability.
+
+.. code-block:: html
+
+  {% include 'components/navbar.html' %}
+
+**Related Files:**
+- `templates/components/navbar.html`
+- `static/js/public/hamburger.js`
+- `static/css/common/navbar.css`
 
 ---
 
 Dashboard
 ---------
 
-**Descripción:**  
-Panel principal que presenta información general y analítica del sistema, incluyendo métricas, gráficos y accesos rápidos.
+**Description:**
+Main panel that presents general and analytical information of the system, including metrics, graphics, and quick access.
 
-**Características:**
-- Muestra datos provenientes del backend mediante peticiones `fetch`.
-- Contiene componentes visuales como tarjetas, gráficos estadísticos y tablas.
-- Estructura basada en `CSS Grid` para mantener una distribución flexible.
-- Permite recarga dinámica de contenido sin refrescar la página completa.
+**Features:**
+- Displays data from the backend through `fetch` requests.
+- Contains visual components such as cards, statistical charts, and tables.
+- Structure based on `CSS Grid` to maintain a flexible distribution.
+- Allows dynamic content reloading without refreshing the entire page.
 
-**Archivos relacionados:**
-- `templates/dashboard.html`
-- `static/js/dashboard.js`
-- `static/css/dashboard.css`
-
----
-
-Formularios
-------------
-
-**Descripción:**  
-Componentes utilizados para la creación, edición y eliminación de registros (usuarios, encuestas, tareas, etc.).
-
-**Características:**
-- Validaciones en tiempo real mediante JavaScript (sin recargar la página).
-- Mensajes de error dinámicos y retroalimentación visual al usuario.
-- Estilos coherentes con el modo oscuro global.
-- Envío de datos mediante la **Fetch API** hacia los endpoints del backend Flask.
-
-**Archivos relacionados:**
-- `components/forms.html`
-- `static/js/forms.js`
-- `static/css/forms.css`
+**Related Files:**
+- `templates/pages/private/dashboard.html`
+- `static/js/dashboard/`
+- `static/css/common/skeleton.css`
 
 ---
 
-Modales
--------
+Forms
+-----
 
-**Descripción:**  
-Ventanas emergentes utilizadas para confirmar acciones, mostrar información adicional o editar elementos sin salir de la vista actual.
+**Description:**
+Components used for the creation, editing, and deletion of records (users, surveys, tasks, etc.).
 
-**Características:**
-- Implementados con HTML dinámico inyectado por JavaScript.
-- Cuentan con animaciones suaves de aparición y cierre.
-- Soportan eventos personalizados (`onOpen`, `onClose`, `onSubmit`).
-- Diseñados con esquinas redondeadas y fondo translúcido.
+**Features:**
+- Real-time validations using JavaScript (without reloading the page).
+- Dynamic error messages and visual feedback to the user.
+- Styles consistent with the global dark mode.
+- Data submission via the **Fetch API** to the Flask backend endpoints.
 
-**Archivos relacionados:**
-- `components/modal.html`
-- `static/js/modal.js`
-- `static/css/modal.css`
+**Related Files:**
+- `templates/components/forms/` (example: `templates/components/forms/surveys/create.html`)
+- `static/js/surveys/create-modal.js`
+- `static/js/utils/http.js`
 
 ---
 
-Notificaciones
----------------
+Modals
+------
 
-**Descripción:**  
-Sistema de alertas visuales para informar al usuario sobre acciones exitosas, errores o advertencias.
+**Description:**
+Pop-up windows used to confirm actions, display additional information, or edit items without leaving the current view.
 
-**Características:**
-- Compatible con diferentes tipos de notificación: *éxito, error, información, advertencia*.
-- Desaparecen automáticamente tras un tiempo configurable.
-- Implementadas en JavaScript mediante plantillas HTML dinámicas.
-- Se muestran en la esquina superior derecha de la pantalla.
+**Features:**
+- Implemented with dynamic HTML injected by JavaScript.
+- They have smooth appearance and closing animations.
+- Support custom events (`onOpen`, `onClose`, `onSubmit`).
+- Designed with rounded corners and a translucent background.
 
-**Archivos relacionados:**
-- `components/alerts.html`
-- `static/js/alerts.js`
-- `static/css/alerts.css`
+**Code Example (JavaScript):**
+Modals are often managed by utility functions that handle their lifecycle.
+
+.. code-block:: javascript
+
+  import { openModal, closeModal } from '/static/js/utils/drawer.js';
+
+  const myModal = document.getElementById('my-modal');
+
+  // To open
+  openModal(myModal);
+
+  // To close
+  closeModal(myModal);
+
+
+**Related Files:**
+- `static/js/utils/drawer.js`
+- The HTML for modals is usually part of the page that uses them.
+
+---
+
+Notifications
+-------------
+
+**Description:**
+Visual alert system to inform the user about successful actions, errors, or warnings.
+
+**Features:**
+- Compatible with different types of notifications: *success, error, info, warning*.
+- They disappear automatically after a configurable time.
+- Implemented in JavaScript using dynamic HTML templates.
+- They are displayed in the upper right corner of the screen.
+
+**Code Example (JavaScript):**
+A utility function can be used to trigger notifications.
+
+.. code-block:: javascript
+
+  import { showNotification } from '/static/js/utils/dom.js';
+
+  // Show a success notification
+  showNotification('The operation was successful', 'success');
+
+  // Show an error notification
+  showNotification('Something went wrong', 'error');
+
+**Related Files:**
+- `static/js/utils/dom.js`
+- The CSS is part of the global styles.
